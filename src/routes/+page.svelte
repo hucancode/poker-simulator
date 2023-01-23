@@ -174,8 +174,8 @@
         maxlength="4"
       />
       <label for="hand-a" class="absolute top-0 left-0">Your Hand</label>
-      <button on:click={randomA}>🎲</button>
-      <button on:click={clearA}>🃏</button>
+      <div class="button" on:click={randomA}>🎲</div>
+      <div class="button" on:click={clearA}>🃏</div>
     </div>
     <Hand cards={handAInt} fill={2} />
     <div>
@@ -190,8 +190,8 @@
         pattern={"([2-9tjqkaxTJQKA][scdh]){3,5}"}
         on:change={invalidate}
       />
-      <button title="Random" on:click={randomC}>🎲</button>
-      <button title="Clear" on:click={clearC}>🃏</button>
+      <div class="button" title="Random" on:click={randomC}>🎲</div>
+      <div class="button" title="Clear" on:click={clearC}>🃏</div>
     </div>
     <Hand cards={communityInt} fill={5} />
     <div>
@@ -206,8 +206,8 @@
         pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
         maxlength="4"
       />
-      <button title="Random" on:click={randomB}>🎲</button>
-      <button title="Clear" on:click={clearB}>🃏</button>
+      <div class="button" title="Random" on:click={randomB}>🎲</div>
+      <div class="button" title="Clear" on:click={clearB}>🃏</div>
     </div>
     <Hand cards={handBInt} fill={2} />
     <div>
@@ -248,14 +248,18 @@
   h1 + p {
     @apply mt-0;
   }
+  .button,
   button {
-    @apply bg-black px-4 py-1 text-lg uppercase text-white;
+    @apply bg-black px-4 py-1 uppercase text-white;
+  }
+  .button {
+    @apply px-6 text-2xl;
   }
   input {
     @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
   }
   form > div {
-    @apply relative mt-8 mb-2 flex justify-center gap-2 items-center;
+    @apply relative mt-8 mb-2 flex items-center justify-center gap-2;
   }
   label {
     @apply absolute -top-1/2 left-2 bg-black px-2 text-sm text-white;
