@@ -22,7 +22,7 @@
 </script>
 
 <div
-  class="my-2 flex max-w-full flex-wrap items-center justify-center gap-1 font-bold"
+  class="flex max-w-full flex-wrap items-center justify-center gap-1 font-bold"
 >
   {#if Math.max(cards.length, fill) > 0}
     {#each Array(Math.max(cards.length, fill)) as _, i}

@@ -4,6 +4,7 @@
   import Hand from "$lib/components/hand-visualizer.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
+  import Loading from "$lib/components/loading.svelte";
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
@@ -53,13 +54,19 @@
     community.value = randomCard(5);
     invalidate();
   }
+  function clearA() {
+    const n = handA.value.length;
+    handA.value = handA.value.slice(0, Math.max(0, Math.floor(n / 2) - 1) * 2);
+    invalidate();
+  }
   function randomA() {
     handA.value = "";
     handA.value = randomCard(2);
     invalidate();
   }
   function clearB() {
-    handB.value = "";
+    const n = handB.value.length;
+    handB.value = handB.value.slice(0, Math.max(0, Math.floor(n / 2) - 1) * 2);
     invalidate();
   }
   function randomB() {
@@ -137,7 +144,7 @@
 
   onMount(() => {
     randomA();
-    clearB();
+    randomB();
     randomC();
     computeFast();
   });
@@ -153,90 +160,73 @@
     winning odds for you 😌
   </p>
 </header>
-<form class="container prose prose-slate text-center dark:prose-invert">
-  <div class="relative">
-    <input
-      title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-      bind:this={handA}
-      id="hand-a"
-      type="text"
-      on:change={invalidate}
-      value="KsAs"
-      pattern={"([2-9tjqkaxTJQKA][scdh]){2}"}
-      maxlength="4"
-    />
-    <label for="hand-a" class="absolute top-0 left-0">Your Hand</label>
-    <button on:click={randomA}>🎲</button>
-  </div>
-  <Hand cards={handAInt} fill={2} />
-  <div>
-    <label for="community">Community Cards</label>
-    <input
-      title="Enter 3-5 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-      bind:this={community}
-      id="community"
-      type="text"
-      value="2d9h2hJhKh"
-      maxlength="10"
-      pattern={"([2-9tjqkaxTJQKA][scdh]){3,5}"}
-      on:change={invalidate}
-    />
-    <button title="Random" on:click={randomC}>🎲</button>
-    <button title="Clear" on:click={clearC}>🃏</button>
-  </div>
-  <Hand cards={communityInt} fill={5} />
-  <div>
-    <label for="hand-b">Their Hand</label>
-    <input
-      title="Enter 2 or 0 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-      bind:this={handB}
-      id="hand-b"
-      type="text"
-      on:change={invalidate}
-      value="2s2c"
-      pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
-      maxlength="4"
-    />
-    <button title="Random" on:click={randomB}>🎲</button>
-    <button title="Clear" on:click={clearB}>🃏</button>
-  </div>
-  <Hand cards={handBInt} fill={2} />
-  <div>
-    <button on:click={computeFast}>Compute (Fast)</button>
-    <button on:click={computeSlow}>Compute (Slow)</button>
-    <button on:click={computeSlow}>Compute (Very Slow)</button>
-  </div>
-</form>
-<div class="container prose prose-slate text-center dark:prose-invert">
-  {#if isWorking}
-    <svg
-      class="aspec-square my-4 mx-auto w-10 animate-spin"
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-    >
-      <circle
-        class="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke="currentColor"
-        stroke-width="4"
+<main class="container prose prose-slate text-center dark:prose-invert">
+  <form>
+    <div>
+      <input
+        title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+        bind:this={handA}
+        id="hand-a"
+        type="text"
+        on:change={invalidate}
+        value="KsAs"
+        pattern={"([2-9tjqkaxTJQKA][scdh]){2}"}
+        maxlength="4"
       />
-      <path
-        class="opacity-75"
-        fill="currentColor"
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      <label for="hand-a" class="absolute top-0 left-0">Your Hand</label>
+      <button on:click={randomA}>🎲</button>
+      <button on:click={clearA}>🃏</button>
+    </div>
+    <Hand cards={handAInt} fill={2} />
+    <div>
+      <label for="community">Community Cards</label>
+      <input
+        title="Enter 3-5 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+        bind:this={community}
+        id="community"
+        type="text"
+        value="2d9h2hJhKh"
+        maxlength="10"
+        pattern={"([2-9tjqkaxTJQKA][scdh]){3,5}"}
+        on:change={invalidate}
       />
-    </svg>
-  {:else if result.total > 0}
-    <Result {result} />
-  {:else}
-    <h3>Press <kbd>Compute</kbd> to see result</h3>
-  {/if}
-</div>
-
-<footer class="container my-10 text-center opacity-50">
+      <button title="Random" on:click={randomC}>🎲</button>
+      <button title="Clear" on:click={clearC}>🃏</button>
+    </div>
+    <Hand cards={communityInt} fill={5} />
+    <div>
+      <label for="hand-b">Their Hand</label>
+      <input
+        title="Enter 2 or 0 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+        bind:this={handB}
+        id="hand-b"
+        type="text"
+        on:change={invalidate}
+        value="2s2c"
+        pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
+        maxlength="4"
+      />
+      <button title="Random" on:click={randomB}>🎲</button>
+      <button title="Clear" on:click={clearB}>🃏</button>
+    </div>
+    <Hand cards={handBInt} fill={2} />
+    <div>
+      <button on:click={computeFast}>Compute (Fast)</button>
+      <button on:click={computeSlow}>Compute (Slow)</button>
+      <button on:click={computeSlow}>Compute (Slowww)</button>
+    </div>
+  </form>
+  <div>
+    {#if isWorking}
+      <Loading />
+    {:else if result.total > 0}
+      <Result {result} />
+    {:else}
+      <h3>Press <kbd>Compute</kbd> to see result</h3>
+    {/if}
+  </div>
+</main>
+<footer class="my-10 opacity-50">
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
   <small>
@@ -247,19 +237,30 @@
 </footer>
 
 <style>
+  header,
+  main,
+  footer {
+    @apply px-4;
+  }
+  h1 {
+    @apply mb-2 text-3xl;
+  }
+  h1 + p {
+    @apply mt-0;
+  }
   button {
-    @apply mx-auto bg-black px-4 py-1 text-lg uppercase text-white;
+    @apply bg-black px-4 py-1 text-lg uppercase text-white;
   }
   input {
-    @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500 disabled:line-through;
+    @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
   }
-  form div {
-    @apply relative my-2 flex justify-center gap-2;
+  form > div {
+    @apply relative mt-8 mb-2 flex justify-center gap-2 items-center;
   }
   label {
     @apply absolute -top-1/2 left-2 bg-black px-2 text-sm text-white;
   }
   input {
-    @apply grow;
+    @apply w-48;
   }
 </style>

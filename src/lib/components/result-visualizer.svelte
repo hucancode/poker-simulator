@@ -10,7 +10,7 @@
 </script>
 
 {#if result.total == 0}
-  <h3>No computation has been made</h3>
+  <h2>No computation has been made</h2>
 {:else}
   <h3>
     Win/Lose/Tie: {result.win}/{result.lose}/{result.tie}
