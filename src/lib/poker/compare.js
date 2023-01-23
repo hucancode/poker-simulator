@@ -151,20 +151,36 @@ function checkBit(mask, x) {
   return (BigInt(mask) & BigInt(x)) == BigInt(mask);
 }
 
-function evaluate(mask) {
-  if (straightFlush.includes(mask)) {
+function binarySearch(arr, x) {
+  let l = 0;
+  let r = arr.length - 1;
+  while (l <= r) {
+    let m = Math.floor((l + r) / 2);
+    if (arr[m] === x) {
+      return true;
+    } else if (arr[m] < x) {
+      l = m + 1;
+    } else {
+      r = m - 1;
+    }
+  }
+  return false;
+}
+
+export function evaluate(mask) {
+  if (binarySearch(straightFlush, mask)) {
     return STRAIGHT_FLUSH;
   }
   if (fourOfAKind.some((e) => checkBit(e, mask))) {
     return FOUR_OF_A_KIND;
   }
-  if (fullHouse.includes(mask)) {
+  if (binarySearch(fullHouse, mask)) {
     return FULL_HOUSE;
   }
-  if (flush.includes(mask)) {
+  if (binarySearch(flush, mask)) {
     return FLUSH;
   }
-  if (straight.includes(mask)) {
+  if (binarySearch(straight, mask)) {
     return STRAIGHT;
   }
   if (threeOfAKind.some((e) => checkBit(e, mask))) {
@@ -178,6 +194,7 @@ function evaluate(mask) {
   }
   return HIGH_CARD;
 }
+
 export function compare(handA, handB) {
   if (handA.rank > handB.rank) return A_WIN;
   if (handB.rank > handA.rank) return B_WIN;
@@ -212,4 +229,40 @@ export function compare7(arrayA, arrayB) {
   // console.log("best A", handMaskToText(bestA));
   // console.log("best B", handMaskToText(bestB));
   return compare(bestA, bestB);
+}
+
+let handRanks = [];
+
+export function precomputeHandRank() {
+  let usedCard = 0;
+  let mask = 0n;
+  let st = [];
+  for (var c = 0; c < 52; c++) {
+    st.push(c);
+  }
+  while (st.length > 0) {
+    const c = st[st.length - 1];
+    st.pop();
+    if (c < 0) {
+      usedCard--;
+      mask ^= 1n << BigInt(-c);
+      continue;
+    }
+    usedCard++;
+    mask ^= 1n << BigInt(c);
+    if (usedCard == 5) {
+      handRanks.push({
+        mask: Number(mask),
+        rank: evaluate(mask),
+      });
+      mask ^= 1n << BigInt(c);
+      usedCard--;
+      continue;
+    }
+    st.push(-c);
+    for (var next = c + 1; next < 52; next++) {
+      st.push(next);
+    }
+  }
+  console.log("precompute done");
 }

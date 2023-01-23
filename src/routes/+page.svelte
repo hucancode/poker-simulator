@@ -1,7 +1,6 @@
 <script>
   import { onMount } from "svelte";
   import { handTextToArray, cardIdToText } from "$lib/poker/cards";
-  /* import PokerSolverWorker from '$lib/workers/poker-solver?worker' */
   import Hand from "$lib/components/hand-visualizer.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
@@ -147,7 +146,10 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <small>Enter your hand and table configuration. Then let computer calculate the winning odds for you 😌</small>
+  <small
+    >Enter your hand and table configuration. Then let computer calculate the
+    winning odds for you 😌</small
+  >
 </header>
 <form class="container prose prose-slate text-center dark:prose-invert">
   <div>

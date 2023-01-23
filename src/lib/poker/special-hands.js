@@ -109,6 +109,9 @@ for (var r1 = 0n; r1 < 13; r1++)
         }
   }
 
+straight.sort();
+flush.sort();
+fullHouse.sort();
 const straightFlush = straight.filter((e) => flush.includes(e));
 export {
   straightFlush,

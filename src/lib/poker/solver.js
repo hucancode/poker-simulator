@@ -90,9 +90,9 @@ export function solve(handA, handB, community, step = JUMP_3) {
   console.log(
     "done enumerating candidates, there are",
     candidateC.length,
-    "ways to pick community cards, there are",
+    "candidates to pick community cards, there are",
     candidateB.length,
-    "ways to pick opponent cards"
+    "candidates to pick opponent cards"
   );
   console.log("running tests...");
   // run the tests with candidates
@@ -101,10 +101,8 @@ export function solve(handA, handB, community, step = JUMP_3) {
   let tie = 0;
   for (const extraB of candidateB) {
     const handBFinal = handB.concat(extraB);
-    // console.log("checking with opp hand", extraB);
     for (const extraC of candidateC) {
       if (extraB.some((e) => extraC.includes(e))) continue;
-      // console.log("checking with community cards", extraC);
       const communityFinal = community.concat(extraC);
       const ret = compare7(
         handA.concat(communityFinal),
@@ -115,8 +113,17 @@ export function solve(handA, handB, community, step = JUMP_3) {
       if (ret == TIE) tie++;
     }
   }
-  const pickC = ncr(52 - community.length - 2, 5 - community.length);
-  const pickB = ncr(45 - handB.length, 2 - handB.length);
+  let pool = 52 - used.length;
+  const pickC = ncr(pool, 5 - community.length);
+  pool -= 5 - community.length;
+  const pickB = ncr(pool, 2 - handB.length);
+  console.log(
+    "statistically there are",
+    pickC,
+    "ways to pick community cards, there are",
+    pickB,
+    "ways to pick opponent cards"
+  );
   const total = pickB * pickC;
   const winRate = (win / (lose + win + tie)) * 100;
   const coveragePercent = ((win + lose + tie) / total) * 100;
