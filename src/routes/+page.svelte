@@ -3,6 +3,7 @@
   import { handTextToArray, cardIdToText } from "$lib/poker/cards";
   /* import PokerSolverWorker from '$lib/workers/poker-solver?worker' */
   import Hand from "$lib/components/hand-visualizer.svelte";
+  import Result from "$lib/components/result-visualizer.svelte";
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
@@ -23,17 +24,8 @@
     communityInt = handTextToArray(
       community.validity.valid ? community.value : null
     );
-    while (communityInt && communityInt.length < 5) {
-      communityInt.push(-1);
-    }
     handAInt = handTextToArray(handA.validity.valid ? handA.value : null);
-    while (handAInt && handAInt.length < 2) {
-      handAInt.push(-1);
-    }
     handBInt = handTextToArray(handB.validity.valid ? handB.value : null);
-    while (handBInt && handBInt.length < 2) {
-      handBInt.push(-1);
-    }
   }
   function randomCard(n) {
     let taken = handTextToArray(community.value + handA.value + handB.value);
@@ -151,7 +143,7 @@
 <svelte:head>
   <title>Poker Simulator</title>
 </svelte:head>
-<form>
+<form class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Win Rate Simulator</h1>
   <p>Enter your hand and table configuration to see the result.</p>
   <div>
@@ -169,7 +161,7 @@
     <button on:click={randomA}>🎲</button>
   </div>
   <div>
-    <Hand cards={handAInt} />
+    <Hand cards={handAInt} fill={2} />
   </div>
   <div>
     <label for="community">Community Cards</label>
@@ -186,7 +178,7 @@
     <button on:click={randomC5}>🎲 </button>
   </div>
   <div>
-    <Hand cards={communityInt} />
+    <Hand cards={communityInt} fill={5} />
   </div>
   <div>
     <label for="hand-b">Their Hand</label>
@@ -203,7 +195,7 @@
     <button on:click={randomB}>🎲</button>
   </div>
   <div>
-    <Hand cards={handBInt} />
+    <Hand cards={handBInt} fill={2} />
   </div>
   <div>
     <button on:click={computeFast}>Compute (Fast)</button>
@@ -231,27 +223,14 @@
         />
       </svg>
     {:else if result.total > 0}
-      <h3>
-        Win/Lose/Tie: {result.win}/{result.lose}/{result.tie}
-        <span
-          class:text-green-600={result.winRate > 50}
-          class:text-red-500={result.winRate <= 50}
-          >(You win {result.winRate.toFixed(1)}% of the time)</span
-        ><br />
-      </h3>
-      <p>
-        The simulation has done {result.win + result.lose + result.tie} test runs
-        (in total of {result.total} results that may happen). Which covers {result.coveragePercent.toFixed(
-          2
-        )}% real combinations space
-      </p>
+      <Result {result} />
     {:else}
       <h3>Press <strong>Compute</strong> to see result</h3>
     {/if}
   </div>
 </form>
 
-<footer>
+<footer class="container mb-10 text-center opacity-50">
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
   <small>
@@ -265,14 +244,11 @@
   button {
     @apply my-1 mx-auto bg-black px-4 py-1 uppercase text-white only:w-full;
   }
-  label {
-    @apply w-full text-center;
-  }
   input {
     @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500 disabled:line-through;
   }
   form {
-    @apply container prose prose-slate table text-center dark:prose-invert;
+    @apply table;
   }
   form div {
     @apply my-2;
@@ -280,8 +256,5 @@
   label,
   input {
     @apply table-cell;
-  }
-  footer {
-    @apply container mb-10 text-center opacity-50;
   }
 </style>

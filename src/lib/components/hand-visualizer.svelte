@@ -1,6 +1,7 @@
 <script>
   import * as poker from "$lib/poker/cards";
   export let cards = [];
+  export let fill = 0;
 
   function getCardRank(card) {
     const ret = poker.ranks[Math.floor(card / 4)];
@@ -23,21 +24,21 @@
 <div
   class="my-2 flex max-w-full flex-wrap items-center justify-center gap-1 font-bold"
 >
-  {#if cards.length > 0}
-    {#each cards as card}
-      {#if card >= 0}
+  {#if Math.max(cards.length, fill) > 0}
+    {#each Array(Math.max(cards.length, fill)) as _, i}
+      {#if i < cards.length}
         <div
-          is-high={isHighCard(card)}
+          is-high={isHighCard(cards[i])}
           class="animate-bg-pingpong-fast bg-double-width rounded-t-md p-0.5 pb-0"
         >
           <div
             class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-gray-100/90 px-3 pt-2 text-gray-800"
-            is-red={isRedCard(card)}
+            is-red={isRedCard(cards[i])}
           >
             <div class="absolute top-0 left-1 text-sm">
-              {getCardRank(card) ?? ""}
+              {getCardRank(cards[i]) ?? ""}
             </div>
-            <div class="text-4xl">{getCardSymbol(card) ?? ""}</div>
+            <div class="text-4xl">{getCardSymbol(cards[i]) ?? ""}</div>
           </div>
         </div>
       {:else}
@@ -54,8 +55,7 @@
     <div
       class="relative select-none rounded-t-md border bg-gray-100 px-3 pt-2 text-gray-800"
     >
-      <div class="absolute top-0 left-1 text-sm">?</div>
-      <div class="text-2xl">★</div>
+      <div class="text-4xl">★</div>
     </div>
   {/if}
 </div>
