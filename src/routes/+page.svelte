@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { handTextToArray, cardIdToText } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
+  import Picker from "$lib/components/card-picker.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
   import Loading from "$lib/components/loading.svelte";
@@ -173,52 +174,53 @@
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
     <div>
-      <input
-        title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-        bind:this={handA}
-        id="hand-a"
-        type="text"
-        on:change={invalidate}
-        value="KsAs"
-        pattern={"([2-9tjqkaTJQKA][scdh]){2}"}
-        required
-      />
-      <label for="hand-a">Your Hand</label>
-      <div class="button" title="Randomize cards" on:click={randomA}>🎲</div>
-      <div class="button" title="Clear 1 card" on:click={clearA}>🃏</div>
+      <div class="relative flex gap-1">
+        <input
+          title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+          bind:this={handA}
+          id="hand-a"
+          class="small"
+          type="text"
+          on:change={invalidate}
+          pattern={"([2-9tjqkaTJQKA][scdh]){2}"}
+          required
+        />
+        <label for="hand-a">Your Hand</label>
+        <div class="button" title="Clear 1 card" on:click={clearA}>🎲</div>
+      </div>
+      <div class="relative flex gap-1">
+        <input
+          title="Enter 2 or 0 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+          bind:this={handB}
+          id="hand-b"
+          class="small"
+          type="text"
+          on:change={invalidate}
+          pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
+        />
+        <label for="hand-b">Their Hand</label>
+        <div class="button" title="Clear 1 card" on:click={clearB}>🎲</div>
+      </div>
     </div>
-    <Hand cards={handAInt} fill={2} />
+    <div class="flex items-center justify-between gap-2">
+      <Hand cards={handAInt} fill={2} />
+      <strong>VS</strong>
+      <Hand cards={handBInt} fill={2} />
+    </div>
     <div>
       <input
         title="Enter 3-5 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
         bind:this={community}
         id="community"
         type="text"
-        value="2d9h2hJhKh"
         pattern={"([2-9tjqkaTJQKA][scdh]){3,5}"}
         on:change={invalidate}
         required
       />
       <label for="community">Community Cards</label>
-      <div class="button" title="Randomize cards" on:click={randomC}>🎲</div>
-      <div class="button" title="Clear 1 card" on:click={clearC}>🃏</div>
+      <div class="button" title="Clear 1 card" on:click={clearC}>🎲</div>
     </div>
     <Hand cards={communityInt} fill={5} />
-    <div>
-      <input
-        title="Enter 2 or 0 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-        bind:this={handB}
-        id="hand-b"
-        type="text"
-        on:change={invalidate}
-        value="2s2c"
-        pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
-      />
-      <label for="hand-b">Their Hand</label>
-      <div class="button" title="Randomize cards" on:click={randomB}>🎲</div>
-      <div class="button" title="Clear 1 card" on:click={clearB}>🃏</div>
-    </div>
-    <Hand cards={handBInt} fill={2} />
     <div class="w-full">
       <input
         type="radio"
@@ -242,6 +244,7 @@
       <button on:click={doCompute}>{isWorking ? "Stop" : "Compute"}</button>
     </div>
   </form>
+  <Picker cards={communityInt} />
   <div>
     {#if isWorking}
       <Loading />
@@ -279,7 +282,7 @@
     @apply cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
   }
   .button {
-    @apply select-none px-6 text-2xl;
+    @apply select-none px-6;
   }
   input {
     @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
@@ -299,13 +302,16 @@
   form {
     @apply flex flex-col items-center;
   }
-  form > div {
+  form > div:has(input) {
     @apply relative mt-6 mb-2 flex items-center justify-center gap-2;
   }
   form > div:has(input[type="text"]) {
     @apply w-min;
   }
+  input.small {
+    @apply w-24;
+  }
   input {
-    @apply w-48;
+    @apply w-64;
   }
 </style>
