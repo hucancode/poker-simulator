@@ -1,42 +1,278 @@
-<script context="module">
-  export const prerender = true;
-</script>
-
 <script>
-  import WavingHand from "$lib/components/waving-hand.svelte";
-  import { _ } from "svelte-i18n";
+  import { onMount } from "svelte";
+  import { handTextToArray, cardIdToText } from "$lib/poker/cards";
+  /* import PokerSolverWorker from '$lib/workers/poker-solver?worker' */
+  import Hand from "$lib/components/hand-visualizer.svelte";
+  const UNKOWN_RESULT = {
+    win: 0,
+    lose: 0,
+    tie: 0,
+    winRate: 0,
+    total: 0,
+    coveragePercent: 100,
+  };
+
+  let community,
+    handA,
+    handB,
+    result = UNKOWN_RESULT;
+  let isWorking = false;
+  let worker;
+  let communityInt, handAInt, handBInt;
+  function invalidate() {
+    communityInt = handTextToArray(
+      community.validity.valid ? community.value : null
+    );
+    while (communityInt && communityInt.length < 5) {
+      communityInt.push(-1);
+    }
+    handAInt = handTextToArray(handA.validity.valid ? handA.value : null);
+    while (handAInt && handAInt.length < 2) {
+      handAInt.push(-1);
+    }
+    handBInt = handTextToArray(handB.validity.valid ? handB.value : null);
+    if (communityInt.includes(-1)) {
+      handBInt = [-1, -1];
+    }
+    while (handBInt && handBInt.length < 2) {
+      handBInt.push(-1);
+    }
+  }
+  function randomCard(n) {
+    let taken = handTextToArray(community.value + handA.value + handB.value);
+    let pool = Array(52)
+      .fill()
+      .map((e, i) => i)
+      .filter((i) => !taken.includes(i));
+    return pool
+      .sort((a, b) => Math.random() - 0.5)
+      .slice(0, n)
+      .map((i) => cardIdToText(i))
+      .reduce((ret, v) => ret + v);
+  }
+  function randomC3() {
+    community.value = "";
+    community.value = randomCard(3);
+    invalidate();
+  }
+  function randomC4() {
+    community.value = "";
+    community.value = randomCard(4);
+    invalidate();
+  }
+  function randomC5() {
+    community.value = "";
+    community.value = randomCard(5);
+    invalidate();
+  }
+  function randomA() {
+    handA.value = "";
+    handA.value = randomCard(2);
+    invalidate();
+  }
+  function randomB() {
+    handB.value = "";
+    handB.value = randomCard(2);
+    invalidate();
+  }
+
+  function calculateFast() {
+    return calculate();
+  }
+  function calculateSlow() {
+    return calculate(true);
+  }
+  function calculate(intense) {
+    if (
+      !(
+        community.validity.valid &&
+        handA.validity.valid &&
+        handB.validity.valid
+      )
+    ) {
+      result = UNKOWN_RESULT;
+      return;
+    }
+    const a = handTextToArray(handA.value);
+    const b = handTextToArray(handB.value);
+    const c = handTextToArray(community.value);
+    result = UNKOWN_RESULT;
+    const needed = 7 - (b.length + c.length);
+    let jump;
+    switch (needed) {
+      case 1:
+        jump = 1;
+        break;
+      case 2:
+        jump = 1;
+        break;
+      case 3:
+        jump = 6;
+        break;
+      case 4:
+        jump = 12;
+        break;
+      default:
+        jump = 1;
+    }
+    if (worker) {
+      worker.terminate();
+    }
+    worker = new Worker(
+      new URL("$lib/workers/poker-solver.js", import.meta.url),
+      {
+        type: "module",
+      }
+    );
+    worker.addEventListener("message", (e) => {
+      if (e.data.name === "ok") {
+        result = e.data;
+        isWorking = false;
+      }
+    });
+    worker.postMessage({
+      name: "start",
+      handA: a,
+      handB: b,
+      community: c,
+      step: jump,
+    });
+    isWorking = true;
+  }
+
+  onMount(() => {
+    invalidate();
+  });
 </script>
 
 <svelte:head>
-  <title>SvelteKit</title>
+  <title>Poker Simulator</title>
 </svelte:head>
-<div
-  class="flex-col-center h-screen 
-	w-screen gap-7 bg-gray-100 text-black
-	dark:bg-gray-800 dark:text-white"
->
-  <WavingHand class="text-7xl" />
-  <div class="flex-col-center text-center">
-    <h1 class="welcome">
-      {@html $_("welcome")}
-    </h1>
-    <p class="help-text">
-      {@html $_("help-text")}
-    </p>
+<form>
+  <h2>Poker Win Rate Simulator</h2>
+  <p>Enter your hand and table configuration to see the result.</p>
+  <div>
+    <label for="hand-a">My Hand</label>
+    <input
+      title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+      bind:this={handA}
+      id="hand-a"
+      type="text"
+      on:change={invalidate}
+      value="KsAs"
+      pattern={"([2-9tjqkaxTJQKA][scdh]){2}"}
+      maxlength="4"
+    />
+    <button on:click={randomA}>🎲</button>
   </div>
-</div>
+  <div>
+    <Hand cards={handAInt} />
+  </div>
+  <div>
+    <label for="community">Community Cards</label>
+    <input
+      title="Enter 3-5 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+      bind:this={community}
+      id="community"
+      type="text"
+      value="2d9h2hJhKh"
+      maxlength="10"
+      pattern={"([2-9tjqkaxTJQKA][scdh]){3,5}"}
+      on:change={invalidate}
+    />
+    <button on:click={randomC5}>🎲 </button>
+  </div>
+  <div>
+    <Hand cards={communityInt} />
+  </div>
+  <div>
+    <label for="hand-b">Their Hand</label>
+    <input
+      title="Enter 2 or 0 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+      bind:this={handB}
+      id="hand-b"
+      type="text"
+      on:change={invalidate}
+      value="2s2c"
+      pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
+      maxlength="4"
+    />
+    <button on:click={randomB}>🎲</button>
+  </div>
+  <div>
+    <Hand cards={handBInt} />
+  </div>
+  <div>
+    <button on:click={calculateFast}>Calculate (Fast)</button>
+    <button on:click={calculateSlow}>Calculate (Slow)</button>
+    {#if isWorking}
+      <svg
+        class="aspec-square my-4 mx-auto w-10 animate-spin text-white"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        />
+        <path
+          class="opacity-75"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+        />
+      </svg>
+    {:else if result.total > 0}
+      <h3>
+        Win/Lose/Tie: {result.win}/{result.lose}/{result.tie}
+        <span
+          class:text-green-600={result.winRate > 50}
+          class:text-red-500={result.winRate <= 50}
+          >(You win {result.winRate.toFixed(1)}% of the time)</span
+        ><br />
+      </h3>
+      <p>
+        The simulation has done {result.win + result.lose + result.tie} test runs
+        (in total of {result.total} results that may happen). Which covers {result.coveragePercent.toFixed(
+          2
+        )}% real combinations space
+      </p>
+    {:else}
+      <h3>Press <strong>Calculate</strong> to see result</h3>
+    {/if}
+  </div>
+</form>
 
-<style lang="postcss" global>
-  .welcome {
-    @apply text-4xl font-bold;
-    span {
-      @apply mr-3 font-logo-cursive;
-    }
+<footer>
+  Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
+  />
+  Card evaluation algorithm based on bit masking and pre-calculation. <br />
+  You can test the accuracy of the algorithm using
+  <strong><a href="/specials">this tool</a></strong>
+</footer>
+
+<style>
+  button {
+    @apply my-1 mx-auto bg-black px-4 py-1 uppercase text-white only:w-full;
   }
-  .help-text {
-    @apply font-thin;
-    a {
-      @apply hover:text-blue-500;
-    }
+  input {
+    @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500 disabled:line-through;
+  }
+  form {
+    @apply container prose prose-slate table text-center dark:prose-invert;
+  }
+  form div {
+    @apply my-2;
+  }
+  label,
+  input {
+    @apply table-cell;
+  }
+  footer {
+    @apply container mb-10 text-center opacity-50;
   }
 </style>

@@ -9,6 +9,12 @@ const config = {
         double: "200%",
         "5/2": "250%",
       },
+      backgroundImage: {
+        rainbow:
+          "linear-gradient(115deg,#4fcf70,#fad648,#a767e5,#12bcfe,#44ce7b)",
+        rainbow2:
+          "linear-gradient(141.27deg,#ff904e 0%,#ff5982 20%,#ec68f4 40%,#79e2ff 80%)",
+      },
       fontFamily: {
         "logo-cursive": ['"Great Vibes"', "cursive"],
       },
@@ -43,7 +49,7 @@ const config = {
       },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };
 
 module.exports = config;
