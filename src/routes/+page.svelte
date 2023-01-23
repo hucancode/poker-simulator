@@ -147,7 +147,7 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <small>Enter your hand and table configuration to see the result</small>
+  <small>Enter your hand and table configuration. Then let computer calculate the winning odds for you 😌</small>
 </header>
 <form class="container prose prose-slate text-center dark:prose-invert">
   <div>
