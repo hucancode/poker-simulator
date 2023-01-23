@@ -29,7 +29,7 @@
       {#if i < cards.length}
         <div
           is-high={isHighCard(cards[i])}
-          class="animate-bg-pingpong-fast bg-double-width rounded-t-md p-0.5 pb-0"
+          class="animate-bg-pingpong rounded-t-md bg-4x-width p-0.5 pb-0"
         >
           <div
             class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-gray-100/90 px-3 pt-2 text-gray-800"
@@ -45,7 +45,7 @@
         </div>
       {:else}
         <div
-          class="bg-double-width overflow-hidden rounded-t-md border border-neutral-400 bg-white p-0.5 pb-0"
+          class="overflow-hidden rounded-t-md border border-neutral-400 bg-white bg-double-width p-0.5 pb-0"
         >
           <div
             class="aspect-square w-12 rounded-t-md bg-sky-500 bg-diagonal-stripe"
@@ -70,6 +70,6 @@
     @apply bg-white;
   }
   div[is-high="true"] {
-    @apply bg-rainbow2;
+    @apply bg-rainbow;
   }
 </style>

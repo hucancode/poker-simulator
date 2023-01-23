@@ -9,6 +9,11 @@ const config = {
         double: "200%",
         "5/2": "250%",
       },
+      backgroundSize: {
+        "half-width": "50% 100%",
+        "double-width": "200% 100%",
+        "4x-width": "400% 100%",
+      },
       backgroundImage: {
         rainbow:
           "linear-gradient(115deg,#4fcf70,#fad648,#a767e5,#12bcfe,#44ce7b)",
@@ -38,8 +43,12 @@ const config = {
       },
       animation: {
         "waving-hand": "waving-hand 2.5s infinite",
+        "bg-pingpong": "bg-pingpong 2.5s ease infinite alternate",
       },
       keyframes: {
+        "bg-pingpong": {
+          to: { "background-position-x": "50%" },
+        },
         "waving-hand": {
           "0%": { transform: "rotate(0.0deg)" },
           "10%": { transform: "rotate(20deg)" },
