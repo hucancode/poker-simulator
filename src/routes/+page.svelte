@@ -4,6 +4,7 @@
   /* import PokerSolverWorker from '$lib/workers/poker-solver?worker' */
   import Hand from "$lib/components/hand-visualizer.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
+  import WavingHand from "$lib/components/waving-hand.svelte";
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
@@ -26,6 +27,7 @@
     );
     handAInt = handTextToArray(handA.validity.valid ? handA.value : null);
     handBInt = handTextToArray(handB.validity.valid ? handB.value : null);
+    result = UNKOWN_RESULT;
   }
   function randomCard(n) {
     let taken = handTextToArray(community.value + handA.value + handB.value);
@@ -143,9 +145,11 @@
 <svelte:head>
   <title>Poker Simulator</title>
 </svelte:head>
+<header class="container prose prose-slate text-center dark:prose-invert">
+  <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
+  <small>Enter your hand and table configuration to see the result</small>
+</header>
 <form class="container prose prose-slate text-center dark:prose-invert">
-  <h1>Poker Win Rate Simulator</h1>
-  <p>Enter your hand and table configuration to see the result.</p>
   <div>
     <label for="hand-a">Your Hand</label>
     <input
@@ -225,7 +229,7 @@
     {:else if result.total > 0}
       <Result {result} />
     {:else}
-      <h3>Press <strong>Compute</strong> to see result</h3>
+      <h3>Press <kbd>Compute</kbd> to see result</h3>
     {/if}
   </div>
 </form>

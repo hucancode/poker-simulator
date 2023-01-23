@@ -65,13 +65,13 @@
 </svelte:head>
 
 <form>
-  <h1>Poker Combinations Tester</h1>
-  <p>
+  <h1>Poker Combinations</h1>
+  <small>
     This page serve as a test for the hand evaluation algorithm. Ideally when
     you ask for a <strong>Full House</strong> the program must produce a random
     <strong>Full House (A triplet and a pair)</strong> combination. Press buttons
     below to get a special combinations
-  </p>
+  </small>
   <div>
     <button on:click={randomSF}>🎲 Straight Flush</button>
     <button on:click={random4X}>🎲 Four of a Kind</button>
