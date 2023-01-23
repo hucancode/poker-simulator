@@ -14,6 +14,7 @@
     coveragePercent: 100,
   };
 
+  let speedFast, speedSlow, speedVerySlow;
   let community,
     handA,
     handB,
@@ -75,14 +76,21 @@
     invalidate();
   }
 
-  function computeFast() {
-    return compute();
-  }
-  function computeSlow() {
-    return compute(0.6);
-  }
-  function computeVerySlow() {
-    return compute(0.3);
+  function doCompute() {
+    if (isWorking) {
+      worker.terminate();
+      isWorking = false;
+      return;
+    }
+    if (speedFast.checked) {
+      return compute();
+    }
+    if (speedSlow.checked) {
+      return compute(0.6);
+    }
+    if (speedVerySlow.checked) {
+      return compute(0.3);
+    }
   }
   function compute(k = 1) {
     if (
@@ -146,7 +154,7 @@
     randomA();
     randomB();
     randomC();
-    computeFast();
+    compute();
   });
 </script>
 
@@ -155,10 +163,7 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <p>
-    Enter your hand and table configuration. Then let computer calculate the
-    winning odds for you 😌
-  </p>
+  <p>Enter your game state and let computer do the hard work for you 😌</p>
 </header>
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
@@ -170,32 +175,31 @@
         type="text"
         on:change={invalidate}
         value="KsAs"
-        pattern={"([2-9tjqkaxTJQKA][scdh]){2}"}
-        maxlength="4"
+        pattern={"([2-9tjqkaTJQKA][scdh]){2}"}
+        required
       />
-      <label for="hand-a" class="absolute top-0 left-0">Your Hand</label>
-      <div class="button" on:click={randomA}>🎲</div>
-      <div class="button" on:click={clearA}>🃏</div>
+      <label for="hand-a">Your Hand</label>
+      <div class="button" title="Randomize cards" on:click={randomA}>🎲</div>
+      <div class="button" title="Clear 1 card" on:click={clearA}>🃏</div>
     </div>
     <Hand cards={handAInt} fill={2} />
     <div>
-      <label for="community">Community Cards</label>
       <input
         title="Enter 3-5 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
         bind:this={community}
         id="community"
         type="text"
         value="2d9h2hJhKh"
-        maxlength="10"
-        pattern={"([2-9tjqkaxTJQKA][scdh]){3,5}"}
+        pattern={"([2-9tjqkaTJQKA][scdh]){3,5}"}
         on:change={invalidate}
+        required
       />
-      <div class="button" title="Random" on:click={randomC}>🎲</div>
-      <div class="button" title="Clear" on:click={clearC}>🃏</div>
+      <label for="community">Community Cards</label>
+      <div class="button" title="Randomize cards" on:click={randomC}>🎲</div>
+      <div class="button" title="Clear 1 card" on:click={clearC}>🃏</div>
     </div>
     <Hand cards={communityInt} fill={5} />
     <div>
-      <label for="hand-b">Their Hand</label>
       <input
         title="Enter 2 or 0 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
         bind:this={handB}
@@ -204,16 +208,33 @@
         on:change={invalidate}
         value="2s2c"
         pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
-        maxlength="4"
       />
-      <div class="button" title="Random" on:click={randomB}>🎲</div>
-      <div class="button" title="Clear" on:click={clearB}>🃏</div>
+      <label for="hand-b">Their Hand</label>
+      <div class="button" title="Randomize cards" on:click={randomB}>🎲</div>
+      <div class="button" title="Clear 1 card" on:click={clearB}>🃏</div>
     </div>
     <Hand cards={handBInt} fill={2} />
+    <div class="w-full">
+      <input
+        type="radio"
+        name="speed"
+        id="speed-fast"
+        checked
+        bind:this={speedFast}
+      />
+      <label for="speed-fast">Fast 🐰</label>
+      <input type="radio" name="speed" id="speed-slow" bind:this={speedSlow} />
+      <label for="speed-slow">Slow 🐢</label>
+      <input
+        type="radio"
+        name="speed"
+        id="speed-very-slow"
+        bind:this={speedVerySlow}
+      />
+      <label for="speed-very-slow">🐌</label>
+    </div>
     <div>
-      <button on:click={computeFast}>Compute (Fast)</button>
-      <button on:click={computeSlow}>Compute (Slow)</button>
-      <button on:click={computeSlow}>Compute (Slowww)</button>
+      <button on:click={doCompute}>{isWorking ? "Stop" : "Compute"}</button>
     </div>
   </form>
   <div>
@@ -222,7 +243,7 @@
     {:else if result.total > 0}
       <Result {result} />
     {:else}
-      <h3>Press <kbd>Compute</kbd> to see result</h3>
+      <h3>Press <kbd>Compute</kbd> to see run the simulation for this board</h3>
     {/if}
   </div>
 </main>
@@ -250,19 +271,34 @@
   }
   .button,
   button {
-    @apply bg-black px-4 py-1 uppercase text-white;
+    @apply cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
   }
   .button {
-    @apply px-6 text-2xl;
+    @apply select-none px-6 text-2xl;
   }
   input {
     @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
   }
-  form > div {
-    @apply relative mt-8 mb-2 flex items-center justify-center gap-2;
+  input[type="text"] + label {
+    @apply absolute -top-1/3 left-1 bg-black px-2 text-sm text-white;
   }
-  label {
-    @apply absolute -top-1/2 left-2 bg-black px-2 text-sm text-white;
+  input[type="radio"] {
+    display: none;
+  }
+  input[type="radio"] + label {
+    @apply w-1/3 bg-gray-600 px-4 py-2 text-center font-semibold text-gray-100;
+  }
+  input[type="radio"]:checked + label {
+    @apply bg-black text-white;
+  }
+  form {
+    @apply flex flex-col items-center;
+  }
+  form > div {
+    @apply relative mt-6 mb-2 flex items-center justify-center gap-2;
+  }
+  form > div:has(input[type="text"]) {
+    @apply w-min;
   }
   input {
     @apply w-48;
