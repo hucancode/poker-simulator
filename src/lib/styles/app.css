@@ -1,0 +1,14 @@
+@import url("https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  .flex-col-center {
+    @apply flex flex-col items-center justify-center;
+  }
+  .flex-center,
+  .flex-row-center {
+    @apply flex items-center justify-center;
+  }
+}

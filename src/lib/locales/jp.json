@@ -1,0 +1,4 @@
+{
+  "welcome": "<span>Sveltekit</span>へようこそ！",
+  "help-text": "詳細は <a href=\"https://kit.svelte.dev\">kit.svelte.dev</a> にご参考ください。"
+}
