@@ -22,7 +22,7 @@
 </script>
 
 <div
-  class="flex max-w-full flex-wrap items-center justify-center gap-1 font-bold"
+  class="flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
 >
   {#if Math.max(cards.length, fill) > 0}
     {#each Array(Math.max(cards.length, fill)) as _, i}
@@ -35,10 +35,12 @@
             class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-gray-100/90 px-3 pt-2 text-gray-800"
             is-red={isRedCard(cards[i])}
           >
-            <div class="absolute top-0 left-1 text-sm">
+            <div class="absolute top-0.5 left-0.5 leading-none">
               {getCardRank(cards[i]) ?? ""}
             </div>
-            <div class="text-4xl">{getCardSymbol(cards[i]) ?? ""}</div>
+            <div class="text-2xl md:text-4xl">
+              {getCardSymbol(cards[i]) ?? ""}
+            </div>
           </div>
         </div>
       {:else}

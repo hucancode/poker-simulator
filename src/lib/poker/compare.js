@@ -212,7 +212,7 @@ export function compare(handA, handB) {
   return compareHighCard(handA.mask, handB.mask);
 }
 
-function getBestCombination(arr) {
+export function getBestCombination(arr) {
   const comb = getCombinations(arr, 5).map((e) => {
     const mask = handArrayToMask(e);
     const rank = evaluate(mask);
@@ -226,8 +226,8 @@ export function compare7(arrayA, arrayB) {
   // console.log("compare 7", arrayA, arrayB);
   const bestA = getBestCombination(arrayA);
   const bestB = getBestCombination(arrayB);
-  // console.log("best A", handMaskToText(bestA));
-  // console.log("best B", handMaskToText(bestB));
+  // console.log("best A", handMaskToText(bestA.mask));
+  // console.log("best B", handMaskToText(bestB.mask));
   return compare(bestA, bestB);
 }
 

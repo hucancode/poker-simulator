@@ -12,19 +12,17 @@
 {#if result.total == 0}
   <h2>No computation has been made</h2>
 {:else if result.total == 1}
-  {#if result.win == 1}
-    <h3>You Win!</h3>
-  {:else if result.lose == 1}
-    <h3>You Lose!</h3>
-  {:else}
-    <h3>You Tie!</h3>
-  {/if}
+  <h3 positive={result.win == 1} negative={result.lose == 1}>
+    {result.win == 1
+      ? "You Win!"
+      : result.lose == 1
+      ? "You Lose..."
+      : "It's A Tie!"}
+  </h3>
 {:else}
   <h3>
     Win/Lose/Tie: {result.win}/{result.lose}/{result.tie}
-    <span
-      class:text-green-600={result.winRate > 50}
-      class:text-red-500={result.winRate <= 50}
+    <span positive={result.winRate > 50} negative={result.winRate <= 50}
       >(You win {result.winRate.toFixed(1)}% of the time)</span
     ><br />
   </h3>
@@ -41,3 +39,14 @@
     </p>
   {/if}
 {/if}
+
+<style>
+  h3[negative="true"],
+  span[negative="true"] {
+    @apply text-red-500;
+  }
+  h3[positive="true"],
+  span[positive="true"] {
+    @apply text-green-600;
+  }
+</style>
