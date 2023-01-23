@@ -28,10 +28,16 @@
       >(You win {result.winRate.toFixed(1)}% of the time)</span
     ><br />
   </h3>
-  <p>
-    The computer has gone through
-    {result.win + result.lose + result.tie} test runs (of total {result.total}
-    possible outcomes). Which covers {result.coveragePercent.toFixed(2)}% real
-    combinations space
-  </p>
+  {#if result.win + result.lose + result.tie == result.total}
+    <p>
+      The computer has covered all {result.total} possible outcomes
+    </p>
+  {:else}
+    <p>
+      The computer has gone through
+      {result.win + result.lose + result.tie} test runs (of total {result.total}
+      possible outcomes). Which covers {result.coveragePercent.toFixed(2)}% real
+      combinations space
+    </p>
+  {/if}
 {/if}
