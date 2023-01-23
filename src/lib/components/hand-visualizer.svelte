@@ -28,10 +28,10 @@
       {#if card >= 0}
         <div
           is-high={isHighCard(card)}
-          class="animate-bg-pingpong-fast bg-double-width rounded-t-md p-px pb-0"
+          class="animate-bg-pingpong-fast bg-double-width rounded-t-md p-0.5 pb-0"
         >
           <div
-            class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-gray-100 px-3 pt-2 text-gray-800"
+            class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-gray-100/90 px-3 pt-2 text-gray-800"
             is-red={isRedCard(card)}
           >
             <div class="absolute top-0 left-1 text-sm">
@@ -63,6 +63,9 @@
 <style>
   div[is-red="true"] {
     @apply text-red-500;
+  }
+  div[is-high="false"] {
+    @apply bg-white;
   }
   div[is-high="true"] {
     @apply bg-rainbow2;

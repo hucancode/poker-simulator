@@ -31,9 +31,6 @@
       handAInt.push(-1);
     }
     handBInt = handTextToArray(handB.validity.valid ? handB.value : null);
-    if (communityInt.includes(-1)) {
-      handBInt = [-1, -1];
-    }
     while (handBInt && handBInt.length < 2) {
       handBInt.push(-1);
     }
@@ -76,13 +73,16 @@
     invalidate();
   }
 
-  function calculateFast() {
-    return calculate();
+  function computeFast() {
+    return compute();
   }
-  function calculateSlow() {
-    return calculate(true);
+  function computeSlow() {
+    return compute(0.6);
   }
-  function calculate(intense) {
+  function computeVerySlow() {
+    return compute(0.3);
+  }
+  function compute(k = 1) {
     if (
       !(
         community.validity.valid &&
@@ -104,13 +104,13 @@
         jump = 1;
         break;
       case 2:
-        jump = 1;
+        jump = 2 * k;
         break;
       case 3:
-        jump = 6;
+        jump = 6 * k;
         break;
       case 4:
-        jump = 12;
+        jump = 12 * k;
         break;
       default:
         jump = 1;
@@ -141,7 +141,10 @@
   }
 
   onMount(() => {
-    invalidate();
+    randomA();
+    randomB();
+    randomC5();
+    computeFast();
   });
 </script>
 
@@ -149,10 +152,10 @@
   <title>Poker Simulator</title>
 </svelte:head>
 <form>
-  <h2>Poker Win Rate Simulator</h2>
+  <h1>Poker Win Rate Simulator</h1>
   <p>Enter your hand and table configuration to see the result.</p>
   <div>
-    <label for="hand-a">My Hand</label>
+    <label for="hand-a">Your Hand</label>
     <input
       title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
       bind:this={handA}
@@ -203,8 +206,9 @@
     <Hand cards={handBInt} />
   </div>
   <div>
-    <button on:click={calculateFast}>Calculate (Fast)</button>
-    <button on:click={calculateSlow}>Calculate (Slow)</button>
+    <button on:click={computeFast}>Compute (Fast)</button>
+    <button on:click={computeSlow}>Compute (Slow)</button>
+    <button on:click={computeSlow}>Compute (Very Slow)</button>
     {#if isWorking}
       <svg
         class="aspec-square my-4 mx-auto w-10 animate-spin text-white"
@@ -242,7 +246,7 @@
         )}% real combinations space
       </p>
     {:else}
-      <h3>Press <strong>Calculate</strong> to see result</h3>
+      <h3>Press <strong>Compute</strong> to see result</h3>
     {/if}
   </div>
 </form>
@@ -250,14 +254,19 @@
 <footer>
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
-  Card evaluation algorithm based on bit masking and pre-calculation. <br />
-  You can test the accuracy of the algorithm using
-  <strong><a href="/specials">this tool</a></strong>
+  <small>
+    Card evaluation algorithm based on bit masking and pre-calculation. <br />
+    You can test the accuracy of the algorithm using
+    <strong><a href="/specials">this tool</a></strong>
+  </small>
 </footer>
 
 <style>
   button {
     @apply my-1 mx-auto bg-black px-4 py-1 uppercase text-white only:w-full;
+  }
+  label {
+    @apply w-full text-center;
   }
   input {
     @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500 disabled:line-through;
