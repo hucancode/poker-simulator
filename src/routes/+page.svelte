@@ -12,6 +12,7 @@
     winRate: 0,
     total: 0,
     coveragePercent: 100,
+    time: 0,
   };
 
   let speedFast, speedSlow, speedVerySlow;

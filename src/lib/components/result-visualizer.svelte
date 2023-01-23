@@ -6,6 +6,7 @@
     winRate: 0,
     total: 0,
     coveragePercent: 100,
+    time: 0,
   };
 </script>
 
@@ -26,18 +27,21 @@
       >(You win {result.winRate.toFixed(1)}% of the time)</span
     ><br />
   </h3>
-  {#if result.win + result.lose + result.tie == result.total}
-    <p>
+  <p>
+    {#if result.time > 2000}
+      Thanks for the
+      <em>{Math.floor(result.time / 1000)} seconds</em> wait <big>😅</big>.
+    {/if}
+    {#if result.win + result.lose + result.tie == result.total}
       The computer has covered all {result.total} possible outcomes
-    </p>
-  {:else}
-    <p>
+    {:else}
       The computer has gone through
-      {result.win + result.lose + result.tie} test runs (of total {result.total}
+      {result.win + result.lose + result.tie} test runs (of total
+      <em>{result.total}</em>
       possible outcomes). Which covers {result.coveragePercent.toFixed(2)}% real
       combinations space
-    </p>
-  {/if}
+    {/if}
+  </p>
 {/if}
 
 <style>
