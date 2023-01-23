@@ -24,6 +24,7 @@ function randomJump(x) {
 
 export function solve(handA, handB, community, step = JUMP_3) {
   console.log("solving", handA, community, handB);
+  const startSolvingTime = new Date();
   let used = [];
   let candidateB = [];
   let candidateC = [];
@@ -128,6 +129,8 @@ export function solve(handA, handB, community, step = JUMP_3) {
   const winRate = (win / (lose + win + tie)) * 100;
   const coveragePercent = ((win + lose + tie) / total) * 100;
   console.log("done running tests");
+  const now = new Date();
+  const time = now - startSolvingTime;
   return {
     win,
     lose,
@@ -135,5 +138,6 @@ export function solve(handA, handB, community, step = JUMP_3) {
     winRate,
     total,
     coveragePercent,
+    time,
   };
 }
