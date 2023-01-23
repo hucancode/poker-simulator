@@ -40,17 +40,15 @@
       .map((i) => cardIdToText(i))
       .reduce((ret, v) => ret + v);
   }
-  function randomC3() {
-    community.value = "";
-    community.value = randomCard(3);
+  function clearC() {
+    const n = community.value.length;
+    community.value = community.value.slice(
+      0,
+      Math.max(3, Math.floor(n / 2) - 1) * 2
+    );
     invalidate();
   }
-  function randomC4() {
-    community.value = "";
-    community.value = randomCard(4);
-    invalidate();
-  }
-  function randomC5() {
+  function randomC() {
     community.value = "";
     community.value = randomCard(5);
     invalidate();
@@ -58,6 +56,10 @@
   function randomA() {
     handA.value = "";
     handA.value = randomCard(2);
+    invalidate();
+  }
+  function clearB() {
+    handB.value = "";
     invalidate();
   }
   function randomB() {
@@ -135,8 +137,8 @@
 
   onMount(() => {
     randomA();
-    randomB();
-    randomC5();
+    clearB();
+    randomC();
     computeFast();
   });
 </script>
@@ -146,14 +148,13 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <small
-    >Enter your hand and table configuration. Then let computer calculate the
-    winning odds for you 😌</small
-  >
+  <p>
+    Enter your hand and table configuration. Then let computer calculate the
+    winning odds for you 😌
+  </p>
 </header>
 <form class="container prose prose-slate text-center dark:prose-invert">
-  <div>
-    <label for="hand-a">Your Hand</label>
+  <div class="relative">
     <input
       title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
       bind:this={handA}
@@ -164,11 +165,10 @@
       pattern={"([2-9tjqkaxTJQKA][scdh]){2}"}
       maxlength="4"
     />
+    <label for="hand-a" class="absolute top-0 left-0">Your Hand</label>
     <button on:click={randomA}>🎲</button>
   </div>
-  <div>
-    <Hand cards={handAInt} fill={2} />
-  </div>
+  <Hand cards={handAInt} fill={2} />
   <div>
     <label for="community">Community Cards</label>
     <input
@@ -181,11 +181,10 @@
       pattern={"([2-9tjqkaxTJQKA][scdh]){3,5}"}
       on:change={invalidate}
     />
-    <button on:click={randomC5}>🎲 </button>
+    <button title="Random" on:click={randomC}>🎲</button>
+    <button title="Clear" on:click={clearC}>🃏</button>
   </div>
-  <div>
-    <Hand cards={communityInt} fill={5} />
-  </div>
+  <Hand cards={communityInt} fill={5} />
   <div>
     <label for="hand-b">Their Hand</label>
     <input
@@ -198,45 +197,46 @@
       pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
       maxlength="4"
     />
-    <button on:click={randomB}>🎲</button>
+    <button title="Random" on:click={randomB}>🎲</button>
+    <button title="Clear" on:click={clearB}>🃏</button>
   </div>
-  <div>
-    <Hand cards={handBInt} fill={2} />
-  </div>
+  <Hand cards={handBInt} fill={2} />
   <div>
     <button on:click={computeFast}>Compute (Fast)</button>
     <button on:click={computeSlow}>Compute (Slow)</button>
     <button on:click={computeSlow}>Compute (Very Slow)</button>
-    {#if isWorking}
-      <svg
-        class="aspec-square my-4 mx-auto w-10 animate-spin text-white"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
-        <circle
-          class="opacity-25"
-          cx="12"
-          cy="12"
-          r="10"
-          stroke="currentColor"
-          stroke-width="4"
-        />
-        <path
-          class="opacity-75"
-          fill="currentColor"
-          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-        />
-      </svg>
-    {:else if result.total > 0}
-      <Result {result} />
-    {:else}
-      <h3>Press <kbd>Compute</kbd> to see result</h3>
-    {/if}
   </div>
 </form>
+<div class="container prose prose-slate text-center dark:prose-invert">
+  {#if isWorking}
+    <svg
+      class="aspec-square my-4 mx-auto w-10 animate-spin"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+    >
+      <circle
+        class="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        stroke-width="4"
+      />
+      <path
+        class="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+      />
+    </svg>
+  {:else if result.total > 0}
+    <Result {result} />
+  {:else}
+    <h3>Press <kbd>Compute</kbd> to see result</h3>
+  {/if}
+</div>
 
-<footer class="container mb-10 text-center opacity-50">
+<footer class="container my-10 text-center opacity-50">
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
   <small>
@@ -248,19 +248,18 @@
 
 <style>
   button {
-    @apply my-1 mx-auto bg-black px-4 py-1 uppercase text-white only:w-full;
+    @apply mx-auto bg-black px-4 py-1 text-lg uppercase text-white;
   }
   input {
     @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500 disabled:line-through;
   }
-  form {
-    @apply table;
-  }
   form div {
-    @apply my-2;
+    @apply relative my-2 flex justify-center gap-2;
   }
-  label,
+  label {
+    @apply absolute -top-1/2 left-2 bg-black px-2 text-sm text-white;
+  }
   input {
-    @apply table-cell;
+    @apply grow;
   }
 </style>

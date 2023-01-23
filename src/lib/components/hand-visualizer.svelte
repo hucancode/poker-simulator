@@ -42,12 +42,12 @@
           </div>
         </div>
       {:else}
-        <div class="bg-double-width rounded-t-md p-px pb-0">
+        <div
+          class="bg-double-width overflow-hidden rounded-t-md border border-neutral-400 bg-white p-0.5 pb-0"
+        >
           <div
-            class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-gray-100 px-3 pt-2 text-gray-800"
-          >
-            <div class="text-4xl">★</div>
-          </div>
+            class="aspect-square w-12 rounded-t-md bg-sky-500 bg-diagonal-stripe"
+          />
         </div>
       {/if}
     {/each}

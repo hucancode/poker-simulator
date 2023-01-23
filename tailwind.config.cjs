@@ -14,6 +14,8 @@ const config = {
           "linear-gradient(115deg,#4fcf70,#fad648,#a767e5,#12bcfe,#44ce7b)",
         rainbow2:
           "linear-gradient(141.27deg,#ff904e 0%,#ff5982 20%,#ec68f4 40%,#79e2ff 80%)",
+        "diagonal-stripe":
+          "repeating-linear-gradient(45deg, transparent, transparent 10px, currentColor 10px, currentColor calc(2 * 10px))",
       },
       fontFamily: {
         "logo-cursive": ['"Great Vibes"', "cursive"],
