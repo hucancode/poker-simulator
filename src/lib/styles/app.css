@@ -6,7 +6,7 @@
 @layer base {
   body {
     @apply flex min-h-screen w-full
-            flex-col items-center justify-start gap-4 bg-sky-50 pt-4 text-gray-800 antialiased
+            flex-col items-center justify-start bg-sky-50 pt-4 text-gray-800 antialiased
             duration-500 dark:bg-gray-900 dark:text-white;
     font-family: "Poppins", "Noto Sans JP", sans-serif;
   }

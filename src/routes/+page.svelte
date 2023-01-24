@@ -139,11 +139,10 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <small
-    >Enter your game state and let computer do the hard work for you <big
-      >😌</big
-    ></small
-  >
+  <p>
+    Enter your game state and let computer do the hard work for you <big>😌</big
+    >
+  </p>
 </header>
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
@@ -158,6 +157,11 @@
         required
       />
       <label for="game-code">Game Code</label>
+    </div>
+    <small>You can use standard notation <em>(2-9TJQKA + scdh)</em></small>
+    <div class="mt-6 flex w-full justify-between">
+      <strong class="w-full text-center">Your Cards</strong>
+      <strong class="w-full text-center">Their Cards</strong>
     </div>
     <div class="mb-4 flex items-center justify-between gap-2">
       <Hand
@@ -188,6 +192,7 @@
         }}
       />
     </div>
+    <strong class="w-full text-center">Community Cards</strong>
     <Hand
       cards={community}
       fill={5}
@@ -256,6 +261,10 @@
   h1 + p {
     @apply mt-0;
   }
+  p,
+  small {
+    @apply leading-tight;
+  }
   .button,
   button {
     @apply cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
@@ -264,10 +273,10 @@
     @apply select-none px-6;
   }
   input {
-    @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
+    @apply border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
   }
   input[type="text"] + label {
-    @apply absolute -top-1/3 left-1 bg-black px-2 text-sm text-white;
+    @apply absolute -top-1/3 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
   }
   input[type="radio"] {
     display: none;

@@ -23,7 +23,7 @@
 </script>
 
 <div
-  class="flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
+  class="flex max-w-full cursor-pointer flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
   on:click={() => {
     isPicking = !isPicking;
   }}
@@ -33,7 +33,7 @@
   {/each}
 </div>
 <div
-  class="picker top-0 left-0 flex h-full w-full flex-col items-center bg-black/20"
+  class="picker top-0 left-0 flex h-full w-full flex-col items-center bg-black/20 backdrop-blur"
   enabled={isPicking}
 >
   <div class="flex items-center justify-between gap-2">
@@ -59,7 +59,7 @@
     @apply bg-black p-2 text-white;
   }
   span {
-    @apply bg-black py-2 px-4 font-bold text-white;
+    @apply cursor-pointer bg-black py-2 px-6 font-bold text-white;
   }
   div.picker[enabled="true"] {
     @apply fixed z-40;
