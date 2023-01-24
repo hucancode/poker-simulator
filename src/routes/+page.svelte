@@ -274,7 +274,7 @@
   }
   .button,
   button {
-    @apply cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
+    @apply m-2 cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
   }
   .button {
     @apply select-none px-6;

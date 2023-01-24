@@ -21,7 +21,7 @@
 </script>
 
 <div
-  class="mx-auto grid max-h-96 w-max grid-cols-4 gap-0.5 overflow-y-scroll px-10 py-4 font-bold md:max-h-full md:grid-cols-8 md:gap-1 md:overflow-hidden"
+  class="mx-auto grid max-h-96 w-max grid-cols-4 gap-2 overflow-y-scroll px-10 py-4 font-bold md:max-h-full md:grid-cols-8 md:gap-4 md:overflow-hidden"
 >
   {#each Array(52)
     .fill()

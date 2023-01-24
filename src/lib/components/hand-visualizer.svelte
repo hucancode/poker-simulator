@@ -11,13 +11,11 @@
 
   function notifyRemove(event) {
     cards = cards;
-    console.log("hand vis cards", cards);
     dispatch("remove", { card: event.detail.card });
   }
 
   function notifyAdd(event) {
     cards = cards;
-    console.log("hand vis cards", cards);
     dispatch("add", { card: event.detail.card });
   }
 </script>
@@ -33,11 +31,14 @@
   {/each}
 </div>
 <div
-  class="picker top-0 left-0 flex h-full w-full flex-col items-center bg-black/20 backdrop-blur"
+  class="picker top-0 left-0 flex h-full w-full flex-col items-center justify-center bg-black/20 pb-20 backdrop-blur"
   enabled={isPicking}
+  on:click={() => {
+    isPicking = false;
+  }}
 >
   <div class="flex items-center justify-between gap-2">
-    <p>Selected {cards.length}/{fill} cards</p>
+    <p>Selected <b>{cards.length}/{fill}</b> cards</p>
     <span
       on:click={() => {
         isPicking = false;

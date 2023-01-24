@@ -8,9 +8,9 @@
   export let selected = false;
 
   const dispatch = createEventDispatcher();
-  function toggleSelected() {
-    console.log("toggle", card, "used=", used, "selectable", selectable);
+  function toggleSelected(event) {
     if (!selectable) return;
+    event.stopPropagation();
     if (used) return;
     dispatch("selectedChange", { selected: !selected });
   }
