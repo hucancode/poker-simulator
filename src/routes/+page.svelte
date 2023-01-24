@@ -1,7 +1,12 @@
 <script>
   import { onMount } from "svelte";
-  import { handTextToArray, cardIdToText } from "$lib/poker/cards";
+  import {
+    handTextToArray,
+    handArrayToText,
+    cardIdToText,
+  } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
+  import Picker from "$lib/components/card-picker.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
   import Loading from "$lib/components/loading.svelte";
@@ -14,67 +19,48 @@
     coveragePercent: 100,
     time: 0,
   };
-
+  const HAND_DELIMETER = "-";
   let speedFast, speedSlow, speedVerySlow;
-  let community,
-    handA,
-    handB,
-    result = UNKOWN_RESULT;
+  let gameCodeInput;
+  let result = UNKOWN_RESULT;
   let isWorking = false;
   let worker;
-  let communityInt, handAInt, handBInt;
-  function invalidate() {
-    communityInt = handTextToArray(
-      community.validity.valid ? community.value : null
-    );
-    handAInt = handTextToArray(handA.validity.valid ? handA.value : null);
-    handBInt = handTextToArray(handB.validity.valid ? handB.value : null);
+  let community = [],
+    handA = [],
+    handB = [];
+  function updateArrayFromText() {
+    if (!gameCodeInput.validity.valid) {
+      community = [];
+      handA = [];
+      handB = [];
+      return;
+    }
+    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    handA = handTextToArray(arr[0]);
+    handB = handTextToArray(arr[1]);
+    community = handTextToArray(arr[2]);
     result = UNKOWN_RESULT;
   }
-  function randomCard(n) {
-    let taken = handTextToArray(community.value + handA.value + handB.value);
+
+  function updateTextFromArray() {
+    gameCodeInput.value =
+      handArrayToText(handA) +
+      HAND_DELIMETER +
+      handArrayToText(handB) +
+      HAND_DELIMETER +
+      handArrayToText(community);
+  }
+
+  function randomize() {
     let pool = Array(52)
       .fill()
       .map((e, i) => i)
-      .filter((i) => !taken.includes(i));
-    return pool
-      .sort((a, b) => Math.random() - 0.5)
-      .slice(0, n)
-      .map((i) => cardIdToText(i))
-      .reduce((ret, v) => ret + v);
-  }
-  function clearC() {
-    const n = community.value.length;
-    community.value = community.value.slice(
-      0,
-      Math.max(3, Math.floor(n / 2) - 1) * 2
-    );
-    invalidate();
-  }
-  function randomC() {
-    community.value = "";
-    community.value = randomCard(5);
-    invalidate();
-  }
-  function clearA() {
-    const n = handA.value.length;
-    handA.value = handA.value.slice(0, Math.max(0, Math.floor(n / 2) - 1) * 2);
-    invalidate();
-  }
-  function randomA() {
-    handA.value = "";
-    handA.value = randomCard(2);
-    invalidate();
-  }
-  function clearB() {
-    const n = handB.value.length;
-    handB.value = handB.value.slice(0, Math.max(0, Math.floor(n / 2) - 1) * 2);
-    invalidate();
-  }
-  function randomB() {
-    handB.value = "";
-    handB.value = randomCard(2);
-    invalidate();
+      .sort((a, b) => Math.random() - 0.5);
+    handA = pool.slice(0, 2);
+    handB = pool.slice(2, 4);
+    community = pool.slice(5, 10);
+    updateTextFromArray();
+    result = UNKOWN_RESULT;
   }
 
   function doCompute() {
@@ -94,21 +80,12 @@
     }
   }
   function compute(k = 1) {
-    if (
-      !(
-        community.validity.valid &&
-        handA.validity.valid &&
-        handB.validity.valid
-      )
-    ) {
+    if (!gameCodeInput.validity.valid) {
       result = UNKOWN_RESULT;
       return;
     }
-    const a = handTextToArray(handA.value);
-    const b = handTextToArray(handB.value);
-    const c = handTextToArray(community.value);
     result = UNKOWN_RESULT;
-    const needed = 7 - (b.length + c.length);
+    const needed = 7 - (handB.length + community.length);
     let jump;
     switch (needed) {
       case 1:
@@ -143,18 +120,16 @@
     });
     worker.postMessage({
       name: "start",
-      handA: a,
-      handB: b,
-      community: c,
+      handA: handA,
+      handB: handB,
+      community: community,
       step: jump,
     });
     isWorking = true;
   }
 
   onMount(() => {
-    randomA();
-    randomB();
-    randomC();
+    randomize();
     compute();
   });
 </script>
@@ -164,61 +139,73 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <small
-    >Enter your game state and let computer do the hard work for you <big
-      >😌</big
-    ></small
-  >
+  <p>
+    Enter your game state and let computer do the hard work for you <big>😌</big
+    >
+  </p>
 </header>
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
     <div>
       <input
-        title="Enter 2 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-        bind:this={handA}
-        id="hand-a"
+        title="Enter 5-9 cards. 2 for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
+        bind:this={gameCodeInput}
+        id="game-code"
         type="text"
-        on:change={invalidate}
-        value="KsAs"
-        pattern={"([2-9tjqkaTJQKA][scdh]){2}"}
+        pattern={"([2-9tjqkaTJQKA][scdh]){2}-([2-9tjqkaTJQKA][scdh]){0,2}-([2-9tjqkaTJQKA][scdh]){3,5}"}
+        on:change={updateArrayFromText}
         required
       />
-      <label for="hand-a">Your Hand</label>
-      <div class="button" title="Randomize cards" on:click={randomA}>🎲</div>
-      <div class="button" title="Clear 1 card" on:click={clearA}>🃏</div>
+      <label for="game-code">Game Code</label>
     </div>
-    <Hand cards={handAInt} fill={2} />
-    <div>
-      <input
-        title="Enter 3-5 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-        bind:this={community}
-        id="community"
-        type="text"
-        value="2d9h2hJhKh"
-        pattern={"([2-9tjqkaTJQKA][scdh]){3,5}"}
-        on:change={invalidate}
-        required
+    <small>You can use standard notation <em>(2-9TJQKA + scdh)</em></small>
+    <div class="mt-6 flex w-full justify-between">
+      <strong class="w-full text-center">Your Cards</strong>
+      <strong class="w-full text-center">Their Cards</strong>
+    </div>
+    <div class="mb-4 flex items-center justify-between gap-2">
+      <Hand
+        cards={handA}
+        fill={2}
+        usedCards={handB.concat(community)}
+        on:remove={(e) => {
+          handA = handA;
+          updateTextFromArray();
+        }}
+        on:add={(e) => {
+          handA = handA;
+          updateTextFromArray();
+        }}
       />
-      <label for="community">Community Cards</label>
-      <div class="button" title="Randomize cards" on:click={randomC}>🎲</div>
-      <div class="button" title="Clear 1 card" on:click={clearC}>🃏</div>
-    </div>
-    <Hand cards={communityInt} fill={5} />
-    <div>
-      <input
-        title="Enter 2 or 0 cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-        bind:this={handB}
-        id="hand-b"
-        type="text"
-        on:change={invalidate}
-        value="2s2c"
-        pattern={"([2-9tjqkaTJQKA][scdh]){0,2}"}
+      <strong>VS</strong>
+      <Hand
+        cards={handB}
+        fill={2}
+        usedCards={handA.concat(community)}
+        on:remove={(e) => {
+          handB = handB;
+          updateTextFromArray();
+        }}
+        on:add={(e) => {
+          handB = handB;
+          updateTextFromArray();
+        }}
       />
-      <label for="hand-b">Their Hand</label>
-      <div class="button" title="Randomize cards" on:click={randomB}>🎲</div>
-      <div class="button" title="Clear 1 card" on:click={clearB}>🃏</div>
     </div>
-    <Hand cards={handBInt} fill={2} />
+    <strong class="w-full text-center">Community Cards</strong>
+    <Hand
+      cards={community}
+      fill={5}
+      usedCards={handA.concat(handB)}
+      on:remove={(e) => {
+        community = community;
+        updateTextFromArray();
+      }}
+      on:add={(e) => {
+        community = community;
+        updateTextFromArray();
+      }}
+    />
     <div class="w-full">
       <input
         type="radio"
@@ -274,18 +261,22 @@
   h1 + p {
     @apply mt-0;
   }
+  p,
+  small {
+    @apply leading-tight;
+  }
   .button,
   button {
     @apply cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
   }
   .button {
-    @apply select-none px-6 text-2xl;
+    @apply select-none px-6;
   }
   input {
-    @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
+    @apply border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
   }
   input[type="text"] + label {
-    @apply absolute -top-1/3 left-1 bg-black px-2 text-sm text-white;
+    @apply absolute -top-1/3 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
   }
   input[type="radio"] {
     display: none;
@@ -299,13 +290,16 @@
   form {
     @apply flex flex-col items-center;
   }
-  form > div {
+  form > div:has(input) {
     @apply relative mt-6 mb-2 flex items-center justify-center gap-2;
   }
   form > div:has(input[type="text"]) {
     @apply w-min;
   }
+  input.small {
+    @apply w-24;
+  }
   input {
-    @apply w-48;
+    @apply w-64;
   }
 </style>
