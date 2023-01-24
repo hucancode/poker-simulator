@@ -218,8 +218,10 @@ export function getBestCombination(arr) {
     const rank = evaluate(mask);
     return { mask, rank };
   });
-  // console.log(comb.map(e => handMaskToText(e)));
-  return comb.reduce((r, v) => (v.rank > r.rank ? v : r), comb[0]);
+  // console.log(comb.map(e => handMaskToText(e.mask)));
+  return comb.reduce((r, v) => {
+    return compare(r, v) == A_WIN ? r : v;
+  }, comb[0]);
 }
 
 export function compare7(arrayA, arrayB) {
