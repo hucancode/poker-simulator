@@ -249,11 +249,6 @@
 <footer class="my-10 text-center opacity-50">
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
-  <small>
-    Card evaluation algorithm based on bit masking and pre-calculation. <br />
-    You can test the accuracy of the algorithm using
-    <strong><a href="/specials">this tool</a></strong>
-  </small>
 </footer>
 
 <style>
