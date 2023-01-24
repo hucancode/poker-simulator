@@ -25,6 +25,7 @@
   let gameCodeInput;
   let result = UNKOWN_RESULT;
   let isWorking = false;
+  let slowWarning = false;
   let worker;
   let community = [],
     handA = [],
@@ -87,6 +88,7 @@
     }
     result = UNKOWN_RESULT;
     const needed = 7 - (handB.length + community.length);
+    slowWarning = false;
     let jump;
     switch (needed) {
       case 1:
@@ -97,9 +99,11 @@
         break;
       case 3:
         jump = 6 * k;
+        slowWarning = jump <= 2;
         break;
       case 4:
         jump = 12 * k;
+        slowWarning = jump <= 4;
         break;
       default:
         jump = 1;
@@ -241,6 +245,12 @@
   <div>
     {#if isWorking}
       <Loading />
+      {#if slowWarning}
+        <big>⚠️</big>
+        <small
+          ><br />Computation might take longer to finish, please be patient
+        </small>
+      {/if}
     {:else if result.total > 0}
       <Result {result} />
     {:else}
