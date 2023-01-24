@@ -213,7 +213,7 @@
         updateTextFromArray();
       }}
     />
-    <div class="w-full">
+    <div>
       <input
         type="radio"
         name="speed"
@@ -230,7 +230,7 @@
         id="speed-very-slow"
         bind:this={speedVerySlow}
       />
-      <label for="speed-very-slow">🐌</label>
+      <label for="speed-very-slow">Slowww 🐌</label>
     </div>
     <div>
       <button on:click={doCompute}>{isWorking ? "Stop" : "Compute"}</button>
