@@ -2,66 +2,63 @@
   import { createEventDispatcher } from "svelte";
   import * as poker from "$lib/poker/cards";
   export let card = 0;
+  export let used = false;
   export let selectable = false;
   export let selected = false;
-  export let narrow = false;
-
-  function getCardRank() {
-    const ret = poker.ranks[Math.floor(card / 4)];
-    return ret == "T" ? "10" : ret;
-  }
-
-  function isHighCard() {
-    return card >= 8 * 4; // JQKA
-  }
-
-  function getCardSymbol() {
-    return poker.suitSymbols[Math.floor(card % 4)];
-  }
-
-  function isRedCard() {
-    return Math.floor(card % 4) >= 2;
-  }
+  export let narrowX = false;
+  export let narrowY = false;
 
   const dispatch = createEventDispatcher();
   function toggleSelected() {
+    console.log("toggle", card, "used=", used, "selectable", selectable);
     if (!selectable) return;
-    selected = !selected;
-    dispatch("selectedChange", { selected });
+    if (used) return;
+    dispatch("selectedChange", { selected: !selected });
   }
 </script>
 
 {#if card >= 0}
   <div
     on:click={toggleSelected}
-    is-high={isHighCard()}
-    {narrow}
+    is-high={card >= 9 * 4}
+    narrow-x={narrowX}
+    narrow-y={narrowY}
+    {card}
     class="animate-bg-pingpong rounded-t-md bg-4x-width p-0.5 pb-0"
   >
     <div
       class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-gray-100/90 px-3 pt-2 text-gray-800"
       {selected}
-      is-red={isRedCard()}
+      {used}
+      is-red={Math.floor(card % 4) >= 2}
     >
       <div class="absolute top-0.5 left-0.5 leading-none">
-        {getCardRank() ?? ""}
+        {poker.readableRanks[Math.floor(card / 4)] ?? ""}
       </div>
       <div class="text-2xl md:text-4xl">
-        {getCardSymbol() ?? ""}
+        {poker.suitSymbols[Math.floor(card % 4)] ?? ""}
       </div>
     </div>
   </div>
 {:else}
   <div
-    class="overflow-hidden rounded-t-md border-2 border-neutral-400 bg-white bg-double-width p-0.5 pb-0"
+    class="relative select-none rounded-t-md border border-b-0 border-gray-300 bg-sky-500 bg-diagonal-stripe px-3 pt-2 text-gray-800"
   >
-    <div class="h-10 w-12 rounded-t-md bg-sky-500 bg-diagonal-stripe" />
+    <div class="invisible text-2xl md:text-4xl">
+      {poker.suitSymbols[0]}
+    </div>
   </div>
 {/if}
 
 <style>
-  div[narrow="true"] {
+  div[narrow-x="true"] {
     @apply -mx-4;
+  }
+  div[narrow-y="true"] {
+    @apply -my-1;
+  }
+  div[used="true"] {
+    @apply bg-diagonal-stripe opacity-70;
   }
   div[selected="true"] {
     @apply bg-orange-200;
@@ -73,6 +70,6 @@
     @apply bg-white;
   }
   div[is-high="true"] {
-    @apply bg-rainbow;
+    @apply z-10 bg-rainbow;
   }
 </style>

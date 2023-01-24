@@ -3,12 +3,17 @@
   import Card from "$lib/components/card.svelte";
   export let cards = [];
   export let usedCards = [];
+  export let max = 5;
   const dispatch = createEventDispatcher();
+
   function toggle(i) {
     if (cards.includes(i)) {
       cards.splice(cards.indexOf(i), 1);
       dispatch("remove", { card: i });
     } else {
+      if (cards.length >= max) {
+        return;
+      }
       cards.push(i);
       dispatch("add", { card: i });
     }
@@ -16,16 +21,19 @@
 </script>
 
 <div
-  class="flex max-w-full items-center gap-0.5 overflow-x-scroll px-10 py-4 font-bold md:gap-1"
+  class="mx-auto grid max-h-80 w-max grid-cols-4 gap-0.5 gap-y-0 overflow-y-scroll px-10 py-4 font-bold md:max-h-full md:grid-cols-8 md:gap-1 md:overflow-hidden"
 >
   {#each Array(52)
-    .map((_, i) => i)
-    .filter((e) => !usedCards.includes(e)) as i}
+    .fill()
+    .map((e, i) => i) as i}
     <Card
       card={i}
+      on:selectedChange={() => {
+        toggle(i);
+      }}
       selectable={true}
+      used={usedCards.includes(i)}
       selected={cards.includes(i)}
-      narrow={true}
     />
   {/each}
 </div>
