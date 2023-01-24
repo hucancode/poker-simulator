@@ -162,8 +162,7 @@
         >You can use standard notation <em>(2-9TJQKA + scdh)</em></small
       >
       <small class="help-invalid-input"
-        >Please make sure you enter at least <strong>2 cards</strong> on your
-        hand and <strong>3 community cards</strong></small
+        >You need <em>2 hand cards</em> and <em>3+ community cards</em></small
       >
     </div>
     <div class="mt-6 flex w-full justify-between">
@@ -173,7 +172,8 @@
     <div class="mb-4 flex items-center justify-between gap-2">
       <Hand
         cards={handA}
-        fill={2}
+        max={2}
+        min={2}
         usedCards={handB.concat(community)}
         on:remove={(e) => {
           handA = handA;
@@ -187,7 +187,8 @@
       <strong>VS</strong>
       <Hand
         cards={handB}
-        fill={2}
+        max={2}
+        min={0}
         usedCards={handA.concat(community)}
         on:remove={(e) => {
           handB = handB;
@@ -202,7 +203,8 @@
     <strong class="w-full text-center">Community Cards</strong>
     <Hand
       cards={community}
-      fill={5}
+      max={5}
+      min={3}
       usedCards={handA.concat(handB)}
       on:remove={(e) => {
         community = community;
@@ -280,7 +282,7 @@
     @apply select-none px-6;
   }
   input {
-    @apply border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
+    @apply w-full border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-red-500;
   }
   input[type="text"] + label {
     @apply absolute -top-1/3 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
@@ -298,6 +300,6 @@
     @apply flex flex-col items-center;
   }
   form > div:has(input) {
-    @apply relative mt-6 mb-2;
+    @apply relative mt-6 mb-2 w-full;
   }
 </style>

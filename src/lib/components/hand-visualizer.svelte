@@ -5,7 +5,8 @@
   let picker;
   export let usedCards = [];
   export let cards = [];
-  export let fill = 0;
+  export let max = 5;
+  export let min = 3;
   let isPicking = false;
   const dispatch = createEventDispatcher();
 
@@ -26,7 +27,7 @@
     isPicking = !isPicking;
   }}
 >
-  {#each Array(Math.max(cards.length, fill)) as _, i}
+  {#each Array(Math.max(cards.length, max)) as _, i}
     <Card card={i < cards.length ? cards[i] : -1} />
   {/each}
 </div>
@@ -38,7 +39,9 @@
   }}
 >
   <div class="flex items-center justify-between gap-2">
-    <p>Selected <b>{cards.length}/{fill}</b> cards</p>
+    <p>
+      Selected <b class:invalid={cards.length < min}>{cards.length}/{max}</b> cards
+    </p>
     <span
       on:click={() => {
         isPicking = false;
@@ -49,13 +52,16 @@
     bind:this={picker}
     {cards}
     {usedCards}
-    max={fill}
+    {max}
     on:remove={notifyRemove}
     on:add={notifyAdd}
   />
 </div>
 
 <style>
+  .invalid {
+    @apply text-red-500;
+  }
   p {
     @apply bg-black p-2 text-white;
   }
