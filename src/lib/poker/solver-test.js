@@ -1,23 +1,21 @@
 import { handTextToArray, handMaskToText, handTextToMask } from "./cards.js";
 import { solve } from "./solver.js";
 import { evaluate, getBestCombination } from "./compare.js";
-if (true) {
+function test1() {
   let handA, handB, community, ret;
-  handA = "KsAs";
-  handB = "";
-  community = "2d9h2h";
+  handA = "3s4s";
+  handB = "Ks6s";
+  community = "AsAcAdAhQh";
   ret = solve(
     handTextToArray(handA),
     handTextToArray(handB),
     handTextToArray(community)
   );
   console.log(ret);
+  return;
   handA = "7c4d";
   handB = "4c3d";
   community = "6s2d7d9s5s";
-  console.log(
-    handMaskToText(getBestCombination(handTextToArray(handB + community)).mask)
-  );
   ret = solve(
     handTextToArray(handA),
     handTextToArray(handB),
@@ -25,6 +23,7 @@ if (true) {
   );
   console.log(ret); // should be lose
 }
+test1();
 
 if (false) {
   let handRanks = [];
