@@ -10,6 +10,7 @@
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
   import Loading from "$lib/components/loading.svelte";
+
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
@@ -157,8 +158,14 @@
         required
       />
       <label for="game-code">Game Code</label>
+      <small class="help-general"
+        >You can use standard notation <em>(2-9TJQKA + scdh)</em></small
+      >
+      <small class="help-invalid-input"
+        >Please make sure you enter at least <strong>2 cards</strong> on your
+        hand and <strong>3 community cards</strong></small
+      >
     </div>
-    <small>You can use standard notation <em>(2-9TJQKA + scdh)</em></small>
     <div class="mt-6 flex w-full justify-between">
       <strong class="w-full text-center">Your Cards</strong>
       <strong class="w-full text-center">Their Cards</strong>
@@ -239,7 +246,7 @@
     {/if}
   </div>
 </main>
-<footer class="my-10 opacity-50">
+<footer class="my-10 text-center opacity-50">
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
   <small>
@@ -256,14 +263,19 @@
     @apply px-4;
   }
   h1 {
-    @apply mb-2 text-3xl;
-  }
-  h1 + p {
     @apply mt-0;
   }
   p,
   small {
-    @apply leading-tight;
+    @apply leading-snug;
+  }
+  input[type="text"]:valid ~ .help-general,
+  input[type="text"]:invalid ~ .help-invalid-input {
+    @apply block;
+  }
+  input[type="text"]:invalid ~ .help-general,
+  input[type="text"]:valid ~ .help-invalid-input {
+    @apply hidden;
   }
   .button,
   button {
@@ -291,15 +303,6 @@
     @apply flex flex-col items-center;
   }
   form > div:has(input) {
-    @apply relative mt-6 mb-2 flex items-center justify-center gap-2;
-  }
-  form > div:has(input[type="text"]) {
-    @apply w-min;
-  }
-  input.small {
-    @apply w-24;
-  }
-  input {
-    @apply w-64;
+    @apply relative mt-6 mb-2;
   }
 </style>
