@@ -51,6 +51,7 @@
       handArrayToText(handB) +
       HAND_DELIMETER +
       handArrayToText(community);
+    result = UNKOWN_RESULT;
   }
 
   function randomize() {
