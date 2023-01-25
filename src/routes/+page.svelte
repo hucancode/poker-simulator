@@ -67,7 +67,7 @@
       .map((e, i) => i)
       .sort((a, b) => Math.random() - 0.5);
     handA = pool.slice(0, 2);
-    handB = pool.slice(2, 4);
+    /* handB = pool.slice(2, 4); */
     community = pool.slice(5, 10);
     updateTextFromArray();
     result = UNKOWN_RESULT;
