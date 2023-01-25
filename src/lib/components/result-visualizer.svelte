@@ -4,6 +4,7 @@
     lose: 0,
     tie: 0,
     total: 0,
+    covered: 0,
     time: 0,
     interrupted: false,
   };
@@ -42,10 +43,10 @@
       The computer has covered all {result.total} possible outcomes
     {:else}
       The computer has gone through
-      {result.win + result.lose + result.tie} test runs (of total
+      {result.covered} test runs (of total
       <em>{result.total}</em>
       possible outcomes). Which covers
-      {((result.win + result.lose + result.tie) / result.total).toFixed(2)}%
+      {((result.covered) / result.total * 100).toFixed(2)}%
       real combinations space
     {/if}
   </p>
