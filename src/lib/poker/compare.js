@@ -78,13 +78,17 @@ function compareFlush(maskA, maskB) {
 }
 
 function hasCardRank(mask, rank) {
-  return (BigInt(mask) & BigInt(rankMask[rank])) != 0;
+  return (mask & BigInt(rankMask[rank])) != 0;
 }
 
 function countDuplicate(mask, rank) {
   let ret = 0;
-  for (var j = SUIT_SPADE; j <= SUIT_HEART; j++)
-    if ((BigInt(mask) & (1n << BigInt(rank * SUIT_MAX + j))) != 0) ret++;
+  for (var j = SUIT_SPADE; j <= SUIT_HEART; j++) {
+    const card = 1n << BigInt(rank * SUIT_MAX + j);
+    if ((mask & card) != 0) {
+      ret++;
+    }
+  }
   return ret;
 }
 
