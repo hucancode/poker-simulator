@@ -1,4 +1,5 @@
 <script>
+  import { fade, scale } from "svelte/transition";
   import Card from "$lib/components/card.svelte";
   import Picker from "$lib/components/card-picker.svelte";
   import { createEventDispatcher } from "svelte";
@@ -31,32 +32,40 @@
     <Card card={i < cards.length ? cards[i] : -1} />
   {/each}
 </div>
-<div
-  class="picker top-0 left-0 flex h-full w-full flex-col items-center justify-center bg-black/20 pb-20 backdrop-blur"
-  enabled={isPicking}
-  on:click={() => {
-    isPicking = false;
-  }}
->
-  <div class="flex items-center justify-between gap-2">
-    <p>
-      Selected <b class:invalid={cards.length < min}>{cards.length}/{max}</b> cards
-    </p>
-    <span
-      on:click={() => {
-        isPicking = false;
-      }}>X</span
+{#if isPicking}
+  <div
+    transition:fade
+    class="picker top-0 left-0 h-full w-full bg-black/20 pb-20 backdrop-blur duration-500"
+    on:click={() => {
+      isPicking = false;
+    }}
+  >
+    <div
+      transition:scale
+      class="flex h-full w-full flex-col items-center justify-center"
     >
+      <div class="flex items-center justify-between gap-2">
+        <p>
+          Selected <b class:invalid={cards.length < min}>{cards.length}/{max}</b
+          > cards
+        </p>
+        <span
+          on:click={() => {
+            isPicking = false;
+          }}>X</span
+        >
+      </div>
+      <Picker
+        bind:this={picker}
+        {cards}
+        {usedCards}
+        {max}
+        on:remove={notifyRemove}
+        on:add={notifyAdd}
+      />
+    </div>
   </div>
-  <Picker
-    bind:this={picker}
-    {cards}
-    {usedCards}
-    {max}
-    on:remove={notifyRemove}
-    on:add={notifyAdd}
-  />
-</div>
+{/if}
 
 <style>
   .invalid {
@@ -68,11 +77,7 @@
   span {
     @apply cursor-pointer bg-black py-2 px-6 font-bold text-white;
   }
-  div.picker[enabled="true"] {
+  div.picker {
     @apply fixed z-40;
-  }
-
-  div.picker[enabled="false"] {
-    @apply hidden;
   }
 </style>
