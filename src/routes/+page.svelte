@@ -251,11 +251,14 @@
         <small
           ><br />Computation might take longer to finish, please be patient
         </small>
+      {:else}
+        <big>🎲</big>
+        <small><br />Looking into the future... </small>
       {/if}
     {:else if result.total > 0}
       <Result {result} />
     {:else}
-      <h3>Press <kbd>Compute</kbd> to see run the simulation for this board</h3>
+      <h3>Press <kbd>Compute</kbd> to run the simulation for this board</h3>
     {/if}
   </div>
 </main>
