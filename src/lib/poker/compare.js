@@ -85,7 +85,7 @@ function countDuplicate(mask, rank) {
   let ret = 0;
   for (var j = SUIT_SPADE; j <= SUIT_HEART; j++) {
     const card = 1n << BigInt(rank * SUIT_MAX + j);
-    if ((mask & card) != 0) {
+    if ((mask & card) != 0n) {
       ret++;
     }
   }
@@ -222,8 +222,8 @@ export function getStrongest5(mask) {
       mask: best,
     };
   }
-  ret = matchAll(fullHouse, mask);
-  if (ret.length > 0) {
+  ret = match(fullHouse, mask);
+  if (ret) {
     return {
       rank: FULL_HOUSE,
       mask: ret,

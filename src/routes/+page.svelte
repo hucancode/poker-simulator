@@ -11,15 +11,17 @@
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
   import Loading from "$lib/components/loading.svelte";
+  import Bar from "$lib/components/progress-bar.svelte";
 
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
     tie: 0,
-    winRate: 0,
     total: 0,
-    coveragePercent: 100,
+    covered: 0,
     time: 0,
+    winRate: 0,
+    interupted: false,
   };
   const HAND_DELIMETER = "-";
   let speedFast, speedSlow, speedVerySlow, speedAllDay;
@@ -28,6 +30,7 @@
   let isWorking = false;
   let slowWarning = false;
   let worker;
+  let gameToPlay = 1;
   let community = [],
     handA = [],
     handB = [];
@@ -74,6 +77,7 @@
     if (isWorking) {
       worker.terminate();
       isWorking = false;
+      result.interupted = true;
       return;
     }
     if (speedFast.checked) {
@@ -126,9 +130,18 @@
       }
     );
     worker.addEventListener("message", (e) => {
-      if (e.data.name === "ok") {
+      if (e.data.name == "progress") {
+        result.covered = e.data.covered;
+        result.win = e.data.win;
+        result.lose = e.data.lose;
+        result.tie = e.data.tie;
+        result.winRate = (result.win / result.covered) * 100;
+      } else if (e.data.name === "ok") {
         result = e.data;
         isWorking = false;
+      } else if (e.data.name == "estimate") {
+        result.total = e.data.total;
+        gameToPlay = e.data.play;
       }
     });
     worker.postMessage({
@@ -139,6 +152,7 @@
       step: jump,
     });
     isWorking = true;
+    result.interupted = false;
   }
 
   onMount(() => {
@@ -243,28 +257,28 @@
           checked
           bind:this={speedFast}
         />
-        <label for="speed-fast">Fast 🐰</label>
+        <label for="speed-fast">🚀</label>
         <input
           type="radio"
           name="speed"
           id="speed-slow"
           bind:this={speedSlow}
         />
-        <label for="speed-slow">Slow 🐢</label>
+        <label for="speed-slow">🐰</label>
         <input
           type="radio"
           name="speed"
           id="speed-very-slow"
           bind:this={speedVerySlow}
         />
-        <label for="speed-very-slow">Slowww 🐌</label>
+        <label for="speed-very-slow">🐢</label>
         <input
           type="radio"
           name="speed"
           id="speed-all-day"
           bind:this={speedAllDay}
         />
-        <label for="speed-all-day">I can do this all day 💪</label>
+        <label for="speed-all-day">I can do this all day 🐌</label>
       </div>
     </div>
     <div>
@@ -273,14 +287,11 @@
   </form>
   <div>
     {#if isWorking}
-      <Loading />
-      {#if slowWarning}
-        <small
-          >Computation might take longer to finish, please be patient
-        </small>
-      {:else}
-        <small>Looking into the future... </small>
-      {/if}
+      <Bar percentage={(result.covered / gameToPlay) * 100} />
+      <small
+        >Looking into the future... <br />You are winning {result.win}/{result.covered}
+        ({result.winRate.toFixed(1)}%) games so far</small
+      >
     {:else if result.total > 0}
       <Result {result} />
     {:else}

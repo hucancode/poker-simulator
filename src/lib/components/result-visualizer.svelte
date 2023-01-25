@@ -3,14 +3,13 @@
     win: 0,
     lose: 0,
     tie: 0,
-    winRate: 0,
     total: 0,
-    coveragePercent: 100,
     time: 0,
+    interrupted: false,
   };
 </script>
 
-{#if result.total == 0}
+{#if result.total == 0 || result.covered == 0}
   <h2>No computation has been made</h2>
 {:else if result.total == 1}
   <h3 positive={result.win == 1} negative={result.lose == 1}>
@@ -37,14 +36,17 @@
       Thanks for the
       <em>{Math.floor(result.time / 1000)} seconds</em> wait <big>😅</big>.
     {/if}
-    {#if result.win + result.lose + result.tie == result.total}
+    {#if result.interrupted}
+      The computer has covered {result.covered} outcomes
+    {:else if result.win + result.lose + result.tie == result.total}
       The computer has covered all {result.total} possible outcomes
     {:else}
       The computer has gone through
       {result.win + result.lose + result.tie} test runs (of total
       <em>{result.total}</em>
-      possible outcomes). Which covers {result.coveragePercent.toFixed(2)}% real
-      combinations space
+      possible outcomes). Which covers
+      {((result.win + result.lose + result.tie) / result.total).toFixed(2)}%
+      real combinations space
     {/if}
   </p>
 {/if}

@@ -22,15 +22,28 @@ function randomJump(x) {
   return Math.ceil(Math.random() * x);
 }
 
-export function solve(handA, handB, community, step = JUMP_3) {
-  console.log("solving", handA, community, handB);
-  const startSolvingTime = new Date();
-  let used = [];
+export function calculatePossibleOutcome(handA, handB, community) {
+  let used = handA.concat(handB).concat(community);
+  let pool = 52 - used.length;
+  const pickC = ncr(pool, 5 - community.length);
+  pool -= 5 - community.length;
+  const pickB = ncr(pool, 2 - handB.length);
+  console.log(
+    "statistically there are",
+    pickC,
+    "ways to pick community cards, there are",
+    pickB,
+    "ways to pick opponent cards"
+  );
+  const total = pickB * pickC;
+  return total;
+}
+
+export function enumerate(handA, handB, community, step = JUMP_3) {
+  console.log("enumerating", handA, community, handB);
+  let used = handA.concat(handB).concat(community);
   let candidateB = [];
   let candidateC = [];
-  for (const card of handA) used.push(card);
-  for (const card of community) used.push(card);
-  for (const card of handB) used.push(card);
   // build candidates array
   console.log("building candidates array");
   let st = [];
@@ -95,6 +108,21 @@ export function solve(handA, handB, community, step = JUMP_3) {
     candidateB.length,
     "candidates to pick opponent cards"
   );
+  return {
+    candidateB,
+    candidateC,
+  };
+}
+
+export function solve(
+  handA,
+  handB,
+  community,
+  candidateB,
+  candidateC,
+  onProgress
+) {
+  const startSolvingTime = new Date();
   console.log("running tests...");
   // run the tests with candidates
   let win = 0;
@@ -112,22 +140,15 @@ export function solve(handA, handB, community, step = JUMP_3) {
       if (ret == A_WIN) win++;
       if (ret == B_WIN) lose++;
       if (ret == TIE) tie++;
+      if (onProgress) {
+        onProgress(win, lose, tie);
+      }
     }
   }
-  let pool = 52 - used.length;
-  const pickC = ncr(pool, 5 - community.length);
-  pool -= 5 - community.length;
-  const pickB = ncr(pool, 2 - handB.length);
-  console.log(
-    "statistically there are",
-    pickC,
-    "ways to pick community cards, there are",
-    pickB,
-    "ways to pick opponent cards"
-  );
-  const total = pickB * pickC;
-  const winRate = (win / (lose + win + tie)) * 100;
-  const coveragePercent = ((win + lose + tie) / total) * 100;
+  const covered = lose + win + tie;
+  const total = calculatePossibleOutcome(handA, handB, community);
+  const winRate = (win / covered) * 100;
+  const coveragePercent = (covered / total) * 100;
   console.log("done running tests");
   const now = new Date();
   const time = now - startSolvingTime;
@@ -136,6 +157,7 @@ export function solve(handA, handB, community, step = JUMP_3) {
     lose,
     tie,
     winRate,
+    covered,
     total,
     coveragePercent,
     time,
