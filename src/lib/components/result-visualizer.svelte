@@ -46,8 +46,8 @@
       {result.covered} test runs (of total
       <em>{result.total}</em>
       possible outcomes). Which covers
-      {((result.covered) / result.total * 100).toFixed(2)}%
-      real combinations space
+      {((result.covered / result.total) * 100).toFixed(2)}% real combinations
+      space
     {/if}
   </p>
 {/if}

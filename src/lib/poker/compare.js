@@ -22,44 +22,46 @@ export const A_WIN = 1;
 export const B_WIN = -1;
 export const TIE = 0;
 
-const RANK_2 = 0;
-const RANK_3 = 1;
-const RANK_4 = 2;
-const RANK_5 = 3;
-const RANK_6 = 4;
-const RANK_7 = 5;
-const RANK_8 = 6;
-const RANK_9 = 7;
-const RANK_10 = 8;
-const RANK_J = 9;
-const RANK_Q = 10;
-const RANK_K = 11;
-const RANK_A = 12;
-const RANK_MAX = 13;
-const SUIT_SPADE = 0;
-const SUIT_CLUB = 1;
-const SUIT_DIAMOND = 2;
-const SUIT_HEART = 3;
-const SUIT_MAX = 4;
+const RANK_2 = 0n;
+const RANK_3 = 1n;
+const RANK_4 = 2n;
+const RANK_5 = 3n;
+const RANK_6 = 4n;
+const RANK_7 = 5n;
+const RANK_8 = 6n;
+const RANK_9 = 7n;
+const RANK_10 = 8n;
+const RANK_J = 9n;
+const RANK_Q = 10n;
+const RANK_K = 11n;
+const RANK_A = 12n;
+const RANK_MAX = 13n;
+const SUIT_SPADE = 0n;
+const SUIT_CLUB = 1n;
+const SUIT_DIAMOND = 2n;
+const SUIT_HEART = 3n;
+const SUIT_MAX = 4n;
 
-const STRAIGHT_FLUSH = 9;
-const FOUR_OF_A_KIND = 8;
-const FULL_HOUSE = 7;
-const FLUSH = 6;
-const STRAIGHT = 5;
-const THREE_OF_A_KIND = 4;
-const TWO_PAIR = 3;
-const PAIR = 2;
-const HIGH_CARD = 1;
+const STRAIGHT_FLUSH = 0;
+const FOUR_OF_A_KIND = 1;
+const FULL_HOUSE = 2;
+const FLUSH = 3;
+const STRAIGHT = 4;
+const THREE_OF_A_KIND = 5;
+const TWO_PAIR = 6;
+const PAIR = 7;
+const HIGH_CARD = 8;
 
 let rankMask = Array(RANK_MAX);
 rankMask.fill(0n);
-for (var i = RANK_2; i < RANK_MAX; i++) {
-  for (var j = SUIT_SPADE; j < SUIT_MAX; j++) {
-    const d = i * SUIT_MAX + j;
-    const x = 1n << BigInt(d);
-    rankMask[i] |= x;
-  }
+for (let i = RANK_2; i < RANK_MAX; i++) {
+  const card = BIT_1111 << (i * SUIT_MAX);
+  rankMask[i] = card;
+}
+
+function hasCardRank(mask, rank) {
+  const cards = rankMask[rank];
+  return (mask & cards) != 0n;
 }
 
 function compareHighCard(maskA, maskB) {
@@ -71,84 +73,6 @@ function compareHighCard(maskA, maskB) {
     if (b) return B_WIN;
   }
   return TIE;
-}
-
-function compareFlush(maskA, maskB) {
-  return compareHighCard(maskA, maskB);
-}
-
-function hasCardRank(mask, rank) {
-  return (mask & BigInt(rankMask[rank])) != 0;
-}
-
-function countDuplicate(mask, rank) {
-  let ret = 0;
-  for (var j = SUIT_SPADE; j <= SUIT_HEART; j++) {
-    const card = 1n << BigInt(rank * SUIT_MAX + j);
-    if ((mask & card) != 0n) {
-      ret++;
-    }
-  }
-  return ret;
-}
-
-function compareStraight(maskA, maskB) {
-  const lowAceA = hasCardRank(maskA, RANK_2) && hasCardRank(maskA, RANK_A);
-  const lowAceB = hasCardRank(maskB, RANK_2) && hasCardRank(maskB, RANK_A);
-  if (!lowAceA && !lowAceB) return compareHighCard(maskA, maskB);
-  if (lowAceA) return B_WIN;
-  if (lowAceB) return A_WIN;
-  return TIE;
-}
-
-function compareFullHouse(maskA, maskB) {
-  for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = countDuplicate(maskA, i);
-    const b = countDuplicate(maskB, i);
-    if (a == 3 && b != 3) return A_WIN;
-    if (b == 3 && a != 3) return B_WIN;
-  }
-  for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = countDuplicate(maskA, i);
-    const b = countDuplicate(maskB, i);
-    if (a == 2 && b != 2) return A_WIN;
-    if (b == 2 && a != 2) return B_WIN;
-  }
-  return TIE;
-}
-
-function compareFourOfAKind(maskA, maskB) {
-  for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = countDuplicate(maskA, i);
-    const b = countDuplicate(maskB, i);
-    if (a == 4 && b != 4) return A_WIN;
-    if (b == 4 && a != 4) return B_WIN;
-  }
-  return compareHighCard(maskA, maskB);
-}
-
-function compareThreeOfAKind(maskA, maskB) {
-  for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = countDuplicate(maskA, i);
-    const b = countDuplicate(maskB, i);
-    if (a == 3 && b != 3) return A_WIN;
-    if (b == 3 && a != 3) return B_WIN;
-  }
-  return compareHighCard(maskA, maskB);
-}
-
-function comparePair(maskA, maskB) {
-  for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = countDuplicate(maskA, i);
-    const b = countDuplicate(maskB, i);
-    if (a == 2 && b != 2) {
-      return A_WIN;
-    }
-    if (b == 2 && a != 2) {
-      return B_WIN;
-    }
-  }
-  return compareHighCard(maskA, maskB);
 }
 
 function binarySearch(arr, x) {
@@ -167,20 +91,15 @@ function binarySearch(arr, x) {
   return false;
 }
 
-function matchAll(arr, mask) {
-  let ret = [];
-  for (const pattern of arr) {
-    if (pattern == (mask & pattern)) {
-      ret.push(pattern);
-    }
-  }
-  return ret;
-}
-
 function match(arr, mask) {
-  for (const pattern of arr) {
-    if (pattern == (mask & pattern)) {
-      return pattern;
+  for (let order = 0; order < arr.length; order++) {
+    for (const pattern of arr[order]) {
+      if (pattern == (mask & pattern)) {
+        return {
+          pattern,
+          order,
+        };
+      }
     }
   }
   return null;
@@ -210,96 +129,100 @@ export function getStrongest5(mask) {
   if (ret) {
     return {
       rank: STRAIGHT_FLUSH,
-      mask: ret,
+      order: ret.order,
+      unranked: 0n,
+      mask: ret.pattern,
     };
   }
   ret = match(fourOfAKind, mask);
   if (ret) {
-    const high = mask & ~ret;
-    const best = ret | getHighestBit(high);
+    const high = mask & ~ret.pattern;
     return {
       rank: FOUR_OF_A_KIND,
-      mask: best,
+      order: ret.order,
+      unranked: getHighestBit(high),
+      mask: ret.pattern,
     };
   }
   ret = match(fullHouse, mask);
   if (ret) {
     return {
       rank: FULL_HOUSE,
-      mask: ret,
+      order: ret.order,
+      unranked: 0n,
+      mask: ret.pattern,
     };
   }
   ret = match(flush, mask);
   if (ret) {
     return {
       rank: FLUSH,
-      mask: ret,
+      order: ret.order,
+      unranked: 0n,
+      mask: ret.pattern,
     };
   }
   ret = match(straight, mask);
   if (ret) {
     return {
       rank: STRAIGHT,
-      mask: ret,
+      order: ret.order,
+      unranked: 0n,
+      mask: ret.pattern,
     };
   }
   ret = match(threeOfAKind, mask);
   if (ret) {
-    const high = mask & ~ret;
-    const best = ret | getHighestBit(high, 2);
+    const high = mask & ~ret.pattern;
     return {
       rank: THREE_OF_A_KIND,
-      mask: best,
+      order: ret.order,
+      unranked: getHighestBit(high, 2),
+      mask: ret.pattern,
     };
   }
   ret = match(twoPair, mask);
   if (ret) {
-    const high = mask & ~ret;
-    const best = ret | getHighestBit(high);
+    const high = mask & ~ret.pattern;
     return {
       rank: TWO_PAIR,
-      mask: best,
+      order: ret.order,
+      unranked: getHighestBit(high),
+      mask: ret.pattern,
     };
   }
   ret = match(pair, mask);
   if (ret) {
-    const high = mask & ~ret;
-    const best = ret | getHighestBit(high, 3);
+    const high = mask & ~ret.pattern;
     return {
       rank: PAIR,
-      mask: best,
+      order: ret.order,
+      unranked: getHighestBit(high, 3),
+      mask: ret.pattern,
     };
   }
-  const best = getHighestBit(mask, 5);
   return {
     rank: HIGH_CARD,
-    mask: best,
+    order: 0,
+    unranked: getHighestBit(mask, 5),
+    mask: 0n,
   };
 }
 
 export function compare(handA, handB) {
-  if (handA.rank > handB.rank) return A_WIN;
-  if (handB.rank > handA.rank) return B_WIN;
-  if (handA.rank == STRAIGHT_FLUSH)
-    return compareStraight(handA.mask, handB.mask);
-  if (handA.rank == FOUR_OF_A_KIND)
-    return compareFourOfAKind(handA.mask, handB.mask);
-  if (handA.rank == FULL_HOUSE) return compareFullHouse(handA.mask, handB.mask);
-  if (handA.rank == FLUSH) return compareFlush(handA.mask, handB.mask);
-  if (handA.rank == STRAIGHT) return compareStraight(handA.mask, handB.mask);
-  if (handA.rank == THREE_OF_A_KIND)
-    return compareThreeOfAKind(handA.mask, handB.mask);
-  if (handA.rank == TWO_PAIR || handA.rank == PAIR)
-    return comparePair(handA.mask, handB.mask);
-  return compareHighCard(handA.mask, handB.mask);
+  if (handA.rank < handB.rank) return A_WIN;
+  if (handB.rank < handA.rank) return B_WIN;
+  if (handA.order < handB.order) return A_WIN;
+  if (handB.order < handA.order) return B_WIN;
+  return compareHighCard(handA.unranked, handB.unranked);
 }
 
 export function compare7(arrayA, arrayB) {
   // console.log("compare 7", arrayA, arrayB);
   const bestA = getStrongest5(arrayA);
   const bestB = getStrongest5(arrayB);
-  // console.log("best A", bestA.rank, handMaskToText(bestA.mask));
-  // console.log("best B", bestB.rank, handMaskToText(bestB.mask));
+  // console.log("best A", bestA.rank, handMaskToText(bestA.mask | bestA.unranked));
+  // console.log("best B", bestB.rank, handMaskToText(bestB.mask | bestB.unranked));
   const ret = compare(bestA, bestB);
   return ret;
 }
