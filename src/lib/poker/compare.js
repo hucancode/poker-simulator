@@ -8,7 +8,13 @@ import {
   twoPair,
   pair,
 } from "./special-hands.js";
-import { handArrayToMask, handMaskToText, handTextToMask } from "./cards.js";
+import {
+  handArrayToMask,
+  handArrayToText,
+  handMaskToArray,
+  handMaskToText,
+  handTextToMask,
+} from "./cards.js";
 import { getCombinations } from "./combinations.js";
 
 const BIT_1111 = (1n << 4n) - 1n;
@@ -127,28 +133,18 @@ function compareThreeOfAKind(maskA, maskB) {
   return compareHighCard(maskA, maskB);
 }
 
-function compareTwoPairs(maskA, maskB) {
-  for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = countDuplicate(maskA, i);
-    const b = countDuplicate(maskB, i);
-    if (a == 2 && b != 2) return A_WIN;
-    if (b == 2 && a != 2) return B_WIN;
-  }
-  return compareHighCard(maskA, maskB);
-}
-
 function comparePair(maskA, maskB) {
   for (var i = RANK_A; i >= RANK_2; i--) {
     const a = countDuplicate(maskA, i);
     const b = countDuplicate(maskB, i);
-    if (a == 2 && b != 2) return A_WIN;
-    if (b == 2 && a != 2) return B_WIN;
+    if (a == 2 && b != 2) {
+      return A_WIN;
+    }
+    if (b == 2 && a != 2) {
+      return B_WIN;
+    }
   }
   return compareHighCard(maskA, maskB);
-}
-
-function checkBit(mask, x) {
-  return (BigInt(mask) & BigInt(x)) == BigInt(mask);
 }
 
 function binarySearch(arr, x) {
@@ -167,32 +163,119 @@ function binarySearch(arr, x) {
   return false;
 }
 
-export function evaluate(mask) {
-  if (binarySearch(straightFlush, mask)) {
-    return STRAIGHT_FLUSH;
+function matchAll(arr, mask) {
+  let ret = [];
+  for (const pattern of arr) {
+    if (pattern == (mask & pattern)) {
+      ret.push(pattern);
+    }
   }
-  if (fourOfAKind.some((e) => checkBit(e, mask))) {
-    return FOUR_OF_A_KIND;
+  return ret;
+}
+
+function match(arr, mask) {
+  for (const pattern of arr) {
+    if (pattern == (mask & pattern)) {
+      return pattern;
+    }
   }
-  if (binarySearch(fullHouse, mask)) {
-    return FULL_HOUSE;
+  return null;
+}
+
+function getHighestBit(mask, count = 1) {
+  let ret = 0n;
+  let k = 1n << 51n; // 100000000...0
+  while (k != 0n) {
+    if ((mask & k) == k) {
+      ret |= k;
+      count--;
+      if (count == 0) {
+        break;
+      }
+    }
+    k = k >> 1n;
   }
-  if (binarySearch(flush, mask)) {
-    return FLUSH;
+  return ret;
+}
+
+// given 7 cards, return the best combination consist of 5 cards
+export function getStrongest5(mask) {
+  mask = handArrayToMask(mask);
+  let ret;
+  ret = match(straightFlush, mask);
+  if (ret) {
+    return {
+      rank: STRAIGHT_FLUSH,
+      mask: ret,
+    };
   }
-  if (binarySearch(straight, mask)) {
-    return STRAIGHT;
+  ret = match(fourOfAKind, mask);
+  if (ret) {
+    const high = mask & ~ret;
+    const best = ret | getHighestBit(high);
+    return {
+      rank: FOUR_OF_A_KIND,
+      mask: best,
+    };
   }
-  if (threeOfAKind.some((e) => checkBit(e, mask))) {
-    return THREE_OF_A_KIND;
+  ret = matchAll(fullHouse, mask);
+  // TODO: return the best full house
+  if (ret.length > 0) {
+    const best = ret.reduce((r, v) => {
+      const win = compareFullHouse(r, v) == A_WIN;
+      return win ? r : v;
+    }, ret[0]);
+    return {
+      rank: FULL_HOUSE,
+      mask: best,
+    };
   }
-  if (twoPair.some((e) => checkBit(e, mask))) {
-    return TWO_PAIR;
+  ret = match(flush, mask);
+  if (ret) {
+    return {
+      rank: FLUSH,
+      mask: ret,
+    };
   }
-  if (pair.some((e) => checkBit(e, mask))) {
-    return PAIR;
+  ret = match(straight, mask);
+  if (ret) {
+    return {
+      rank: STRAIGHT,
+      mask: ret,
+    };
   }
-  return HIGH_CARD;
+  ret = match(threeOfAKind, mask);
+  if (ret) {
+    const high = mask & ~ret;
+    const best = ret | getHighestBit(high, 2);
+    return {
+      rank: THREE_OF_A_KIND,
+      mask: best,
+    };
+  }
+  ret = match(twoPair, mask);
+  if (ret) {
+    const high = mask & ~ret;
+    const best = ret | getHighestBit(high);
+    return {
+      rank: TWO_PAIR,
+      mask: best,
+    };
+  }
+  ret = match(pair, mask);
+  if (ret) {
+    const high = mask & ~ret;
+    const best = ret | getHighestBit(high, 3);
+    return {
+      rank: PAIR,
+      mask: best,
+    };
+  }
+  const best = getHighestBit(mask, 5);
+  return {
+    rank: HIGH_CARD,
+    mask: best,
+  };
 }
 
 export function compare(handA, handB) {
@@ -207,30 +290,19 @@ export function compare(handA, handB) {
   if (handA.rank == STRAIGHT) return compareStraight(handA.mask, handB.mask);
   if (handA.rank == THREE_OF_A_KIND)
     return compareThreeOfAKind(handA.mask, handB.mask);
-  if (handA.rank == TWO_PAIR) return compareTwoPairs(handA.mask, handB.mask);
-  if (handA.rank == PAIR) return comparePair(handA.mask, handB.mask);
+  if (handA.rank == TWO_PAIR || handA.rank == PAIR)
+    return comparePair(handA.mask, handB.mask);
   return compareHighCard(handA.mask, handB.mask);
-}
-
-export function getBestCombination(arr) {
-  const comb = getCombinations(arr, 5).map((e) => {
-    const mask = handArrayToMask(e);
-    const rank = evaluate(mask);
-    return { mask, rank };
-  });
-  // console.log(comb.map(e => handMaskToText(e.mask)));
-  return comb.reduce((r, v) => {
-    return compare(r, v) == A_WIN ? r : v;
-  }, comb[0]);
 }
 
 export function compare7(arrayA, arrayB) {
   // console.log("compare 7", arrayA, arrayB);
-  const bestA = getBestCombination(arrayA);
-  const bestB = getBestCombination(arrayB);
-  // console.log("best A", handMaskToText(bestA.mask));
-  // console.log("best B", handMaskToText(bestB.mask));
-  return compare(bestA, bestB);
+  const bestA = getStrongest5(arrayA);
+  const bestB = getStrongest5(arrayB);
+  // console.log("best A", bestA.rank, handMaskToText(bestA.mask));
+  // console.log("best B", bestB.rank, handMaskToText(bestB.mask));
+  const ret = compare(bestA, bestB);
+  return ret;
 }
 
 let handRanks = [];

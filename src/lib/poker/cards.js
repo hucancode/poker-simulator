@@ -22,9 +22,8 @@ export function cardIdToText(i) {
 }
 export function handMaskToArray(mask) {
   let ret = [];
-  let v = BigInt(mask); // need big int to use 64bit bit shift
-  for (let i = 0n; i < 52; i++) {
-    if (((v >> i) & 1n) != 0) {
+  for (let i = 0n; i < 52n; i++) {
+    if ((mask & (1n << i)) != 0) {
       ret.push(Number(i));
     }
   }
@@ -47,7 +46,7 @@ export function handArrayToMask(cards) {
   for (const card of cards) {
     ret |= 1n << BigInt(card);
   }
-  return Number(ret);
+  return ret;
 }
 
 export function handTextToArray(text) {

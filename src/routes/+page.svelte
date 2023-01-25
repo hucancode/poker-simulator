@@ -1,4 +1,5 @@
 <script>
+  import { page } from "$app/stores";
   import { onMount } from "svelte";
   import {
     handTextToArray,
@@ -21,7 +22,7 @@
     time: 0,
   };
   const HAND_DELIMETER = "-";
-  let speedFast, speedSlow, speedVerySlow;
+  let speedFast, speedSlow, speedVerySlow, speedAllDay;
   let gameCodeInput;
   let result = UNKOWN_RESULT;
   let isWorking = false;
@@ -38,6 +39,7 @@
       return;
     }
     const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    $page.url.searchParams.set("code", gameCodeInput.value);
     handA = handTextToArray(arr[0]);
     handB = handTextToArray(arr[1]);
     community = handTextToArray(arr[2]);
@@ -51,6 +53,8 @@
       handArrayToText(handB) +
       HAND_DELIMETER +
       handArrayToText(community);
+    /* $page.url.searchParams.set('code', gameCodeInput.value); */
+    /* document.location.search = $page.url.searchParams; */
     result = UNKOWN_RESULT;
   }
 
@@ -80,6 +84,9 @@
     }
     if (speedVerySlow.checked) {
       return compute(0.3);
+    }
+    if (speedAllDay.checked) {
+      return compute(0.1);
     }
   }
   function compute(k = 1) {
@@ -135,8 +142,14 @@
   }
 
   onMount(() => {
-    randomize();
-    /* compute(); */
+    const code = $page.url.searchParams.get("code");
+    if (code) {
+      gameCodeInput.value = code;
+      updateArrayFromText();
+      compute();
+    } else {
+      randomize();
+    }
   });
 </script>
 
@@ -220,24 +233,39 @@
         updateTextFromArray();
       }}
     />
-    <div>
-      <input
-        type="radio"
-        name="speed"
-        id="speed-fast"
-        checked
-        bind:this={speedFast}
-      />
-      <label for="speed-fast">Fast 🐰</label>
-      <input type="radio" name="speed" id="speed-slow" bind:this={speedSlow} />
-      <label for="speed-slow">Slow 🐢</label>
-      <input
-        type="radio"
-        name="speed"
-        id="speed-very-slow"
-        bind:this={speedVerySlow}
-      />
-      <label for="speed-very-slow">Slowww 🐌</label>
+    <div class="flex flex-col justify-center">
+      <strong>Compute Speed</strong>
+      <div class="flex flex-wrap justify-center gap-0.5">
+        <input
+          type="radio"
+          name="speed"
+          id="speed-fast"
+          checked
+          bind:this={speedFast}
+        />
+        <label for="speed-fast">Fast 🐰</label>
+        <input
+          type="radio"
+          name="speed"
+          id="speed-slow"
+          bind:this={speedSlow}
+        />
+        <label for="speed-slow">Slow 🐢</label>
+        <input
+          type="radio"
+          name="speed"
+          id="speed-very-slow"
+          bind:this={speedVerySlow}
+        />
+        <label for="speed-very-slow">Slowww 🐌</label>
+        <input
+          type="radio"
+          name="speed"
+          id="speed-all-day"
+          bind:this={speedAllDay}
+        />
+        <label for="speed-all-day">I can do this all day 💪</label>
+      </div>
     </div>
     <div>
       <button on:click={doCompute}>{isWorking ? "Stop" : "Compute"}</button>
@@ -247,13 +275,11 @@
     {#if isWorking}
       <Loading />
       {#if slowWarning}
-        <big>😩</big>
         <small
-          ><br />Computation might take longer to finish, please be patient
+          >Computation might take longer to finish, please be patient
         </small>
       {:else}
-        <big>🎲</big>
-        <small><br />Looking into the future... </small>
+        <small>Looking into the future... </small>
       {/if}
     {:else if result.total > 0}
       <Result {result} />
@@ -305,7 +331,7 @@
     display: none;
   }
   input[type="radio"] + label {
-    @apply w-1/3 bg-gray-600 px-4 py-2 text-center font-semibold text-gray-100;
+    @apply bg-gray-600 px-4 py-2 text-center font-semibold text-gray-100;
   }
   input[type="radio"]:checked + label {
     @apply bg-black text-white;
