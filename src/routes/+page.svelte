@@ -153,6 +153,8 @@
     });
     isWorking = true;
     result.interupted = false;
+    result.covered = 0;
+    result.total = 0;
   }
 
   onMount(() => {
