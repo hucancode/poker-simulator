@@ -247,7 +247,7 @@
     {#if isWorking}
       <Loading />
       {#if slowWarning}
-        <big>⚠️</big>
+        <big>😩</big>
         <small
           ><br />Computation might take longer to finish, please be patient
         </small>
