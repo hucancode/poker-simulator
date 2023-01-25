@@ -219,15 +219,10 @@ export function getStrongest5(mask) {
     };
   }
   ret = matchAll(fullHouse, mask);
-  // TODO: return the best full house
   if (ret.length > 0) {
-    const best = ret.reduce((r, v) => {
-      const win = compareFullHouse(r, v) == A_WIN;
-      return win ? r : v;
-    }, ret[0]);
     return {
       rank: FULL_HOUSE,
-      mask: best,
+      mask: ret,
     };
   }
   ret = match(flush, mask);
@@ -303,40 +298,4 @@ export function compare7(arrayA, arrayB) {
   // console.log("best B", bestB.rank, handMaskToText(bestB.mask));
   const ret = compare(bestA, bestB);
   return ret;
-}
-
-let handRanks = [];
-
-export function precomputeHandRank() {
-  let usedCard = 0;
-  let mask = 0n;
-  let st = [];
-  for (var c = 0; c < 52; c++) {
-    st.push(c);
-  }
-  while (st.length > 0) {
-    const c = st[st.length - 1];
-    st.pop();
-    if (c < 0) {
-      usedCard--;
-      mask ^= 1n << BigInt(-c);
-      continue;
-    }
-    usedCard++;
-    mask ^= 1n << BigInt(c);
-    if (usedCard == 5) {
-      handRanks.push({
-        mask: Number(mask),
-        rank: evaluate(mask),
-      });
-      mask ^= 1n << BigInt(c);
-      usedCard--;
-      continue;
-    }
-    st.push(-c);
-    for (var next = c + 1; next < 52; next++) {
-      st.push(next);
-    }
-  }
-  console.log("precompute done");
 }
