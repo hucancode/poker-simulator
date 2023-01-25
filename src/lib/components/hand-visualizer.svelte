@@ -41,7 +41,7 @@
     }}
   >
     <div
-      transition:scale
+      transition:scale={{ start: 0.8, duration: 200 }}
       class="flex h-full w-full flex-col items-center justify-center"
     >
       <div class="flex items-center justify-between gap-2">

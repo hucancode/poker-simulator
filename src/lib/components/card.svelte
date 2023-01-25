@@ -23,10 +23,8 @@
   class="aspect-[2/2.5] w-16 animate-bg-pingpong rounded-md bg-4x-width p-0.5"
 >
   <div
-    class="relative flex h-full w-full select-none items-center justify-center rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"
+    class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"
     {selected}
-    {used}
-    is-valid={card >= 0}
     is-red={Math.floor(card % 4) >= 2}
   >
     <div class="absolute top-1 left-1 leading-none">
@@ -35,21 +33,17 @@
     <div class="text-2xl md:text-4xl">
       {poker.suitSymbols[Math.floor(card % 4)] ?? ""}
     </div>
+    {#if used || card < 0}
+      <div
+        class="absolute top-0 left-0 h-full w-full bg-diagonal-stripe text-black/80"
+      />
+    {/if}
   </div>
 </div>
 
 <style>
   div[selectable="true"] {
     @apply cursor-pointer;
-  }
-  div[used="true"] {
-    @apply bg-diagonal-stripe;
-  }
-  div[is-valid="false"] > div {
-    @apply invisible;
-  }
-  div[is-valid="false"] {
-    @apply bg-diagonal-stripe;
   }
   div[selected="true"] {
     @apply bg-orange-200;
