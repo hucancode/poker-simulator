@@ -136,7 +136,7 @@
 
   onMount(() => {
     randomize();
-    compute();
+    /* compute(); */
   });
 </script>
 
