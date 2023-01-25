@@ -250,7 +250,7 @@
       }}
     />
     <div class="flex flex-col justify-center">
-      <strong>Compute Speed</strong>
+      <strong>Number of tests (fewer is faster)</strong>
       <div class="flex flex-wrap justify-center gap-0.5">
         <input
           type="radio"
