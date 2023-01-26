@@ -291,9 +291,10 @@
     {#if isWorking}
       <Bar percentage={(result.covered / gameToPlay) * 100} />
       <small
-        >Looking into the future #{result.covered}
-        <br />You are winning {result.win}
-        ({result.winRate.toFixed(1)}%) games so far</small
+        >Looking into the future <b><kbd>#{result.covered}</kbd></b>
+        <br />You are winning
+        <b><kbd>{result.win} ({result.winRate.toFixed(1)}%)</kbd></b>
+        games so far</small
       >
     {:else if result.total > 0}
       <Result {result} />

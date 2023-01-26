@@ -108,8 +108,8 @@ export function enumerate(handA, handB, community, step = JUMP_3) {
     candidateB.length,
     "candidates to pick opponent cards"
   );
-  candidateB.sort((a,b) => (0.5 - Math.random()));
-  candidateC.sort((a,b) => (0.5 - Math.random()));
+  candidateB.sort((a, b) => 0.5 - Math.random());
+  candidateC.sort((a, b) => 0.5 - Math.random());
   return {
     candidateB,
     candidateC,
