@@ -70,7 +70,7 @@
     {/if}
   </h3>
 {:else}
-  <canvas class="mx-auto max-w-xs p-10" bind:this={canvas} />
+  <canvas class="mx-auto max-w-xs p-8" bind:this={canvas} />
   <small class="leading-tight">
     {#if result.time > 2000}
       In the matter of
