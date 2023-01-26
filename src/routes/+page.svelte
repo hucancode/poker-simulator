@@ -73,7 +73,8 @@
     result = UNKOWN_RESULT;
   }
 
-  function doCompute() {
+  function doCompute(e) {
+    e.preventDefault() //prevents jumpscrolling to the top on button press.
     if (isWorking) {
       worker.terminate();
       isWorking = false;
