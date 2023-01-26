@@ -73,7 +73,8 @@
     result = UNKOWN_RESULT;
   }
 
-  function doCompute() {
+  function doCompute(e) {
+    e.preventDefault() //prevents jumpscrolling to the top on button press.
     if (isWorking) {
       worker.terminate();
       isWorking = false;
@@ -290,12 +291,28 @@
   <div>
     {#if isWorking}
       <Bar percentage={(result.covered / gameToPlay) * 100} />
-      <small
-        >Looking into the future <b><kbd>#{result.covered}</kbd></b>
-        <br />You are winning
-        <b><kbd>{result.win} ({result.winRate.toFixed(1)}%)</kbd></b>
-        games so far</small
-      >
+        <!-- essentially only changed numbers to font-mono and restructured html. 
+             added margin top to the first line and font-bold to result.
+            now the numbers won't jitter as they are changing, being easier on the eyes, generally more clean look.
+            -->
+        <small class="flex justify-center items-center flex-col gap-5" >
+            <div class="mt-5">
+                <span>Looking into the future</span>
+                <span class="font-mono">#{result.covered}</span>
+            </div>
+            <div class="my-auto flex items-baseline"> 
+                <span>You are winning &nbsp</span>
+                <div class="font-mono font-bold w-10 flex flex-col justify-center items-center">
+                    <div class="">
+                        {result.win} 
+                    </div>
+                    
+                   ({result.winRate.toFixed(1)}%)
+                
+                </div>
+                <span>&nbsp;games so far</span>
+            </div>
+        </small>
     {:else if result.total > 0}
       <Result {result} />
     {:else}
