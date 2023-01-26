@@ -1,38 +1,35 @@
-# create-svelte
+# Poker Simulator
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);
+## Motivation
 
-## Creating a project
+This tool will help you approximate your winning chance in a "Texas Holdem" poker game.
+Kindly set a board, click `Compute` and let the computer do the hard work for you. 
 
-If you're seeing this, you've probably already done this step. Congrats!
+Without a doubt, luck play a significant role in the game, 
+but step into the game without a good mathematical foundation can harm you in the long run.
+I hope my codes can do a little help preparing you on that aspect ☺.
 
-```bash
-# create a new project in the current directory
-npm init svelte@next
+## Methodology
 
-# create a new project in my-app
-npm init svelte@next my-app
+### Hand evaluation
+
+I use some bit math to match a hand of cards to a specials pattern. Then rank the hand accordingly.
+Check `src/lib/poker/special-hands.js` for pattern building algorithm. 
+Check `src/lib/poker/compare.js` for hands comparing/ranking algorithm.
+
+### Combinations
+
+Since the total combinations is so big we probably can't traverse all possible situations. I use [Monte Carlo](https://en.wikipedia.org/wiki/Monte_Carlo_algorithm) to get the approximate result. Here is how many outcomes that may happen in any round
+
+|                   | Flop (2 hidden cards)    | Turn (1 hidden card)  | River (All cards visible) |
+|-------------------|---------|-------|-------|
+| Possible Outcomes | 1070190 | 45540 | 990   |
+
+## Running
+The latest build is live at https://poker.lamsaoquenem.day/
+### Building locally
+I use `Svelte Kit` to build this. You can build and run the application with
 ```
-
-> Note: the `@next` is temporary
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+npm run start
 ```
-
-## Building
-
-Before creating a production version of your app, install an [adapter](https://kit.svelte.dev/docs#adapters) for your target environment. Then:
-
-```bash
-npm run build
-```
-
-> You can preview the built app with `npm run preview`, regardless of whether you installed an adapter. This should _not_ be used to serve your app in production.
+Then open this `http://localhost:5173/` in your browser
