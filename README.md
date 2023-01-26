@@ -21,9 +21,9 @@ I hope my codes can do a little help preparing you on that aspect ☺.
 
 ### Hand evaluation
 
-I use some bit math to match a hand of cards to a specials pattern. Then rank the hand accordingly.
-Check `src/lib/poker/special-hands.js` for pattern building algorithm. 
-Check `src/lib/poker/compare.js` for hands comparing/ranking algorithm.
+I use some [bit math](https://en.wikipedia.org/wiki/Mask_(computing)) to match given hand of cards to a set of precomputed patterns. Then rank the hand accordingly.
+Kindly check `src/lib/poker/special-hands.js` for pattern building algorithm. 
+Kindly check `src/lib/poker/compare.js` for hands comparing/ranking algorithm.
 
 ### Combinations
 
