@@ -37,15 +37,15 @@
       },
       options: {
         plugins: {
-            legend: {
-                labels: {
-                    font: {
-                        size: 20
-                    }
-                }
-            }
-        }
-    },
+          legend: {
+            labels: {
+              font: {
+                size: 20,
+              },
+            },
+          },
+        },
+      },
     });
     return () => {
       chart.destroy();
@@ -71,26 +71,24 @@
   </h3>
 {:else}
   <canvas class="mx-auto max-w-xs p-10" bind:this={canvas} />
-  <p>
+  <small class="leading-tight">
     {#if result.time > 2000}
       In the matter of
       <em>{Math.floor(result.time / 1000)} seconds</em>,
     {/if}
+    I have fast-forwarded into the future and saw
     {#if result.interrupted}
-      I have fast-forwarded into the future and saw {result.covered} outcomes
+      <em>{result.covered}</em>
     {:else if result.covered == result.total}
-      I have fast-forwarded into the future and saw all <em>{result.total}</em> possible
-      outcomes
+      all <em>{result.total}</em> possible
     {:else}
-      I have fast-forwarded into the future and saw
-      <em
-        >{result.covered} ({((result.covered / result.total) * 100).toFixed(
-          2
-        )}%)</em
-      >
-      futures (of total <em>{result.total}</em>)
+      <em>
+        {result.covered}/{result.total}
+        ({((result.covered / result.total) * 100).toFixed(2)}%)
+      </em>
     {/if}
-  </p>
+    outcomes, {result.win} of that you win
+  </small>
 {/if}
 
 <style>
