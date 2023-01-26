@@ -299,9 +299,16 @@
                 <span>Looking into the future</span>
                 <span class="font-mono">#{result.covered}</span>
             </div>
-            <div class="my-auto flex"> 
+            <div class="my-auto flex items-baseline"> 
                 <span>You are winning &nbsp</span>
-                <span class="font-mono font-bold">{result.win} ({result.winRate.toFixed(1)}%)</span>
+                <div class="font-mono font-bold w-10 flex flex-col justify-center items-center">
+                    <div class="">
+                        {result.win} 
+                    </div>
+                    
+                   ({result.winRate.toFixed(1)}%)
+                
+                </div>
                 <span>&nbsp;games so far</span>
             </div>
         </small>
