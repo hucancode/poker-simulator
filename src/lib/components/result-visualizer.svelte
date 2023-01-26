@@ -23,14 +23,14 @@
     let chart = new Chart(canvas, {
       type: "pie",
       data: {
-        labels: ["Win", "Lose", "Tie"],
+        labels: ["Win", "Tie", "Lose"],
         datasets: [
           {
-            data: [result.win, result.lose, result.tie],
+            data: [result.win, result.tie, result.lose],
             backgroundColor: [
               "rgb(255, 205, 86)",
-              "rgb(255, 99, 132)",
               "rgb(54, 162, 235)",
+              "rgb(255, 99, 132)",
             ],
           },
         ],
