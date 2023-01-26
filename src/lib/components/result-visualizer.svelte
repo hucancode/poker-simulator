@@ -73,20 +73,22 @@
   <canvas class="mx-auto max-w-xs p-10" bind:this={canvas} />
   <p>
     {#if result.time > 2000}
-      Thanks for the
-      <em>{Math.floor(result.time / 1000)} seconds</em> wait <big>😅</big>.
+      In the matter of
+      <em>{Math.floor(result.time / 1000)} seconds</em>,
     {/if}
     {#if result.interrupted}
-      The computer has covered {result.covered} outcomes
-    {:else if result.win + result.lose + result.tie == result.total}
-      The computer has covered all {result.total} possible outcomes
+      I have fast-forwarded into the future and saw {result.covered} outcomes
+    {:else if result.covered == result.total}
+      I have fast-forwarded into the future and saw all <em>{result.total}</em> possible
+      outcomes
     {:else}
-      The computer has gone through
-      {result.covered} test runs (of total
-      <em>{result.total}</em>
-      possible outcomes). Which covers
-      {((result.covered) / result.total * 100).toFixed(2)}%
-      real combinations space
+      I have fast-forwarded into the future and saw
+      <em
+        >{result.covered} ({((result.covered / result.total) * 100).toFixed(
+          2
+        )}%)</em
+      >
+      futures (of total <em>{result.total}</em>)
     {/if}
   </p>
 {/if}
