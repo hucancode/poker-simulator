@@ -290,11 +290,21 @@
   <div>
     {#if isWorking}
       <Bar percentage={(result.covered / gameToPlay) * 100} />
-      <small
-        >Looking into the future #{result.covered}
-        <br />You are winning {result.win}
-        ({result.winRate.toFixed(1)}%) games so far</small
-      >
+        <!-- essentially only changed numbers to font-mono and restructured html. 
+             added margin top to the first line and font-bold to result.
+            now the numbers won't jitter as they are changing, being easier on the eyes, generally more clean look.
+            -->
+        <small class="flex justify-center items-center flex-col gap-5" >
+            <div class="mt-5">
+                <span>Looking into the future</span>
+                <span class="font-mono">#{result.covered}</span>
+            </div>
+            <div class="my-auto flex"> 
+                <span>You are winning &nbsp</span>
+                <span class="font-mono font-bold">{result.win} ({result.winRate.toFixed(1)}%)</span>
+                <span>&nbsp;games so far</span>
+            </div>
+        </small>
     {:else if result.total > 0}
       <Result {result} />
     {:else}
