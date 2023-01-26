@@ -87,7 +87,7 @@
         ({((result.covered / result.total) * 100).toFixed(2)}%)
       </em>
     {/if}
-    outcomes, {result.win} of that you win
+    outcomes, <em>{result.win}</em> of that you win
   </small>
 {/if}
 
