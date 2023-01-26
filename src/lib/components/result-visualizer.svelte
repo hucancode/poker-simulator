@@ -1,4 +1,13 @@
 <script>
+  import { onMount } from "svelte";
+  import {
+    Chart,
+    Colors,
+    PieController,
+    ArcElement,
+    Legend,
+    Tooltip,
+  } from "chart.js";
   export let result = {
     win: 0,
     lose: 0,
@@ -8,6 +17,41 @@
     time: 0,
     interrupted: false,
   };
+  let canvas;
+  onMount(() => {
+    Chart.register(PieController, ArcElement, Colors, Legend, Tooltip);
+    let chart = new Chart(canvas, {
+      type: "pie",
+      data: {
+        labels: ["Win", "Lose", "Tie"],
+        datasets: [
+          {
+            data: [result.win, result.lose, result.tie],
+            backgroundColor: [
+              "rgb(255, 205, 86)",
+              "rgb(255, 99, 132)",
+              "rgb(54, 162, 235)",
+            ],
+          },
+        ],
+      },
+      options: {
+        plugins: {
+            legend: {
+                labels: {
+                    font: {
+                        size: 20
+                    }
+                }
+            }
+        }
+    },
+    });
+    return () => {
+      chart.destroy();
+      chart = null;
+    };
+  });
 </script>
 
 {#if result.total == 0 || result.covered == 0}
@@ -26,12 +70,7 @@
     {/if}
   </h3>
 {:else}
-  <h3>
-    Win/Lose/Tie: {result.win}/{result.lose}/{result.tie}
-    <span positive={result.winRate > 50} negative={result.winRate <= 50}
-      >(You win {result.winRate.toFixed(1)}% of the time)</span
-    ><br />
-  </h3>
+  <canvas class="mx-auto max-w-xs p-10" bind:this={canvas} />
   <p>
     {#if result.time > 2000}
       Thanks for the
