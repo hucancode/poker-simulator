@@ -4,15 +4,25 @@
   import {
     handTextToArray,
     handArrayToText,
-    cardIdToText,
+    rangeTextToArray,
   } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
-  import Picker from "$lib/components/card-picker.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
-  import Loading from "$lib/components/loading.svelte";
   import Bar from "$lib/components/progress-bar.svelte";
 
+  const TEST_FAST = 1000;
+  const TEST_NORMAL = 10000;
+  const TEST_SLOW = 50000;
+  const TEST_EXTRA_SLOW = 200000;
+  const HAND_DELIMETER = ",";
+  const COMMUNITY_TEXT_REGEX = "([2-9TJQKA][scdh]){3,5}";
+  const MY_HAND_TEXT_REGEX = "([2-9TJQKA][scdh]){2}";
+  const THEIR_HAND_FIXED_REGEX = "([2-9TJQKA][scdh]){0,2}";
+  const THEIR_HAND_RANGE_REGEX = "([2-9TJQKA]{2}[so]?\\+?)";
+  const THEIR_HAND_TEXT_REGEX = `((${THEIR_HAND_FIXED_REGEX})|(${THEIR_HAND_RANGE_REGEX}))`;
+
+  const GAME_CODE_REGEX = `${MY_HAND_TEXT_REGEX}${HAND_DELIMETER}${THEIR_HAND_TEXT_REGEX}${HAND_DELIMETER}${COMMUNITY_TEXT_REGEX}`;
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
@@ -23,17 +33,17 @@
     winRate: 0,
     interupted: false,
   };
-  const HAND_DELIMETER = "-";
   let speedFast, speedSlow, speedVerySlow, speedAllDay;
   let gameCodeInput;
   let result = UNKOWN_RESULT;
   let isWorking = false;
-  let slowWarning = false;
   let worker;
   let gameToPlay = 1;
   let community = [],
     handA = [],
     handB = [];
+  let candidateB = [];
+
   function updateArrayFromText() {
     if (!gameCodeInput.validity.valid) {
       community = [];
@@ -42,9 +52,10 @@
       return;
     }
     const arr = gameCodeInput.value.split(HAND_DELIMETER);
-    $page.url.searchParams.set("code", gameCodeInput.value);
+    // $page.url.searchParams.set("code", gameCodeInput.value);
     handA = handTextToArray(arr[0]);
     handB = handTextToArray(arr[1]);
+    candidateB = rangeTextToArray(arr[1]);
     community = handTextToArray(arr[2]);
     result = UNKOWN_RESULT;
   }
@@ -74,7 +85,7 @@
   }
 
   function doCompute(e) {
-    e.preventDefault() //prevents jumpscrolling to the top on button press.
+    e.preventDefault(); //prevents jumpscrolling to the top on button press.
     if (isWorking) {
       worker.terminate();
       isWorking = false;
@@ -82,54 +93,43 @@
       return;
     }
     if (speedFast.checked) {
-      return compute();
+      return compute(TEST_FAST);
     }
     if (speedSlow.checked) {
-      return compute(0.6);
+      return compute(TEST_NORMAL);
     }
     if (speedVerySlow.checked) {
-      return compute(0.3);
+      return compute(TEST_SLOW);
     }
     if (speedAllDay.checked) {
-      return compute(0.1);
+      return compute(TEST_EXTRA_SLOW);
     }
   }
-  function compute(k = 1) {
+
+  function compute(k = 1000) {
     if (!gameCodeInput.validity.valid) {
       result = UNKOWN_RESULT;
       return;
     }
     result = UNKOWN_RESULT;
-    const needed = 7 - (handB.length + community.length);
-    slowWarning = false;
-    let jump;
-    switch (needed) {
-      case 1:
-        jump = 1;
-        break;
-      case 2:
-        jump = 2 * k;
-        break;
-      case 3:
-        jump = 6 * k;
-        slowWarning = jump <= 2;
-        break;
-      case 4:
-        jump = 12 * k;
-        slowWarning = jump <= 4;
-        break;
-      default:
-        jump = 1;
-    }
     if (worker) {
       worker.terminate();
     }
-    worker = new Worker(
-      new URL("$lib/workers/poker-solver.js", import.meta.url),
-      {
-        type: "module",
-      }
-    );
+    if (candidateB.length > 0) {
+      worker = new Worker(
+        new URL("$lib/workers/range-solver.js", import.meta.url),
+        {
+          type: "module",
+        }
+      );
+    } else {
+      worker = new Worker(
+        new URL("$lib/workers/poker-solver.js", import.meta.url),
+        {
+          type: "module",
+        }
+      );
+    }
     worker.addEventListener("message", (e) => {
       if (e.data.name == "progress") {
         result.covered = e.data.covered;
@@ -145,13 +145,23 @@
         gameToPlay = e.data.play;
       }
     });
-    worker.postMessage({
-      name: "start",
-      handA: handA,
-      handB: handB,
-      community: community,
-      step: jump,
-    });
+    if (candidateB.length > 0) {
+      worker.postMessage({
+        name: "start",
+        handA: handA,
+        candidateB: candidateB,
+        community: community,
+        play: k,
+      });
+    } else {
+      worker.postMessage({
+        name: "start",
+        handA: handA,
+        handB: handB,
+        community: community,
+        play: k,
+      });
+    }
     isWorking = true;
     result.interupted = false;
     result.covered = 0;
@@ -188,7 +198,7 @@
         bind:this={gameCodeInput}
         id="game-code"
         type="text"
-        pattern={"([2-9tjqkaTJQKA][scdh]){2}-([2-9tjqkaTJQKA][scdh]){0,2}-([2-9tjqkaTJQKA][scdh]){3,5}"}
+        pattern={GAME_CODE_REGEX}
         on:change={updateArrayFromText}
         required
       />
@@ -227,10 +237,12 @@
         usedCards={handA.concat(community)}
         on:remove={(e) => {
           handB = handB;
+          candidateB = []; // card picker doesnt work with range yet
           updateTextFromArray();
         }}
         on:add={(e) => {
           handB = handB;
+          candidateB = []; // card picker doesnt work with range yet
           updateTextFromArray();
         }}
       />
@@ -260,28 +272,30 @@
           checked
           bind:this={speedFast}
         />
-        <label for="speed-fast">🚀</label>
+        <label title={TEST_FAST} for="speed-fast">🚀</label>
         <input
           type="radio"
           name="speed"
           id="speed-slow"
           bind:this={speedSlow}
         />
-        <label for="speed-slow">🐰</label>
+        <label title={TEST_NORMAL} for="speed-slow">🐰</label>
         <input
           type="radio"
           name="speed"
           id="speed-very-slow"
           bind:this={speedVerySlow}
         />
-        <label for="speed-very-slow">🐢</label>
+        <label title={TEST_SLOW} for="speed-very-slow">🐢</label>
         <input
           type="radio"
           name="speed"
           id="speed-all-day"
           bind:this={speedAllDay}
         />
-        <label for="speed-all-day">I can do this all day 🐌</label>
+        <label title={TEST_EXTRA_SLOW} for="speed-all-day"
+          >I can do this all day 🐌</label
+        >
       </div>
     </div>
     <div>
@@ -291,28 +305,29 @@
   <div>
     {#if isWorking}
       <Bar percentage={(result.covered / gameToPlay) * 100} />
-        <!-- essentially only changed numbers to font-mono and restructured html. 
+      <!-- essentially only changed numbers to font-mono and restructured html. 
              added margin top to the first line and font-bold to result.
             now the numbers won't jitter as they are changing, being easier on the eyes, generally more clean look.
             -->
-        <small class="flex justify-center items-center flex-col gap-5" >
-            <div class="mt-5">
-                <span>Looking into the future</span>
-                <span class="font-mono">#{result.covered}</span>
+      <small class="flex flex-col items-center justify-center gap-5">
+        <div class="mt-5">
+          <span>Looking into the future</span>
+          <span class="font-mono">#{result.covered}</span>
+        </div>
+        <div class="my-auto flex items-baseline">
+          <span>You are winning &nbsp</span>
+          <div
+            class="flex w-10 flex-col items-center justify-center font-mono font-bold"
+          >
+            <div class="">
+              {result.win}
             </div>
-            <div class="my-auto flex items-baseline"> 
-                <span>You are winning &nbsp</span>
-                <div class="font-mono font-bold w-10 flex flex-col justify-center items-center">
-                    <div class="">
-                        {result.win} 
-                    </div>
-                    
-                   ({result.winRate.toFixed(1)}%)
-                
-                </div>
-                <span>&nbsp;games so far</span>
-            </div>
-        </small>
+
+            ({result.winRate.toFixed(1)}%)
+          </div>
+          <span>&nbsp;games so far</span>
+        </div>
+      </small>
     {:else if result.total > 0}
       <Result {result} />
     {:else}

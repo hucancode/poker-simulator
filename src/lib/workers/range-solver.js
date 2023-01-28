@@ -12,9 +12,9 @@ function updateProgress(w, l, t) {
 }
 
 function start(data) {
-  const used = data.handA.concat(data.handB).concat(data.community);
+  const used = data.handA.concat(data.community);
   let candidateA = [data.handA];
-  let candidateB = enumerate(used, data.handB, 2);
+  let candidateB = data.candidateB;
   let candidateC = enumerate(used, data.community, 5);
   // this total number is not accurate since it includes invalid states
   // but for the sake of simplicity we can use it as an estimate
