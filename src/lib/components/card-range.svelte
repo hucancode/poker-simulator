@@ -25,7 +25,7 @@
   <div
     class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"
     {selected}
-    is-red={suited}
+    is-red={suited && !offSuited}
   >
     <div class="absolute top-1 left-1 text-sm leading-none" />
     <div class="text-xl md:text-3xl">

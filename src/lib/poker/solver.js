@@ -3,7 +3,6 @@ import { compare7, A_WIN, B_WIN, TIE } from "./compare.js";
 // Monte Carlo method https://en.wikipedia.org/wiki/Monte_Carlo_algorithm
 
 export function enumerateRange(config) {
-  console.log("enumerate a range", config);
   let ret = [];
   const { r1, r2, suited, offSuited, extended } = config;
   const paired = r1 == r2;

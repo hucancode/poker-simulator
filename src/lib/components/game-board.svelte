@@ -6,6 +6,7 @@
     handArrayToText,
     rangeTextToConfig,
     rangeConfigToText,
+    isRangeNotation,
   } from "$lib/poker/cards";
   import { enumerate, enumerateRange } from "$lib/poker/solver";
   import Hand from "$lib/components/hand-visualizer.svelte";
@@ -57,11 +58,13 @@
       return;
     }
     const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    useRangeForA = isRangeNotation(arr[0]);
     if (useRangeForA) {
       rangeA = rangeTextToConfig(arr[0]);
     } else {
       handA = handTextToArray(arr[0]);
     }
+    useRangeForB = isRangeNotation(arr[1]);
     if (useRangeForB) {
       rangeB = rangeTextToConfig(arr[1]);
     } else {
@@ -125,7 +128,7 @@
   function switchHandAToRange() {
     useRangeForA = true;
     if (rangeA == null) {
-      rangeA = DEFAULT_RANGE_CONFIG;
+      rangeA = Object.assign({}, DEFAULT_RANGE_CONFIG);
       if (handA.length > 0) {
         rangeA.r1 = rangeA.r2 = Math.floor(handA[0] / 4);
       }
@@ -149,7 +152,7 @@
   function switchHandBToRange() {
     useRangeForB = true;
     if (rangeB == null) {
-      rangeB = DEFAULT_RANGE_CONFIG;
+      rangeB = Object.assign({}, DEFAULT_RANGE_CONFIG);
       if (handB.length > 0) {
         rangeB.r1 = rangeB.r2 = Math.floor(handB[0] / 4);
       }
@@ -176,7 +179,7 @@
   </div>
   <div class="mt-6 flex w-full justify-between">
     <strong
-      >Your Cards
+      >Your Card
       {#if useRangeForA}
         <span
           class="cursor-pointer select-none text-blue-400"
@@ -190,7 +193,7 @@
       {/if}
     </strong>
     <strong
-      >Their Cards
+      >Their Card
       {#if useRangeForB}
         <span
           class="cursor-pointer select-none text-blue-400"
@@ -210,7 +213,6 @@
         config={rangeA}
         on:rangeUpdated={(e) => {
           rangeA = rangeA;
-          console.log("on range updated");
           updateTextFromArray();
         }}
       />
@@ -236,7 +238,6 @@
         config={rangeB}
         on:rangeUpdated={(e) => {
           rangeB = rangeB;
-          console.log("on range updated");
           updateTextFromArray();
         }}
       />
@@ -287,5 +288,8 @@
   }
   input[type="text"] + label {
     @apply absolute -top-1/3 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
+  }
+  div:has(input[type="text"]) {
+    @apply relative mt-6 mb-2;
   }
 </style>

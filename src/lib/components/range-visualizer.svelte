@@ -1,5 +1,6 @@
 <script>
   import { fade, scale } from "svelte/transition";
+  import * as poker from "$lib/poker/cards";
   import Card from "$lib/components/card-range.svelte";
   import RangePicker from "$lib/components/range-picker.svelte";
   import { createEventDispatcher } from "svelte";
@@ -15,13 +16,12 @@
   const dispatch = createEventDispatcher();
 
   function rangeUpdated(event) {
-    console.log("dispatching rangeUpdated event", config);
     config = config;
     dispatch("rangeUpdated", config);
   }
 </script>
 
-<button
+<div
   class="flex max-w-full cursor-pointer flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
   on:click={() => {
     isPicking = !isPicking;
@@ -35,7 +35,7 @@
     offSuited={config.offSuited}
     extended={config.extended}
   />
-</button>
+</div>
 {#if isPicking}
   <div
     transition:fade
@@ -49,7 +49,26 @@
       class="flex h-full w-full flex-col items-center justify-center"
     >
       <div class="flex items-center justify-between gap-2">
-        <p>Selected cards</p>
+        <p>
+          Selected <b>
+            {#if config.r1 == config.r2}
+              Pair of {poker.readableRanks[Math.floor(config.r1)]}
+            {:else if config.suited && !config.offSuited}
+              Suited {poker.readableRanks[Math.floor(config.r1)]}-{poker
+                .readableRanks[Math.floor(config.r2)]}
+            {:else if config.suited && !config.offSuited}
+              Off-suited {poker.readableRanks[Math.floor(config.r1)]}-{poker
+                .readableRanks[Math.floor(config.r2)]}
+            {:else}
+              {poker.readableRanks[Math.floor(config.r1)]}-{poker.readableRanks[
+                Math.floor(config.r2)
+              ]}
+            {/if}
+            {#if config.extended}
+              or higher
+            {/if}
+          </b>
+        </p>
         <span
           on:click={() => {
             isPicking = false;

@@ -32,7 +32,7 @@
   };
   let speedFast, speedSlow, speedVerySlow, speedAllDay;
   let gameBoard;
-  let result = UNKOWN_RESULT;
+  let result = Object.assign({}, UNKOWN_RESULT);
   let isWorking = false;
   let worker;
   let gameToPlay = 1;
@@ -61,10 +61,10 @@
 
   function compute(k = 1000) {
     if (!gameBoard.isValid()) {
-      result = UNKOWN_RESULT;
+      result = Object.assign({}, UNKOWN_RESULT);
       return;
     }
-    result = UNKOWN_RESULT;
+    result = Object.assign({}, UNKOWN_RESULT);
     if (worker) {
       worker.terminate();
     }
@@ -127,7 +127,7 @@
   <form>
     <GameBoard
       bind:this={gameBoard}
-      on:updated={() => (result = UNKOWN_RESULT)}
+      on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
     />
     <div class="flex w-full flex-col justify-center">
       <strong>Number of tests</strong>

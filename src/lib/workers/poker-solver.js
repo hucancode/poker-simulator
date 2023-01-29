@@ -14,7 +14,6 @@ function updateProgress(w, l, t) {
 function start(data) {
   // this total number is not accurate since it includes invalid states
   // but for the sake of simplicity we can use it as an estimate
-  console.log(data);
   let total =
     data.candidateA.length * data.candidateB.length * data.candidateC.length;
   let play = Math.min(total, data.play);

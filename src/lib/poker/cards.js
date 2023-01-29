@@ -74,7 +74,6 @@ export function handMaskToText(mask) {
 }
 
 export function rangeConfigToText(config) {
-  console.log("range config to text", config);
   let ret = "";
   ret += ranks[config.r1];
   ret += ranks[config.r2];
@@ -89,8 +88,19 @@ export function rangeConfigToText(config) {
   return ret;
 }
 
+export function isRangeNotation(text) {
+  if (text.length < 2) {
+    return false;
+  }
+  let i = 0;
+  const r1 = ranks.indexOf(text[i++].toUpperCase());
+  const r2 = ranks.indexOf(text[i++].toUpperCase());
+  if (r1 < 0 || r2 < 0) {
+    return false;
+  }
+  return true;
+}
 export function rangeTextToConfig(text) {
-  console.log("parsing range notation", text);
   // QQ = 2Q
   // QQ+ = QQ,KK,AA
   // Q9 = Q9 suited or not
