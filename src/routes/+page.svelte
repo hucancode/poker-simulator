@@ -1,18 +1,25 @@
 <script>
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import {
-    handTextToArray,
-    handArrayToText,
-    cardIdToText,
-  } from "$lib/poker/cards";
+  import { handTextToArray, handArrayToText } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
-  import Picker from "$lib/components/card-picker.svelte";
+  import GameBoard from "$lib/components/game-board.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
-  import Loading from "$lib/components/loading.svelte";
   import Bar from "$lib/components/progress-bar.svelte";
 
+  const TEST_FAST = 1000;
+  const TEST_NORMAL = 10000;
+  const TEST_SLOW = 50000;
+  const TEST_EXTRA_SLOW = 200000;
+  const HAND_DELIMETER = ",";
+  const COMMUNITY_TEXT_REGEX = "([2-9TJQKA][scdh]){3,5}";
+  const MY_HAND_TEXT_REGEX = "([2-9TJQKA][scdh]){2}";
+  const THEIR_HAND_FIXED_REGEX = "([2-9TJQKA][scdh]){0,2}";
+  const THEIR_HAND_RANGE_REGEX = "([2-9TJQKA]{2}[so]?\\+?)";
+  const THEIR_HAND_TEXT_REGEX = `((${THEIR_HAND_FIXED_REGEX})|(${THEIR_HAND_RANGE_REGEX}))`;
+
+  const GAME_CODE_REGEX = `${MY_HAND_TEXT_REGEX}${HAND_DELIMETER}${THEIR_HAND_TEXT_REGEX}${HAND_DELIMETER}${COMMUNITY_TEXT_REGEX}`;
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
@@ -23,58 +30,15 @@
     winRate: 0,
     interupted: false,
   };
-  const HAND_DELIMETER = "-";
   let speedFast, speedSlow, speedVerySlow, speedAllDay;
-  let gameCodeInput;
-  let result = UNKOWN_RESULT;
+  let gameBoard;
+  let result = Object.assign({}, UNKOWN_RESULT);
   let isWorking = false;
-  let slowWarning = false;
   let worker;
   let gameToPlay = 1;
-  let community = [],
-    handA = [],
-    handB = [];
-  function updateArrayFromText() {
-    if (!gameCodeInput.validity.valid) {
-      community = [];
-      handA = [];
-      handB = [];
-      return;
-    }
-    const arr = gameCodeInput.value.split(HAND_DELIMETER);
-    $page.url.searchParams.set("code", gameCodeInput.value);
-    handA = handTextToArray(arr[0]);
-    handB = handTextToArray(arr[1]);
-    community = handTextToArray(arr[2]);
-    result = UNKOWN_RESULT;
-  }
-
-  function updateTextFromArray() {
-    gameCodeInput.value =
-      handArrayToText(handA) +
-      HAND_DELIMETER +
-      handArrayToText(handB) +
-      HAND_DELIMETER +
-      handArrayToText(community);
-    /* $page.url.searchParams.set('code', gameCodeInput.value); */
-    /* document.location.search = $page.url.searchParams; */
-    result = UNKOWN_RESULT;
-  }
-
-  function randomize() {
-    let pool = Array(52)
-      .fill()
-      .map((e, i) => i)
-      .sort((a, b) => Math.random() - 0.5);
-    handA = pool.slice(0, 2);
-    /* handB = pool.slice(2, 4); */
-    community = pool.slice(5, 10);
-    updateTextFromArray();
-    result = UNKOWN_RESULT;
-  }
 
   function doCompute(e) {
-    e.preventDefault() //prevents jumpscrolling to the top on button press.
+    e.preventDefault(); //prevents jumpscrolling to the top on button press.
     if (isWorking) {
       worker.terminate();
       isWorking = false;
@@ -82,45 +46,25 @@
       return;
     }
     if (speedFast.checked) {
-      return compute();
+      return compute(TEST_FAST);
     }
     if (speedSlow.checked) {
-      return compute(0.6);
+      return compute(TEST_NORMAL);
     }
     if (speedVerySlow.checked) {
-      return compute(0.3);
+      return compute(TEST_SLOW);
     }
     if (speedAllDay.checked) {
-      return compute(0.1);
+      return compute(TEST_EXTRA_SLOW);
     }
   }
-  function compute(k = 1) {
-    if (!gameCodeInput.validity.valid) {
-      result = UNKOWN_RESULT;
+
+  function compute(k = 1000) {
+    if (!gameBoard.isValid()) {
+      result = Object.assign({}, UNKOWN_RESULT);
       return;
     }
-    result = UNKOWN_RESULT;
-    const needed = 7 - (handB.length + community.length);
-    slowWarning = false;
-    let jump;
-    switch (needed) {
-      case 1:
-        jump = 1;
-        break;
-      case 2:
-        jump = 2 * k;
-        break;
-      case 3:
-        jump = 6 * k;
-        slowWarning = jump <= 2;
-        break;
-      case 4:
-        jump = 12 * k;
-        slowWarning = jump <= 4;
-        break;
-      default:
-        jump = 1;
-    }
+    result = Object.assign({}, UNKOWN_RESULT);
     if (worker) {
       worker.terminate();
     }
@@ -147,10 +91,10 @@
     });
     worker.postMessage({
       name: "start",
-      handA: handA,
-      handB: handB,
-      community: community,
-      step: jump,
+      candidateA: gameBoard.getCandidateA(),
+      candidateB: gameBoard.getCandidateB(),
+      candidateC: gameBoard.getCandidateC(),
+      play: k,
     });
     isWorking = true;
     result.interupted = false;
@@ -161,11 +105,10 @@
   onMount(() => {
     const code = $page.url.searchParams.get("code");
     if (code) {
-      gameCodeInput.value = code;
-      updateArrayFromText();
+      gameBoard.updateWithText(code);
       compute();
     } else {
-      randomize();
+      gameBoard.randomize();
     }
   });
 </script>
@@ -176,83 +119,18 @@
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
   <p>
-    Enter your game state and let computer do the hard work for you <big>😌</big
-    >
+    Enter your game state and let computer do the hard work for you
   </p>
 </header>
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
-    <div>
-      <input
-        title="Enter 5-9 cards. 2 for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-        bind:this={gameCodeInput}
-        id="game-code"
-        type="text"
-        pattern={"([2-9tjqkaTJQKA][scdh]){2}-([2-9tjqkaTJQKA][scdh]){0,2}-([2-9tjqkaTJQKA][scdh]){3,5}"}
-        on:change={updateArrayFromText}
-        required
-      />
-      <label for="game-code">Game Code</label>
-      <small class="help-general"
-        >You can use standard notation <em>(2-9TJQKA + scdh)</em></small
-      >
-      <small class="help-invalid-input"
-        >You need <em>2 hand cards</em> and <em>3+ community cards</em></small
-      >
-    </div>
-    <div class="mt-6 flex w-full justify-between">
-      <strong class="w-full text-center">Your Cards</strong>
-      <strong class="w-full text-center">Their Cards</strong>
-    </div>
-    <div class="mb-4 flex items-center justify-between gap-2">
-      <Hand
-        cards={handA}
-        max={2}
-        min={2}
-        usedCards={handB.concat(community)}
-        on:remove={(e) => {
-          handA = handA;
-          updateTextFromArray();
-        }}
-        on:add={(e) => {
-          handA = handA;
-          updateTextFromArray();
-        }}
-      />
-      <strong>VS</strong>
-      <Hand
-        cards={handB}
-        max={2}
-        min={0}
-        usedCards={handA.concat(community)}
-        on:remove={(e) => {
-          handB = handB;
-          updateTextFromArray();
-        }}
-        on:add={(e) => {
-          handB = handB;
-          updateTextFromArray();
-        }}
-      />
-    </div>
-    <strong class="w-full text-center">Community Cards</strong>
-    <Hand
-      cards={community}
-      max={5}
-      min={3}
-      usedCards={handA.concat(handB)}
-      on:remove={(e) => {
-        community = community;
-        updateTextFromArray();
-      }}
-      on:add={(e) => {
-        community = community;
-        updateTextFromArray();
-      }}
+    <GameBoard
+      bind:this={gameBoard}
+      on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
     />
-    <div class="flex flex-col justify-center">
-      <strong>Number of tests (fewer is faster)</strong>
-      <div class="flex flex-wrap justify-center gap-0.5">
+    <div class="flex w-full flex-col justify-center">
+      <strong>Number of tests</strong>
+      <div class="flex w-full flex-wrap justify-center gap-0.5">
         <input
           type="radio"
           name="speed"
@@ -260,28 +138,33 @@
           checked
           bind:this={speedFast}
         />
-        <label for="speed-fast">🚀</label>
+        <label title={TEST_FAST} for="speed-fast">🚀<br />{TEST_FAST}</label>
         <input
           type="radio"
           name="speed"
           id="speed-slow"
           bind:this={speedSlow}
         />
-        <label for="speed-slow">🐰</label>
+        <label title={TEST_NORMAL} for="speed-slow">🐰<br />{TEST_NORMAL}</label
+        >
         <input
           type="radio"
           name="speed"
           id="speed-very-slow"
           bind:this={speedVerySlow}
         />
-        <label for="speed-very-slow">🐢</label>
+        <label title={TEST_SLOW} for="speed-very-slow"
+          >🐢<br />{TEST_SLOW}</label
+        >
         <input
           type="radio"
           name="speed"
           id="speed-all-day"
           bind:this={speedAllDay}
         />
-        <label for="speed-all-day">I can do this all day 🐌</label>
+        <label title={TEST_EXTRA_SLOW} for="speed-all-day"
+          >🐌<br />{TEST_EXTRA_SLOW}</label
+        >
       </div>
     </div>
     <div>
@@ -291,28 +174,29 @@
   <div>
     {#if isWorking}
       <Bar percentage={(result.covered / gameToPlay) * 100} />
-        <!-- essentially only changed numbers to font-mono and restructured html. 
+      <!-- essentially only changed numbers to font-mono and restructured html. 
              added margin top to the first line and font-bold to result.
             now the numbers won't jitter as they are changing, being easier on the eyes, generally more clean look.
             -->
-        <small class="flex justify-center items-center flex-col gap-5" >
-            <div class="mt-5">
-                <span>Looking into the future</span>
-                <span class="font-mono">#{result.covered}</span>
+      <small class="flex flex-col items-center justify-center gap-5">
+        <div class="mt-5">
+          <span>Looking into the future</span>
+          <span class="font-mono">#{result.covered}</span>
+        </div>
+        <div class="my-auto flex items-baseline">
+          <span>You are winning &nbsp</span>
+          <div
+            class="flex w-10 flex-col items-center justify-center font-mono font-bold"
+          >
+            <div class="">
+              {result.win}
             </div>
-            <div class="my-auto flex items-baseline"> 
-                <span>You are winning &nbsp</span>
-                <div class="font-mono font-bold w-10 flex flex-col justify-center items-center">
-                    <div class="">
-                        {result.win} 
-                    </div>
-                    
-                   ({result.winRate.toFixed(1)}%)
-                
-                </div>
-                <span>&nbsp;games so far</span>
-            </div>
-        </small>
+
+            ({result.winRate.toFixed(1)}%)
+          </div>
+          <span>&nbsp;games so far</span>
+        </div>
+      </small>
     {:else if result.total > 0}
       <Result {result} />
     {:else}
@@ -363,7 +247,7 @@
     display: none;
   }
   input[type="radio"] + label {
-    @apply bg-gray-600 px-4 py-2 text-center font-semibold text-gray-100;
+    @apply w-1/5 bg-gray-600 px-1 py-2 text-center font-semibold text-gray-100;
   }
   input[type="radio"]:checked + label {
     @apply bg-black text-white;
