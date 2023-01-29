@@ -98,7 +98,7 @@ export function solve(
         if (handA.some((e) => community.includes(e))) continue;
         if (handB.some((e) => community.includes(e))) continue;
         total++;
-        if (testToRun < 0) {
+        if (testToRun < 1) {
           continue;
         }
         testToRun--;

@@ -119,8 +119,7 @@
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
   <p>
-    Enter your game state and let computer do the hard work for you <big>😌</big
-    >
+    Enter your game state and let computer do the hard work for you
   </p>
 </header>
 <main class="container prose prose-slate text-center dark:prose-invert">
