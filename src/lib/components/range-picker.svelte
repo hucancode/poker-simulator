@@ -20,6 +20,9 @@
   }
   function rangeUpdated() {
     config = config;
+    if (!config.suited && !config.offSuited) {
+      config.suited = config.offSuited = true;
+    }
     dispatch("rangeUpdated", config);
   }
 </script>

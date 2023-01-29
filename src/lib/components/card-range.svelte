@@ -23,12 +23,17 @@
   class="aspect-[2/2.5] w-16 animate-bg-pingpong rounded-md bg-4x-width p-0.5"
 >
   <div
-    class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"
+    class="flex h-full w-full select-none flex-col items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"
     {selected}
-    is-red={suited && !offSuited}
   >
-    <div class="absolute top-1 left-1 text-sm leading-none" />
-    <div class="text-xl md:text-3xl">
+    <div class="text-xs uppercase leading-none">
+      {#if suited && !offSuited}
+        suited
+      {:else if !suited && offSuited}
+        off suited
+      {/if}
+    </div>
+    <div class="text-2xl md:text-4xl">
       {poker.readableRanks[Math.floor(rank)] ?? ""}{extended ? "+" : ""}
     </div>
   </div>

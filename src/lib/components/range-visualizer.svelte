@@ -52,13 +52,18 @@
         <p>
           Selected <b>
             {#if config.r1 == config.r2}
-              Pair of {poker.readableRanks[Math.floor(config.r1)]}
+              Pair of
+              {poker.readableRanks[Math.floor(config.r1)]}
             {:else if config.suited && !config.offSuited}
-              Suited {poker.readableRanks[Math.floor(config.r1)]}-{poker
-                .readableRanks[Math.floor(config.r2)]}
+              Suited
+              {poker.readableRanks[Math.floor(config.r1)]}-{poker.readableRanks[
+                Math.floor(config.r2)
+              ]}
             {:else if config.suited && !config.offSuited}
-              Off-suited {poker.readableRanks[Math.floor(config.r1)]}-{poker
-                .readableRanks[Math.floor(config.r2)]}
+              Off-suited
+              {poker.readableRanks[Math.floor(config.r1)]}-{poker.readableRanks[
+                Math.floor(config.r2)
+              ]}
             {:else}
               {poker.readableRanks[Math.floor(config.r1)]}-{poker.readableRanks[
                 Math.floor(config.r2)
