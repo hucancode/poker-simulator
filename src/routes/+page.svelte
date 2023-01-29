@@ -24,7 +24,7 @@
     win: 0,
     lose: 0,
     tie: 0,
-    total: 0,
+    total: -1,
     covered: 0,
     time: 0,
     winRate: 0,
@@ -118,9 +118,7 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <p>
-    Enter your game state and let computer do the hard work for you
-  </p>
+  <p>Enter your game state and let computer do the hard work for you</p>
 </header>
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
@@ -191,16 +189,17 @@
             <div class="">
               {result.win}
             </div>
-
             ({result.winRate.toFixed(1)}%)
           </div>
           <span>&nbsp;games so far</span>
         </div>
       </small>
-    {:else if result.total > 0}
+    {:else if result.total >= 0}
       <Result {result} />
     {:else}
-      <h3>Press <kbd>Compute</kbd> to run the simulation for this board</h3>
+      <h3>
+        Press <strong>Compute</strong> to run the simulation for this board
+      </h3>
     {/if}
   </div>
 </main>

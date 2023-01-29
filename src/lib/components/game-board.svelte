@@ -43,8 +43,8 @@
   let community = [],
     handA = [],
     handB = [];
-  let rangeA = null;
-  let rangeB = null;
+  let rangeA = Object.assign({}, DEFAULT_RANGE_CONFIG);
+  let rangeB = Object.assign({}, DEFAULT_RANGE_CONFIG);
   let useRangeForA = false;
   let useRangeForB = false;
 
@@ -87,8 +87,20 @@
       .fill()
       .map((e, i) => i)
       .sort((a, b) => Math.random() - 0.5);
-    handA = pool.slice(0, 2);
-    /* handB = pool.slice(2, 4); */
+    useRangeForA = Math.random() > 0.5;
+    if (useRangeForA) {
+      rangeA.r1 = Math.floor(pool[0] / 4);
+      rangeA.r2 = Math.floor(pool[1] / 4);
+    } else {
+      handA = pool.slice(0, 2);
+    }
+    useRangeForB = Math.random() > 0.5;
+    if (useRangeForB) {
+      rangeB.r1 = Math.floor(pool[2] / 4);
+      rangeB.r2 = Math.floor(pool[3] / 4);
+    } else {
+      handB = pool.slice(2, 4);
+    }
     community = pool.slice(5, 10);
     updateTextFromArray();
   }
@@ -135,6 +147,7 @@
       if (handA.length > 1) {
         rangeA.r2 = Math.floor(handA[1] / 4);
       }
+      handA = [];
       updateTextFromArray();
     }
   }
@@ -159,13 +172,14 @@
       if (handB.length > 1) {
         rangeB.r2 = Math.floor(handB[1] / 4);
       }
+      handB = [];
       updateTextFromArray();
     }
   }
 </script>
 
 <div>
-  <div>
+  <div class="flex items-center gap-0.5">
     <input
       title={GAME_CODE_HELP}
       bind:this={gameCodeInput}
@@ -176,6 +190,7 @@
       required
     />
     <label for="game-code">Game Code</label>
+    <div class="button" on:click|preventDefault={randomize}>🎲</div>
   </div>
   <div class="mt-6 flex w-full justify-between">
     <strong

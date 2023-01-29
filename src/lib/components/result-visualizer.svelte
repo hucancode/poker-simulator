@@ -55,7 +55,7 @@
 </script>
 
 {#if result.total == 0 || result.covered == 0}
-  <h2>This is an invalid board. No computation has been made</h2>
+  <h3>This is an invalid board. No computation has been made</h3>
 {:else if result.total == 1}
   <h3 positive={result.win == 1} negative={result.lose == 1}>
     {#if result.win == 1}
