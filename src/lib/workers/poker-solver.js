@@ -12,13 +12,11 @@ function updateProgress(w, l, t) {
 }
 
 function start(data) {
-  const used = data.handA.concat(data.handB).concat(data.community);
-  let candidateA = [data.handA];
-  let candidateB = enumerate(used, data.handB, 2);
-  let candidateC = enumerate(used, data.community, 5);
   // this total number is not accurate since it includes invalid states
   // but for the sake of simplicity we can use it as an estimate
-  let total = candidateA.length * candidateB.length * candidateC.length;
+  console.log(data);
+  let total =
+    data.candidateA.length * data.candidateB.length * data.candidateC.length;
   let play = Math.min(total, data.play);
   self.postMessage({
     name: "estimate",
@@ -26,7 +24,13 @@ function start(data) {
     total: total,
   });
 
-  let result = solve(candidateA, candidateB, candidateC, play, updateProgress);
+  let result = solve(
+    data.candidateA,
+    data.candidateB,
+    data.candidateC,
+    play,
+    updateProgress
+  );
   self.postMessage({
     name: "ok",
     ...result,

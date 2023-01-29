@@ -1,12 +1,9 @@
 <script>
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import {
-    handTextToArray,
-    handArrayToText,
-    rangeTextToArray,
-  } from "$lib/poker/cards";
+  import { handTextToArray, handArrayToText } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
+  import GameBoard from "$lib/components/game-board.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
   import Bar from "$lib/components/progress-bar.svelte";
@@ -34,55 +31,11 @@
     interupted: false,
   };
   let speedFast, speedSlow, speedVerySlow, speedAllDay;
-  let gameCodeInput;
+  let gameBoard;
   let result = UNKOWN_RESULT;
   let isWorking = false;
   let worker;
   let gameToPlay = 1;
-  let community = [],
-    handA = [],
-    handB = [];
-  let candidateB = [];
-
-  function updateArrayFromText() {
-    if (!gameCodeInput.validity.valid) {
-      community = [];
-      handA = [];
-      handB = [];
-      return;
-    }
-    const arr = gameCodeInput.value.split(HAND_DELIMETER);
-    // $page.url.searchParams.set("code", gameCodeInput.value);
-    handA = handTextToArray(arr[0]);
-    handB = handTextToArray(arr[1]);
-    candidateB = rangeTextToArray(arr[1]);
-    community = handTextToArray(arr[2]);
-    result = UNKOWN_RESULT;
-  }
-
-  function updateTextFromArray() {
-    gameCodeInput.value =
-      handArrayToText(handA) +
-      HAND_DELIMETER +
-      handArrayToText(handB) +
-      HAND_DELIMETER +
-      handArrayToText(community);
-    /* $page.url.searchParams.set('code', gameCodeInput.value); */
-    /* document.location.search = $page.url.searchParams; */
-    result = UNKOWN_RESULT;
-  }
-
-  function randomize() {
-    let pool = Array(52)
-      .fill()
-      .map((e, i) => i)
-      .sort((a, b) => Math.random() - 0.5);
-    handA = pool.slice(0, 2);
-    /* handB = pool.slice(2, 4); */
-    community = pool.slice(5, 10);
-    updateTextFromArray();
-    result = UNKOWN_RESULT;
-  }
 
   function doCompute(e) {
     e.preventDefault(); //prevents jumpscrolling to the top on button press.
@@ -107,7 +60,7 @@
   }
 
   function compute(k = 1000) {
-    if (!gameCodeInput.validity.valid) {
+    if (!gameBoard.isValid()) {
       result = UNKOWN_RESULT;
       return;
     }
@@ -115,21 +68,12 @@
     if (worker) {
       worker.terminate();
     }
-    if (candidateB.length > 0) {
-      worker = new Worker(
-        new URL("$lib/workers/range-solver.js", import.meta.url),
-        {
-          type: "module",
-        }
-      );
-    } else {
-      worker = new Worker(
-        new URL("$lib/workers/poker-solver.js", import.meta.url),
-        {
-          type: "module",
-        }
-      );
-    }
+    worker = new Worker(
+      new URL("$lib/workers/poker-solver.js", import.meta.url),
+      {
+        type: "module",
+      }
+    );
     worker.addEventListener("message", (e) => {
       if (e.data.name == "progress") {
         result.covered = e.data.covered;
@@ -145,23 +89,13 @@
         gameToPlay = e.data.play;
       }
     });
-    if (candidateB.length > 0) {
-      worker.postMessage({
-        name: "start",
-        handA: handA,
-        candidateB: candidateB,
-        community: community,
-        play: k,
-      });
-    } else {
-      worker.postMessage({
-        name: "start",
-        handA: handA,
-        handB: handB,
-        community: community,
-        play: k,
-      });
-    }
+    worker.postMessage({
+      name: "start",
+      candidateA: gameBoard.getCandidateA(),
+      candidateB: gameBoard.getCandidateB(),
+      candidateC: gameBoard.getCandidateC(),
+      play: k,
+    });
     isWorking = true;
     result.interupted = false;
     result.covered = 0;
@@ -171,11 +105,10 @@
   onMount(() => {
     const code = $page.url.searchParams.get("code");
     if (code) {
-      gameCodeInput.value = code;
-      updateArrayFromText();
+      gameBoard.updateWithText(code);
       compute();
     } else {
-      randomize();
+      gameBoard.randomize();
     }
   });
 </script>
@@ -192,79 +125,13 @@
 </header>
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
-    <div>
-      <input
-        title="Enter 5-9 cards. 2 for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]"
-        bind:this={gameCodeInput}
-        id="game-code"
-        type="text"
-        pattern={GAME_CODE_REGEX}
-        on:change={updateArrayFromText}
-        required
-      />
-      <label for="game-code">Game Code</label>
-      <small class="help-general"
-        >You can use standard notation <em>(2-9TJQKA + scdh)</em></small
-      >
-      <small class="help-invalid-input"
-        >You need <em>2 hand cards</em> and <em>3+ community cards</em></small
-      >
-    </div>
-    <div class="mt-6 flex w-full justify-between">
-      <strong class="w-full text-center">Your Cards</strong>
-      <strong class="w-full text-center">Their Cards</strong>
-    </div>
-    <div class="mb-4 flex items-center justify-between gap-2">
-      <Hand
-        cards={handA}
-        max={2}
-        min={2}
-        usedCards={handB.concat(community)}
-        on:remove={(e) => {
-          handA = handA;
-          updateTextFromArray();
-        }}
-        on:add={(e) => {
-          handA = handA;
-          updateTextFromArray();
-        }}
-      />
-      <strong>VS</strong>
-      <Hand
-        cards={handB}
-        max={2}
-        min={0}
-        usedCards={handA.concat(community)}
-        on:remove={(e) => {
-          handB = handB;
-          candidateB = []; // card picker doesnt work with range yet
-          updateTextFromArray();
-        }}
-        on:add={(e) => {
-          handB = handB;
-          candidateB = []; // card picker doesnt work with range yet
-          updateTextFromArray();
-        }}
-      />
-    </div>
-    <strong class="w-full text-center">Community Cards</strong>
-    <Hand
-      cards={community}
-      max={5}
-      min={3}
-      usedCards={handA.concat(handB)}
-      on:remove={(e) => {
-        community = community;
-        updateTextFromArray();
-      }}
-      on:add={(e) => {
-        community = community;
-        updateTextFromArray();
-      }}
+    <GameBoard
+      bind:this={gameBoard}
+      on:updated={() => (result = UNKOWN_RESULT)}
     />
-    <div class="flex flex-col justify-center">
-      <strong>Number of tests (fewer is faster)</strong>
-      <div class="flex flex-wrap justify-center gap-0.5">
+    <div class="flex w-full flex-col justify-center">
+      <strong>Number of tests</strong>
+      <div class="flex w-full flex-wrap justify-center gap-0.5">
         <input
           type="radio"
           name="speed"
@@ -272,21 +139,24 @@
           checked
           bind:this={speedFast}
         />
-        <label title={TEST_FAST} for="speed-fast">🚀</label>
+        <label title={TEST_FAST} for="speed-fast">🚀<br />{TEST_FAST}</label>
         <input
           type="radio"
           name="speed"
           id="speed-slow"
           bind:this={speedSlow}
         />
-        <label title={TEST_NORMAL} for="speed-slow">🐰</label>
+        <label title={TEST_NORMAL} for="speed-slow">🐰<br />{TEST_NORMAL}</label
+        >
         <input
           type="radio"
           name="speed"
           id="speed-very-slow"
           bind:this={speedVerySlow}
         />
-        <label title={TEST_SLOW} for="speed-very-slow">🐢</label>
+        <label title={TEST_SLOW} for="speed-very-slow"
+          >🐢<br />{TEST_SLOW}</label
+        >
         <input
           type="radio"
           name="speed"
@@ -294,7 +164,7 @@
           bind:this={speedAllDay}
         />
         <label title={TEST_EXTRA_SLOW} for="speed-all-day"
-          >I can do this all day 🐌</label
+          >🐌<br />{TEST_EXTRA_SLOW}</label
         >
       </div>
     </div>
@@ -378,7 +248,7 @@
     display: none;
   }
   input[type="radio"] + label {
-    @apply bg-gray-600 px-4 py-2 text-center font-semibold text-gray-100;
+    @apply w-1/5 bg-gray-600 px-1 py-2 text-center font-semibold text-gray-100;
   }
   input[type="radio"]:checked + label {
     @apply bg-black text-white;

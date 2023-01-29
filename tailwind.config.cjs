@@ -9,6 +9,9 @@ const config = {
         double: "200%",
         "5/2": "250%",
       },
+      gridTemplateColumns: {
+        13: "repeat(13, minmax(0, 1fr))",
+      },
       backgroundSize: {
         "half-width": "50% 100%",
         "double-width": "200% 100%",

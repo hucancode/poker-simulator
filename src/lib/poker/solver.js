@@ -2,6 +2,46 @@ import { compare7, A_WIN, B_WIN, TIE } from "./compare.js";
 
 // Monte Carlo method https://en.wikipedia.org/wiki/Monte_Carlo_algorithm
 
+export function enumerateRange(config) {
+  console.log("enumerate a range", config);
+  let ret = [];
+  const { r1, r2, suited, offSuited, extended } = config;
+  const paired = r1 == r2;
+  if (!config) {
+    return ret;
+  }
+  if (paired) {
+    for (let r = r1; r < 13; r++) {
+      for (let s1 = 0; s1 < 4; s1++) {
+        for (let s2 = s1 + 1; s2 < 4; s2++) {
+          ret.push([r * 4 + s1, r * 4 + s2]);
+        }
+      }
+      if (!extended) {
+        break;
+      }
+    }
+    return ret;
+  }
+  for (let r = r2; r < 13; r++) {
+    for (let s1 = 0; s1 < 4; s1++) {
+      for (let s2 = 0; s2 < 4; s2++) {
+        if (s1 == s2 && !suited) {
+          continue;
+        }
+        if (s1 != s2 && !offSuited) {
+          continue;
+        }
+        ret.push([r1 * 4 + s1, r * 4 + s2]);
+      }
+    }
+    if (!extended) {
+      break;
+    }
+  }
+  return ret;
+}
+
 export function enumerate(used, hand, size) {
   let ret = [];
   console.log("building candidates array");
@@ -54,10 +94,11 @@ export function solve(
 
   for (const handA of candidateA) {
     for (const handB of candidateB) {
+      if (handA.some((e) => handB.includes(e))) continue;
       for (const community of candidateC) {
+        if (handA.some((e) => community.includes(e))) continue;
         if (handB.some((e) => community.includes(e))) continue;
         total++;
-        // assume that handA will never overlap with community & handB
         if (testToRun < 0) {
           continue;
         }
