@@ -134,8 +134,8 @@
       if (handA[0] == handA[1]) {
         handA[1]++;
       }
-      updateTextFromArray();
     }
+    updateTextFromArray();
   }
   function switchHandAToRange() {
     useRangeForA = true;
@@ -148,8 +148,8 @@
         rangeA.r2 = Math.floor(handA[1] / 4);
       }
       handA = [];
-      updateTextFromArray();
     }
+    updateTextFromArray();
   }
   function switchHandBToValue() {
     useRangeForB = false;
@@ -159,8 +159,8 @@
       if (handB[0] == handB[1]) {
         handB[1]++;
       }
-      updateTextFromArray();
     }
+    updateTextFromArray();
   }
   function switchHandBToRange() {
     useRangeForB = true;
@@ -173,8 +173,8 @@
         rangeB.r2 = Math.floor(handB[1] / 4);
       }
       handB = [];
-      updateTextFromArray();
     }
+    updateTextFromArray();
   }
 </script>
 
