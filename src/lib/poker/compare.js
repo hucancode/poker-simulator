@@ -17,7 +17,6 @@ import {
 } from "./cards.js";
 import { getCombinations } from "./combinations.js";
 
-const BIT_1111 = (1n << 4n) - 1n;
 export const A_WIN = 1;
 export const B_WIN = -1;
 export const TIE = 0;
@@ -52,22 +51,13 @@ const TWO_PAIR = 6;
 const PAIR = 7;
 const HIGH_CARD = 8;
 
-let rankMask = Array(RANK_MAX);
-rankMask.fill(0n);
-for (let i = RANK_2; i < RANK_MAX; i++) {
-  const card = BIT_1111 << (i * SUIT_MAX);
-  rankMask[i] = card;
-}
-
-function hasCardRank(mask, rank) {
-  const cards = rankMask[rank];
-  return (mask & cards) != 0n;
-}
+const BIT_1111 = (1n << 4n) - 1n;
+const rankMask = Array(13).fill().map((_, i) => (BIT_1111 << (BigInt(i) * SUIT_MAX)));
 
 function compareHighCard(maskA, maskB) {
   for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = hasCardRank(maskA, i);
-    const b = hasCardRank(maskB, i);
+    const a = (maskA & rankMask[i]) != 0;
+    const b  = (maskB & rankMask[i]) != 0;
     if (a && b) continue;
     if (a) return A_WIN;
     if (b) return B_WIN;

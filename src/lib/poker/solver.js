@@ -43,7 +43,6 @@ export function enumerateRange(config) {
 
 export function enumerate(used, hand, size) {
   let ret = [];
-  console.log("building candidates array");
   let st = [];
   let extra = [];
   if (hand.length >= size) {
@@ -83,7 +82,6 @@ export function solve(
   onProgress = null
 ) {
   const startSolvingTime = new Date();
-  console.log("running tests...");
   // console.log("candidates", candidateA, candidateB, candidateC);
   // run the tests with candidates
   let win = 0;
@@ -116,7 +114,6 @@ export function solve(
   // this number isn't accurate since it includes invalid state
   const winRate = (win / covered) * 100;
   const coveragePercent = (covered / total) * 100;
-  console.log("done running tests");
   const now = new Date();
   const time = now - startSolvingTime;
   return {

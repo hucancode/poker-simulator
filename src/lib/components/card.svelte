@@ -20,7 +20,7 @@
   on:click={toggleSelected}
   is-high={card >= 9 * 4}
   {selectable}
-  class="aspect-[2/2.5] w-16 animate-bg-pingpong rounded-md bg-4x-width p-0.5"
+  class="invisible aspect-[2/2.5] w-16 animate-bg-pingpong rounded-md bg-4x-width p-0.5"
 >
   <div
     class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"

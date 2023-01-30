@@ -101,7 +101,7 @@ export function isRangeNotation(text) {
   return true;
 }
 export function rangeTextToConfig(text) {
-  // QQ = 2Q
+  // QQ = a pair of Q
   // QQ+ = QQ,KK,AA
   // Q9 = Q9 suited or not
   // Q9+ = Q9, QT, QJ, QQ, QK, QA suited or not
