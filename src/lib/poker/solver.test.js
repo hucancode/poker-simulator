@@ -10,7 +10,7 @@ function compute(a, b, c) {
   const ret = solve(
     enumerate(used, arrA, 2),
     enumerate(used, arrB, 2),
-    enumerate(used, arrC, 5)
+    enumerate(used, arrC, 5),
   );
   // console.log("testing", a, b, c, ret);
   return ret;
