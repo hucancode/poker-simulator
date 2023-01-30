@@ -3,11 +3,11 @@
 
 name: Node.js CI
 
-# on:
-#   push:
-#     branches: [main]
-#   pull_request:
-#     branches: [main]
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
@@ -35,6 +35,8 @@ jobs:
         run: npm install
       - name: Build
         run: npm run build
+      - name: Test
+        run: npm test
       - name: Deploy
         run: |
           git config --global user.name $user_name

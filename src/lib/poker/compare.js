@@ -15,7 +15,7 @@ import {
   handMaskToText,
   handTextToMask,
 } from "./cards.js";
-import { getCombinations } from "./combinations.js";
+// import { getCombinations } from "./combinations.js";
 
 export const A_WIN = 1;
 export const B_WIN = -1;
@@ -41,15 +41,15 @@ const SUIT_DIAMOND = 2n;
 const SUIT_HEART = 3n;
 const SUIT_MAX = 4n;
 
-const STRAIGHT_FLUSH = 0;
-const FOUR_OF_A_KIND = 1;
-const FULL_HOUSE = 2;
-const FLUSH = 3;
-const STRAIGHT = 4;
-const THREE_OF_A_KIND = 5;
-const TWO_PAIR = 6;
-const PAIR = 7;
-const HIGH_CARD = 8;
+export const STRAIGHT_FLUSH = 0;
+export const FOUR_OF_A_KIND = 1;
+export const FULL_HOUSE = 2;
+export const FLUSH = 3;
+export const STRAIGHT = 4;
+export const THREE_OF_A_KIND = 5;
+export const TWO_PAIR = 6;
+export const PAIR = 7;
+export const HIGH_CARD = 8;
 
 const BIT_1111 = (1n << 4n) - 1n;
 const rankMask = Array(13).fill().map((_, i) => (BIT_1111 << (BigInt(i) * SUIT_MAX)));
