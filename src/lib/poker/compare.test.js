@@ -34,6 +34,16 @@ test("AAAAQ vs AAAAK", () => {
   expect(ret).toBe(B_WIN);
 });
 
+test("34567 vs 56789", () => {
+  const ret = compute7("5s6d7h3d4cTdJc", "5s6d7h9c8cTdJc");
+  expect(ret).toBe(B_WIN);
+});
+
+test("333KK vs 333KK", () => {
+  const ret = compute7("3s3d3hKdKc6d9c", "3s3d3hKhKs6d9c");
+  expect(ret).toBe(TIE);
+});
+
 test("best hand 12345 out of 7 cards", () => {
   const output = strongest("As2c3s4s5dKcQd");
   const best5Mask = handTextToMask("As2c3s4s5d");
