@@ -52,12 +52,14 @@ export const PAIR = 7;
 export const HIGH_CARD = 8;
 
 const BIT_1111 = (1n << 4n) - 1n;
-const rankMask = Array(13).fill().map((_, i) => (BIT_1111 << (BigInt(i) * SUIT_MAX)));
+const rankMask = Array(13)
+  .fill()
+  .map((_, i) => BIT_1111 << (BigInt(i) * SUIT_MAX));
 
 function compareHighCard(maskA, maskB) {
   for (var i = RANK_A; i >= RANK_2; i--) {
     const a = (maskA & rankMask[i]) != 0;
-    const b  = (maskB & rankMask[i]) != 0;
+    const b = (maskB & rankMask[i]) != 0;
     if (a && b) continue;
     if (a) return A_WIN;
     if (b) return B_WIN;
