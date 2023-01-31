@@ -21,7 +21,7 @@
   }
 </script>
 
-<button
+<button type="button"
   {disabled}
   class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
   on:click={() => picker.showModal()}
@@ -45,7 +45,8 @@
         Selected <b class:invalid={cards.length < min}>{cards.length}/{max}</b
         > cards
       </p>
-      <button class="cursor-pointer bg-black py-2 px-6 font-bold text-white"
+      <button type="button"
+        class="cursor-pointer bg-black py-2 px-6 font-bold text-white"
         on:click={() => picker.close()}>X</button
       >
     </div>
