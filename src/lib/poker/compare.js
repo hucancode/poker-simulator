@@ -58,8 +58,8 @@ const rankMask = Array(13)
 
 function compareHighCard(maskA, maskB) {
   for (var i = RANK_A; i >= RANK_2; i--) {
-    const a = (maskA & rankMask[i]) != 0;
-    const b = (maskB & rankMask[i]) != 0;
+    const a = (maskA & rankMask[i]) !== 0n;
+    const b = (maskB & rankMask[i]) !== 0n;
     if (a && b) continue;
     if (a) return A_WIN;
     if (b) return B_WIN;
@@ -86,7 +86,7 @@ function binarySearch(arr, x) {
 function match(arr, mask) {
   for (let order = 0; order < arr.length; order++) {
     for (const pattern of arr[order]) {
-      if (pattern == (mask & pattern)) {
+      if (pattern === (mask & pattern)) {
         return {
           pattern,
           order,
@@ -100,11 +100,11 @@ function match(arr, mask) {
 function getHighestBit(mask, count = 1) {
   let ret = 0n;
   let k = 1n << 51n; // 100000000...0
-  while (k != 0n) {
-    if ((mask & k) == k) {
+  while (k !== 0n) {
+    if ((mask & k) === k) {
       ret |= k;
       count--;
-      if (count == 0) {
+      if (count === 0) {
         break;
       }
     }

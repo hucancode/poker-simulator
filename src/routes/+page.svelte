@@ -221,26 +221,8 @@
   small {
     @apply leading-snug;
   }
-  input[type="text"]:valid ~ .help-general,
-  input[type="text"]:invalid ~ .help-invalid-input {
-    @apply block;
-  }
-  input[type="text"]:invalid ~ .help-general,
-  input[type="text"]:valid ~ .help-invalid-input {
-    @apply hidden;
-  }
-  .button,
   button {
     @apply m-2 cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
-  }
-  .button {
-    @apply select-none px-6;
-  }
-  input {
-    @apply w-full border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-red-500;
-  }
-  input[type="text"] + label {
-    @apply absolute -top-1/3 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
   }
   input[type="radio"] {
     display: none;

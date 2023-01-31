@@ -27,7 +27,7 @@
   }
 </script>
 
-<div class="flex gap-1 p-2">
+<div class="flex flex-wrap items-center justify-center gap-1 p-2">
   <input
     id="suited"
     type="checkbox"
@@ -41,7 +41,7 @@
     bind:checked={config.offSuited}
     on:change={rangeUpdated}
   />
-  <label for="off-suited">Off-suited</label>
+  <label for="off-suited">Unsuited</label>
   <input
     id="extended"
     type="checkbox"
@@ -54,7 +54,7 @@
   <div class="flex flex-col justify-between">
     <h3>Card 1</h3>
     <div
-      class="mx-auto grid max-h-96 max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-10 py-4 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
+      class="mx-auto grid max-h-96 max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
     >
       {#each Array(13)
         .fill()
@@ -73,7 +73,7 @@
   <div>
     <h3>Card 2</h3>
     <div
-      class="mx-auto grid max-h-96 max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-10 py-4 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
+      class="mx-auto grid max-h-96 max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
     >
       {#each Array(13)
         .fill()

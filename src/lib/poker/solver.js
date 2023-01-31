@@ -5,7 +5,7 @@ import { compare7, A_WIN, B_WIN, TIE } from "./compare.js";
 export function enumerateRange(config) {
   let ret = [];
   const { r1, r2, suited, offSuited, extended } = config;
-  const paired = r1 == r2;
+  const paired = r1 === r2;
   if (!config) {
     return ret;
   }
@@ -25,10 +25,10 @@ export function enumerateRange(config) {
   for (let r = r2; r < 13; r++) {
     for (let s1 = 0; s1 < 4; s1++) {
       for (let s2 = 0; s2 < 4; s2++) {
-        if (s1 == s2 && !suited) {
+        if (s1 === s2 && !suited) {
           continue;
         }
-        if (s1 != s2 && !offSuited) {
+        if (s1 !== s2 && !offSuited) {
           continue;
         }
         ret.push([r1 * 4 + s1, r * 4 + s2]);
@@ -54,13 +54,13 @@ export function enumerate(used, hand, size) {
   while (st.length > 0) {
     const c = st[st.length - 1];
     st.pop();
-    if (c == -1) {
+    if (c === -1) {
       extra.pop();
       continue;
     }
     if (used.includes(c)) continue;
     extra.push(c);
-    if (extra.length + hand.length == size) {
+    if (extra.length + hand.length === size) {
       ret.push(hand.concat(extra));
       extra.pop();
       continue;
@@ -101,9 +101,9 @@ export function solve(
         }
         testToRun--;
         const ret = compare7(handA.concat(community), handB.concat(community));
-        if (ret == A_WIN) win++;
-        if (ret == B_WIN) lose++;
-        if (ret == TIE) tie++;
+        if (ret === A_WIN) win++;
+        if (ret === B_WIN) lose++;
+        if (ret === TIE) tie++;
         if (onProgress) {
           onProgress(win, lose, tie);
         }

@@ -64,7 +64,7 @@
   <title>Poker Combinations Tester</title>
 </svelte:head>
 
-<form>
+<form class="container prose prose-slate table text-center dark:prose-invert">
   <h1>Poker Combinations</h1>
   <small>
     This page serve as a test for the hand evaluation algorithm. Ideally when
@@ -93,19 +93,9 @@
 
 <style>
   button {
-    @apply my-1 mx-auto bg-black px-4 py-1 uppercase text-white only:w-full;
-  }
-  input {
-    @apply border p-1 text-gray-800 valid:border-green-500 invalid:border-2 invalid:border-red-500;
-  }
-  form {
-    @apply container prose prose-slate table text-center dark:prose-invert;
+    @apply my-1 mx-auto bg-black px-4 py-1 uppercase text-white;
   }
   form div {
     @apply my-2 flex justify-center gap-1;
-  }
-  label,
-  input {
-    @apply table-cell;
   }
 </style>

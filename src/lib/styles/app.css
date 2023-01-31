@@ -5,9 +5,7 @@
 
 @layer base {
   body {
-    @apply flex min-h-screen w-full
-            flex-col items-center justify-start bg-sky-50 pt-4 text-gray-800 antialiased
-            duration-500 dark:bg-gray-900 dark:text-white;
+    @apply flex min-h-screen w-full flex-col items-center justify-start bg-sky-50 pt-4 text-gray-800 antialiased duration-500 dark:bg-gray-900 dark:text-white;
     font-family: "Poppins", "Noto Sans JP", sans-serif;
   }
 
@@ -19,10 +17,48 @@
     @apply grow;
   }
 
+  dialog {
+    @apply m-auto bg-transparent;
+  }
+
+  dialog[open] > div {
+    animation: scale 300ms ease normal;
+  }
+  
+  dialog::backdrop {
+    @apply duration-1000 backdrop-blur-none;
+  }
+
+  dialog[open]::backdrop {
+    @apply backdrop-blur;
+  }
+  dialog[open]::backdrop {
+      animation: blur 300ms ease normal;
+  }
+  @keyframes blur{
+      from {
+          backdrop-filter: blur(0);
+      }
+      to {
+          backdrop-filter: blur(8px);
+      }
+  }
+  @keyframes scale {
+      from {
+          opacity: 0;
+          transform: scale(0.8);
+      }
+      to {
+          opacity: 1;
+          transform: scale(1);
+      }
+  }
+  button {
+    @apply cursor-pointer;
+  }
+
   section {
-    @apply flex w-full
-    max-w-screen-lg flex-col items-center
-    px-4;
+    @apply flex w-full max-w-screen-lg flex-col items-center px-4;
   }
 
   * {
