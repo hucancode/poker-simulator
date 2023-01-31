@@ -11,6 +11,10 @@ I use `Svelte Kit` to build this. You can build and run the application with
 ```
 npm run start
 ```
+Optionally you can run tests with
+```
+npm test
+```
 
 Then open this `http://localhost:5173/` in your browser
 
