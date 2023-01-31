@@ -23,7 +23,7 @@ export function cardIdToText(i) {
 export function handMaskToArray(mask) {
   let ret = [];
   for (let i = 0n; i < 52n; i++) {
-    if ((mask & (1n << i)) != 0) {
+    if ((mask & (1n << i)) !== 0n) {
       ret.push(Number(i));
     }
   }
@@ -121,16 +121,16 @@ export function rangeTextToConfig(text) {
   let suited = true;
   let offSuited = true;
   let extended = false;
-  if (text.length > i && text[i] == "s") {
+  if (text.length > i && text[i] === "s") {
     suited = true;
     offSuited = false;
     i++;
-  } else if (text.length > i && text[i] == "o") {
+  } else if (text.length > i && text[i] === "o") {
     offSuited = true;
     suited = false;
     i++;
   }
-  if (text.length > i && text[i] == "+") {
+  if (text.length > i && text[i] === "+") {
     extended = true;
   }
   return {

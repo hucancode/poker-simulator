@@ -1,14 +1,13 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import * as poker from "$lib/poker/cards";
-  export let crop = true;
   export let card = 0;
   export let used = false;
   export let selectable = false;
   export let selected = false;
 
   const dispatch = createEventDispatcher();
-  function toggleSelected(event) {
+  function toggle(event) {
     if (!selectable) return;
     event.stopPropagation();
     if (used) return;
@@ -16,12 +15,11 @@
   }
 </script>
 
-<div
-  on:click={toggleSelected}
+<label
   is-high={card >= 9 * 4}
-  {selectable}
   class="aspect-[2/2.5] w-16 animate-bg-pingpong rounded-md bg-4x-width p-0.5"
 >
+  <input checked={selected} enabled={selectable} type="checkbox" on:change={toggle} />
   <div
     class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"
     {selected}
@@ -39,11 +37,11 @@
       />
     {/if}
   </div>
-</div>
+</label>
 
 <style>
-  div[selectable="true"] {
-    @apply cursor-pointer;
+  input {
+    @apply hidden;
   }
   div[selected="true"] {
     @apply bg-orange-200;
@@ -51,10 +49,10 @@
   div[is-red="true"] {
     @apply text-red-500;
   }
-  div[is-high="false"] {
+  label[is-high="false"] {
     @apply bg-gray-200;
   }
-  div[is-high="true"] {
+  label[is-high="true"] {
     @apply z-10 bg-rainbow;
   }
 </style>

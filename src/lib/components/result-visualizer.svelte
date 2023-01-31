@@ -92,12 +92,10 @@
 {/if}
 
 <style>
-  h3[negative="true"],
-  span[negative="true"] {
+  h3[negative="true"] {
     @apply text-red-500;
   }
-  h3[positive="true"],
-  span[positive="true"] {
+  h3[positive="true"] {
     @apply text-green-600;
   }
 </style>

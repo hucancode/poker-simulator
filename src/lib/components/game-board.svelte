@@ -190,34 +190,35 @@
       required
     />
     <label for="game-code">Game Code</label>
-    <div class="button" on:click|preventDefault={randomize}>🎲</div>
+    <button class="m-2 cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white select-none px-6"
+       on:click|preventDefault={randomize}>🎲</button>
   </div>
   <div class="mt-6 flex w-full justify-between">
     <strong
       >Your Card
       {#if useRangeForA}
-        <span
+        <button
           class="cursor-pointer select-none text-blue-400"
-          on:click={switchHandAToValue}>Range</span
+          on:click={switchHandAToValue}>Range</button
         >
       {:else}
-        <span
+        <button
           class="cursor-pointer select-none text-blue-400"
-          on:click={switchHandAToRange}>Values</span
+          on:click={switchHandAToRange}>Values</button
         >
       {/if}
     </strong>
     <strong
       >Their Card
       {#if useRangeForB}
-        <span
+        <button
           class="cursor-pointer select-none text-blue-400"
-          on:click={switchHandBToValue}>Range</span
+          on:click={switchHandBToValue}>Range</button
         >
       {:else}
-        <span
+        <button
           class="cursor-pointer select-none text-blue-400"
-          on:click={switchHandBToRange}>Values</span
+          on:click={switchHandBToRange}>Values</button
         >
       {/if}
     </strong>
@@ -291,13 +292,6 @@
 </div>
 
 <style>
-  .button,
-  button {
-    @apply m-2 cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
-  }
-  .button {
-    @apply select-none px-6;
-  }
   input {
     @apply w-full border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-red-500;
   }

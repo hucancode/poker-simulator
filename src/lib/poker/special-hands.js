@@ -15,10 +15,10 @@ for (var top = 12n; top >= 3n; top--) {
             const k = (top - 2n) * 4n + s2;
             const l = (top - 3n) * 4n + s3;
             // special case - low ace
-            const m = (top == 3n ? 12n : top - 4n) * 4n + s4;
+            const m = (top === 3n ? 12n : top - 4n) * 4n + s4;
             const mask =
               (1n << i) | (1n << j) | (1n << k) | (1n << l) | (1n << m);
-            if (s0 == s1 && s1 == s2 && s2 == s3 && s3 == s4) {
+            if (s0 === s1 && s1 === s2 && s2 === s3 && s3 === s4) {
               arrST.push(mask);
             } else {
               arr.push(mask);
@@ -114,7 +114,7 @@ for (var r1 = 12n; r1 >= 0n; r1--) {
 const fullHouse = [];
 for (var r1 = 12n; r1 >= 0n; r1--) {
   for (var r2 = 12n; r2 >= 0n; r2--) {
-    if (r1 == r2) continue;
+    if (r1 === r2) continue;
     const arr = [];
     for (var x1 = 0n; x1 < 4n; x1++) {
       for (var x2 = x1 + 1n; x2 < 4n; x2++) {
