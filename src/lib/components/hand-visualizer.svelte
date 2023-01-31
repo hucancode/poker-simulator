@@ -3,6 +3,7 @@
   import Picker from "$lib/components/card-picker.svelte";
   import { createEventDispatcher } from "svelte";
   let picker;
+  export let disabled = true;
   export let usedCards = [];
   export let cards = [];
   export let max = 5;
@@ -21,6 +22,7 @@
 </script>
 
 <button
+  {disabled}
   class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
   on:click={() => picker.showModal()}
 >

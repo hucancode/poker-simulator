@@ -54,6 +54,12 @@
       }
   }
   button {
+    @apply select-none;
+  }
+  button > * {
+    cursor: inherit;
+  }
+  button:enabled {
     @apply cursor-pointer;
   }
 

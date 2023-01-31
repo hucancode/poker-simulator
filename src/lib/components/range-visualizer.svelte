@@ -4,6 +4,7 @@
   import RangePicker from "$lib/components/range-picker.svelte";
   import { createEventDispatcher } from "svelte";
   let picker;
+  export let disabled = false;
   export let config = {
     r1: 2,
     r2: 3,
@@ -20,7 +21,8 @@
 </script>
 
 <button
-  class="mx-auto flex max-w-full cursor-pointer flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
+  {disabled}
+  class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
   on:click={() => picker.showModal()}
 >
   <Card rank={config.r1} paired={config.r1 == config.r2} />
@@ -67,7 +69,7 @@
           {/if}
         </b>
       </p>
-      <button class="cursor-pointer bg-black py-2 px-6 font-bold text-white"
+      <button class="bg-black py-2 px-6 font-bold text-white"
         on:click={() => picker.close()}>X</button
       >
     </div>

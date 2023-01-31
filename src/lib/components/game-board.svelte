@@ -47,6 +47,7 @@
   let rangeB = Object.assign({}, DEFAULT_RANGE_CONFIG);
   let useRangeForA = false;
   let useRangeForB = false;
+  export let disabled = false;
 
   const dispatch = createEventDispatcher();
 
@@ -188,22 +189,25 @@
       pattern={GAME_CODE_REGEX}
       on:change={updateArrayFromText}
       required
+      {disabled}
     />
     <label for="game-code">Game Code</label>
-    <button class="m-2 cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white select-none px-6"
-       on:click|preventDefault={randomize}>🎲</button>
+    <button class="m-2 bg-black px-4 py-1 text-xl font-bold uppercase text-white select-none px-6"
+       on:click|preventDefault={randomize} {disabled}>🎲</button>
   </div>
   <div class="mt-6 flex w-full justify-between">
     <strong
       >Your Card
       {#if useRangeForA}
         <button
-          class="cursor-pointer select-none text-blue-400"
+          {disabled}
+          class="text-blue-400"
           on:click={switchHandAToValue}>Range</button
         >
       {:else}
         <button
-          class="cursor-pointer select-none text-blue-400"
+          {disabled}
+          class="text-blue-400"
           on:click={switchHandAToRange}>Values</button
         >
       {/if}
@@ -212,12 +216,14 @@
       >Their Card
       {#if useRangeForB}
         <button
-          class="cursor-pointer select-none text-blue-400"
+          {disabled}
+          class="text-blue-400"
           on:click={switchHandBToValue}>Range</button
         >
       {:else}
         <button
-          class="cursor-pointer select-none text-blue-400"
+          {disabled}
+          class="text-blue-400"
           on:click={switchHandBToRange}>Values</button
         >
       {/if}
@@ -226,6 +232,7 @@
   <div class="mb-4 flex items-center justify-between gap-2">
     {#if useRangeForA}
       <HandRange
+        {disabled}
         config={rangeA}
         on:rangeUpdated={(e) => {
           rangeA = rangeA;
@@ -234,6 +241,7 @@
       />
     {:else}
       <Hand
+        {disabled}
         cards={handA}
         max={2}
         min={2}
@@ -251,6 +259,7 @@
     <strong>VS</strong>
     {#if useRangeForB}
       <HandRange
+        {disabled}
         config={rangeB}
         on:rangeUpdated={(e) => {
           rangeB = rangeB;
@@ -259,6 +268,7 @@
       />
     {:else}
       <Hand
+        {disabled}
         cards={handB}
         max={2}
         min={0}
@@ -276,6 +286,7 @@
   </div>
   <strong class="w-full text-center">Community Cards</strong>
   <Hand
+    {disabled}
     cards={community}
     max={5}
     min={3}

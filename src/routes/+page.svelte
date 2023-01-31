@@ -123,6 +123,7 @@
 <main class="container prose prose-slate text-center dark:prose-invert">
   <form>
     <GameBoard
+      disabled={isWorking}
       bind:this={gameBoard}
       on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
     />
@@ -222,7 +223,7 @@
     @apply leading-snug;
   }
   button {
-    @apply m-2 cursor-pointer bg-black px-4 py-1 text-xl font-bold uppercase text-white;
+    @apply m-2 bg-black px-4 py-1 text-xl font-bold uppercase text-white;
   }
   input[type="radio"] {
     display: none;
