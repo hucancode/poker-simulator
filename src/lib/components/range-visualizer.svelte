@@ -41,7 +41,7 @@
   on:keypress={() => {}}
 >
   <div
-    class="w-max max-w-full mx-auto flex flex-col items-center justify-center"
+    class="w-max max-w-full h-full mx-auto flex flex-col items-center justify-center"
   >
     <div class="flex items-center justify-between gap-2">
       <p class="bg-black p-2 text-white">

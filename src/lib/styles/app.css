@@ -17,41 +17,35 @@
     @apply grow;
   }
 
+dialog:not([open]) {
+  pointer-events: none;
+  opacity: 0;
+}
   dialog {
-    @apply m-auto bg-transparent;
+    @apply m-auto bg-transparent grid;
+    display: grid;
+
+  }
+  dialog > div {
+    transition-property: opacity transform;
+    transition-duration: 200ms;
+    transition-timing-function: ease;
+    opacity: 0;
+    transform: scale(0.8);  
+  }
+  dialog[open] > div {
+    opacity: 1;
+    transform: scale(1);
   }
 
-  dialog[open] > div {
-    animation: scale 300ms ease normal;
+  dialog::backdrop {
+    transition-property: backdrop-filter;
+    transition-duration: 500ms;
+    @apply backdrop-blur-none;
   }
   
-  dialog::backdrop {
-    @apply duration-1000 backdrop-blur-none;
-  }
-
   dialog[open]::backdrop {
     @apply backdrop-blur;
-  }
-  dialog[open]::backdrop {
-      animation: blur 300ms ease normal;
-  }
-  @keyframes blur{
-      from {
-          backdrop-filter: blur(0);
-      }
-      to {
-          backdrop-filter: blur(8px);
-      }
-  }
-  @keyframes scale {
-      from {
-          opacity: 0;
-          transform: scale(0.8);
-      }
-      to {
-          opacity: 1;
-          transform: scale(1);
-      }
   }
   button {
     @apply select-none;

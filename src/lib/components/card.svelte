@@ -17,11 +17,11 @@
 
 <label
   is-high={card >= 9 * 4}
-  class="aspect-[2/2.5] w-16 animate-bg-pingpong rounded-md bg-4x-width p-0.5"
+  class="relative aspect-[2/2.5] w-16 animate-bg-pingpong rounded-md bg-4x-width p-0.5"
 >
   <input checked={selected} enabled={selectable} type="checkbox" on:change={toggle} />
   <div
-    class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100/90 text-gray-800"
+    class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100 text-gray-800"
     {selected}
     is-red={Math.floor(card % 4) >= 2}
   >
@@ -53,6 +53,18 @@
     @apply bg-gray-200;
   }
   label[is-high="true"] {
-    @apply z-10 bg-rainbow;
+    @apply relative overflow-hidden;
+  }
+  label[is-high="true"]::before {
+    @apply animate-rotate blur absolute -z-10;
+    content: '';
+		left: -50%;
+		top: -50%;
+		width: 200%;
+		height: 200%;
+		background-repeat: no-repeat;
+		background-size: 50% 50%, 50% 50%;
+		background-position: 0 0, 100% 0, 100% 100%, 0 100%;
+		background-image: linear-gradient(#399953, #399953), linear-gradient(#fbb300, #fbb300), linear-gradient(#d53e33, #d53e33), linear-gradient(#377af5, #377af5);
   }
 </style>

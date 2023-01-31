@@ -54,7 +54,7 @@
   <div class="flex flex-col justify-between">
     <h3>Card 1</h3>
     <div
-      class="mx-auto grid max-h-96 max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
+      class="mx-auto grid max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:grid-cols-4 md:gap-2"
     >
       {#each Array(13)
         .fill()
@@ -70,10 +70,10 @@
       {/each}
     </div>
   </div>
-  <div>
+  <div class="flex flex-col justify-between">
     <h3>Card 2</h3>
     <div
-      class="mx-auto grid max-h-96 max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
+      class="mx-auto grow grid max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:grid-cols-4 md:gap-2"
     >
       {#each Array(13)
         .fill()
