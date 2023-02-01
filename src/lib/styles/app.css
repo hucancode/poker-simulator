@@ -16,43 +16,36 @@
   main {
     @apply grow;
   }
+  dialog:not([open]) {
+    @apply pointer-events-none opacity-0;
+  }
 
-dialog:not([open]) {
-  pointer-events: none;
-  opacity: 0;
-}
   dialog {
-    @apply m-auto bg-transparent grid;
-    display: grid;
-
+    @apply fixed top-0 left-0 m-auto grid bg-transparent;
   }
   dialog > div {
-    transition-property: opacity transform;
-    transition-duration: 200ms;
-    transition-timing-function: ease;
-    opacity: 0;
-    transform: scale(0.8);  
+    @apply scale-75 opacity-0 duration-200 ease-in-out motion-safe:transition-all motion-reduce:transition-none;
   }
   dialog[open] > div {
-    opacity: 1;
-    transform: scale(1);
+    @apply scale-100 opacity-100;
   }
 
   dialog::backdrop {
-    transition-property: backdrop-filter;
-    transition-duration: 500ms;
-    @apply backdrop-blur-none;
+    @apply backdrop-blur-none duration-500 motion-safe:transition-all motion-reduce:transition-none;
   }
-  
+
   dialog[open]::backdrop {
     @apply backdrop-blur;
   }
+
   button {
     @apply select-none;
   }
+
   button > * {
     cursor: inherit;
   }
+
   button:enabled {
     @apply cursor-pointer;
   }

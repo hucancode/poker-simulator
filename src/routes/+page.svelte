@@ -167,7 +167,9 @@
       </div>
     </div>
     <div>
-      <button type="submit" on:click={doCompute}>{isWorking ? "Stop" : "Compute"}</button>
+      <button type="submit" on:click={doCompute}
+        >{isWorking ? "Stop" : "Compute"}</button
+      >
     </div>
   </form>
   <div>

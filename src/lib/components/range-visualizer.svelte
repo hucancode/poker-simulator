@@ -20,7 +20,8 @@
   }
 </script>
 
-<button type="button"
+<button
+  type="button"
   {disabled}
   class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
   on:click={() => picker.showModal()}
@@ -41,7 +42,7 @@
   on:keypress={() => {}}
 >
   <div
-    class="w-max max-w-full h-full mx-auto flex flex-col items-center justify-center"
+    class="mx-auto flex h-full w-max grow flex-col items-center justify-center overflow-y-auto overflow-x-hidden"
   >
     <div class="flex items-center justify-between gap-2">
       <p class="bg-black p-2 text-white">
@@ -69,7 +70,8 @@
           {/if}
         </b>
       </p>
-      <button type="button"
+      <button
+        type="button"
         class="bg-black py-2 px-6 font-bold text-white"
         on:click={() => picker.close()}>X</button
       >

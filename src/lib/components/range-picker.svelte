@@ -50,11 +50,11 @@
   />
   <label for="extended">Extended</label>
 </div>
-<div class="flex items-stretch">
-  <div class="flex flex-col justify-between">
-    <h3>Card 1</h3>
+<div class="flex grow items-stretch">
+  <div class="flex grow flex-col justify-between">
+    <strong>Card 1</strong>
     <div
-      class="mx-auto grid max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:grid-cols-4 md:gap-2"
+      class="mx-auto grid max-h-80 grow grid-cols-2 gap-2 overflow-y-auto px-2 py-2 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
     >
       {#each Array(13)
         .fill()
@@ -70,10 +70,10 @@
       {/each}
     </div>
   </div>
-  <div class="flex flex-col justify-between">
-    <h3>Card 2</h3>
+  <div class="flex grow flex-col justify-between">
+    <strong>Card 2</strong>
     <div
-      class="mx-auto grow grid max-w-screen-lg grid-cols-2 gap-2 overflow-auto px-2 py-2 font-bold md:grid-cols-4 md:gap-2"
+      class="mx-auto grid max-h-80 grow grow grid-cols-2 gap-2 overflow-y-auto px-2 py-2 font-bold md:max-h-full md:grid-cols-4 md:gap-2"
     >
       {#each Array(13)
         .fill()

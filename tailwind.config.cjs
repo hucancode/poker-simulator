@@ -45,13 +45,13 @@ const config = {
         },
       },
       animation: {
-        "rotate": "rotate 4s linear infinite",
+        rotate: "rotate 4s linear infinite",
         "waving-hand": "waving-hand 2.5s infinite",
         "bg-pingpong": "bg-pingpong 2.5s ease infinite alternate",
       },
       keyframes: {
-        "rotate": {
-          to: { "transform": "rotate(1turn)" }
+        rotate: {
+          to: { transform: "rotate(1turn)" },
         },
         "bg-pingpong": {
           to: { "background-position-x": "50%" },

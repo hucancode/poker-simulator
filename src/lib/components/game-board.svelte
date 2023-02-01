@@ -192,21 +192,26 @@
       {disabled}
     />
     <label for="game-code">Game Code</label>
-    <button type="button"
-        class="m-2 bg-black px-4 py-1 text-xl font-bold uppercase text-white select-none px-6"
-        on:click|preventDefault={randomize} {disabled}>🎲</button>
+    <button
+      type="button"
+      class="m-2 select-none bg-black px-4 py-1 px-6 text-xl font-bold uppercase text-white"
+      on:click|preventDefault={randomize}
+      {disabled}>🎲</button
+    >
   </div>
   <div class="mt-6 flex w-full justify-between">
     <strong
       >Your Card
       {#if useRangeForA}
-        <button type="button"
+        <button
+          type="button"
           {disabled}
           class="text-blue-400"
           on:click={switchHandAToValue}>Range</button
         >
       {:else}
-        <button type="button"
+        <button
+          type="button"
           {disabled}
           class="text-blue-400"
           on:click={switchHandAToRange}>Values</button
@@ -216,13 +221,15 @@
     <strong
       >Their Card
       {#if useRangeForB}
-        <button type="button"
+        <button
+          type="button"
           {disabled}
           class="text-blue-400"
           on:click={switchHandBToValue}>Range</button
         >
       {:else}
-        <button type="button"
+        <button
+          type="button"
           {disabled}
           class="text-blue-400"
           on:click={switchHandBToRange}>Values</button

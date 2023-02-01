@@ -28,7 +28,7 @@ function start(data) {
     data.candidateB,
     data.candidateC,
     play,
-    updateProgress,
+    updateProgress
   );
   self.postMessage({
     name: "ok",

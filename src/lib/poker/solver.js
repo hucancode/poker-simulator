@@ -79,7 +79,7 @@ export function solve(
   candidateB,
   candidateC,
   testToRun = 10000,
-  onProgress = null,
+  onProgress = null
 ) {
   const startSolvingTime = new Date();
   // console.log("candidates", candidateA, candidateB, candidateC);
