@@ -174,7 +174,7 @@
   </form>
   <div>
     {#if isWorking}
-      <Bar percentage={(result.covered / gameToPlay) * 100} />
+      <Bar value={result.covered} max={gameToPlay} />
       <!-- essentially only changed numbers to font-mono and restructured html. 
              added margin top to the first line and font-bold to result.
             now the numbers won't jitter as they are changing, being easier on the eyes, generally more clean look.

@@ -61,7 +61,7 @@
     @apply relative overflow-hidden;
   }
   label[is-high="true"]::before {
-    @apply absolute -z-10 blur animate-rotate;
+    @apply absolute -z-10 animate-rotate blur;
     content: "";
     left: -50%;
     top: -50%;
