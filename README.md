@@ -44,3 +44,8 @@ Since the total combinations are so big, traversing every possibility is not rea
 |                   | Flop (2 hidden cards) | Turn (1 hidden card) | River (All cards visible) |
 | ----------------- | --------------------- | -------------------- | ------------------------- |
 | Possible Outcomes | 1070190               | 45540                | 990                       |
+
+## Learn more
+
+I have written a faster version of this simulation (can realistically simulate all 10^6 outcomes in 30 seconds).
+Check this out https://github.com/hucancode/poker-solver
