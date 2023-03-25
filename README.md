@@ -47,5 +47,5 @@ Since the total combinations are so big, traversing every possibility is not rea
 
 ## Learn more
 
-I have written a faster version of this simulation (can realistically simulate all 10^6 outcomes in 30 seconds).
+I have written a 5x faster version of this simulation (can realistically simulate all 10^6 outcomes in 30 seconds).
 Check this out https://github.com/hucancode/poker-solver
