@@ -1,25 +1,22 @@
 <script>
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import { handTextToArray, handArrayToText } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
   import GameBoard from "$lib/components/game-board.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
   import Bar from "$lib/components/progress-bar.svelte";
+  import PokerSolver from "$lib/workers/poker-solver?worker";
+
+  import init, { solve } from "poker-solver";
 
   const TEST_FAST = 1000;
   const TEST_NORMAL = 10000;
   const TEST_SLOW = 50000;
   const TEST_EXTRA_SLOW = 200000;
-  const HAND_DELIMETER = ",";
-  const COMMUNITY_TEXT_REGEX = "([2-9TJQKA][scdh]){3,5}";
-  const MY_HAND_TEXT_REGEX = "([2-9TJQKA][scdh]){2}";
-  const THEIR_HAND_FIXED_REGEX = "([2-9TJQKA][scdh]){0,2}";
-  const THEIR_HAND_RANGE_REGEX = "([2-9TJQKA]{2}[so]?\\+?)";
-  const THEIR_HAND_TEXT_REGEX = `((${THEIR_HAND_FIXED_REGEX})|(${THEIR_HAND_RANGE_REGEX}))`;
 
-  const GAME_CODE_REGEX = `${MY_HAND_TEXT_REGEX}${HAND_DELIMETER}${THEIR_HAND_TEXT_REGEX}${HAND_DELIMETER}${COMMUNITY_TEXT_REGEX}`;
+  const LIVE_UPDATE = false;
+
   const UNKOWN_RESULT = {
     win: 0,
     lose: 0,
@@ -37,72 +34,47 @@
   let worker;
   let gameToPlay = 1;
 
-  function doCompute(e) {
-    e.preventDefault(); //prevents jumpscrolling to the top on button press.
+  function compute(e) {
+    e.preventDefault();
     if (isWorking) {
       worker.terminate();
       isWorking = false;
       result.interupted = true;
       return;
     }
-    if (speedFast.checked) {
-      return compute(TEST_FAST);
-    }
-    if (speedSlow.checked) {
-      return compute(TEST_NORMAL);
-    }
-    if (speedVerySlow.checked) {
-      return compute(TEST_SLOW);
-    }
-    if (speedAllDay.checked) {
-      return compute(TEST_EXTRA_SLOW);
-    }
-  }
-
-  function compute(k = 1000) {
+    result = Object.assign({}, UNKOWN_RESULT);
     if (!gameBoard.isValid()) {
-      result = Object.assign({}, UNKOWN_RESULT);
       return;
     }
-    result = Object.assign({}, UNKOWN_RESULT);
     if (worker) {
       worker.terminate();
     }
-    worker = new Worker(
-      new URL("$lib/workers/poker-solver.js", import.meta.url),
-      {
-        type: "module",
-      }
-    );
+    worker = new PokerSolver();
     worker.addEventListener("message", (e) => {
-      if (e.data.name == "progress") {
-        result.covered = e.data.covered;
-        result.win = e.data.win;
-        result.lose = e.data.lose;
-        result.tie = e.data.tie;
-        result.winRate = (result.win / result.covered) * 100;
-      } else if (e.data.name === "ok") {
-        result = e.data;
-        isWorking = false;
-      } else if (e.data.name == "estimate") {
-        result.total = e.data.total;
-        gameToPlay = e.data.play;
+      if (e.data.name === "ok") {
+        reportComputeData(e.data);
       }
     });
     worker.postMessage({
       name: "start",
-      candidateA: gameBoard.getCandidateA(),
-      candidateB: gameBoard.getCandidateB(),
-      candidateC: gameBoard.getCandidateC(),
-      play: k,
+      handA: gameBoard.getHandA(),
+      handB: gameBoard.getHandB(),
+      community: gameBoard.getCommunity(),
     });
     isWorking = true;
-    result.interupted = false;
-    result.covered = 0;
-    result.total = 0;
   }
 
-  onMount(() => {
+  function reportComputeData(data) {
+    result.win = data.win;
+    result.lose = data.lose;
+    result.tie = data.tie;
+    result.covered = result.total = result.win + result.lose + result.tie;
+    result.winRate = (result.win / result.covered) * 100;
+    result.time = data.time;
+    isWorking = false;
+  }
+
+  onMount(async () => {
     const code = $page.url.searchParams.get("code");
     if (code) {
       gameBoard.updateWithText(code);
@@ -127,76 +99,39 @@
       bind:this={gameBoard}
       on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
     />
-    <div class="flex w-full flex-col justify-center">
-      <strong>Number of tests</strong>
-      <div class="flex w-full flex-wrap justify-center gap-0.5">
-        <input
-          type="radio"
-          name="speed"
-          id="speed-fast"
-          checked
-          bind:this={speedFast}
-        />
-        <label title={TEST_FAST} for="speed-fast">🚀<br />{TEST_FAST}</label>
-        <input
-          type="radio"
-          name="speed"
-          id="speed-slow"
-          bind:this={speedSlow}
-        />
-        <label title={TEST_NORMAL} for="speed-slow">🐰<br />{TEST_NORMAL}</label
-        >
-        <input
-          type="radio"
-          name="speed"
-          id="speed-very-slow"
-          bind:this={speedVerySlow}
-        />
-        <label title={TEST_SLOW} for="speed-very-slow"
-          >🐢<br />{TEST_SLOW}</label
-        >
-        <input
-          type="radio"
-          name="speed"
-          id="speed-all-day"
-          bind:this={speedAllDay}
-        />
-        <label title={TEST_EXTRA_SLOW} for="speed-all-day"
-          >🐌<br />{TEST_EXTRA_SLOW}</label
-        >
-      </div>
-    </div>
     <div>
-      <button type="submit" on:click={doCompute}
+      <button type="submit" on:click={compute}
         >{isWorking ? "Stop" : "Compute"}</button
       >
     </div>
   </form>
   <div>
     {#if isWorking}
-      <Bar value={result.covered} max={gameToPlay} />
-      <!-- essentially only changed numbers to font-mono and restructured html. 
-             added margin top to the first line and font-bold to result.
-            now the numbers won't jitter as they are changing, being easier on the eyes, generally more clean look.
-            -->
-      <small class="flex flex-col items-center justify-center gap-5">
-        <div class="mt-5">
-          <span>Looking into the future</span>
-          <span class="font-mono">#{result.covered}</span>
-        </div>
-        <div class="my-auto flex items-baseline">
-          <span>You are winning &nbsp</span>
-          <div
-            class="flex w-10 flex-col items-center justify-center font-mono font-bold"
-          >
-            <div class="">
-              {result.win}
-            </div>
-            ({result.winRate.toFixed(1)}%)
+      <Bar
+        value={result.covered}
+        max={gameToPlay}
+        indeterminate={!LIVE_UPDATE}
+      />
+      {#if LIVE_UPDATE}
+        <small class="flex flex-col items-center justify-center gap-5">
+          <div class="mt-5">
+            <span>Looking into the future</span>
+            <span class="font-mono">#{result.covered}</span>
           </div>
-          <span>&nbsp;games so far</span>
-        </div>
-      </small>
+          <div class="my-auto flex items-baseline">
+            <span>You are winning &nbsp</span>
+            <div
+              class="flex w-10 flex-col items-center justify-center font-mono font-bold"
+            >
+              <div class="">
+                {result.win}
+              </div>
+              ({result.winRate.toFixed(1)}%)
+            </div>
+            <span>&nbsp;games so far</span>
+          </div>
+        </small>
+      {/if}
     {:else if result.total >= 0}
       <Result {result} />
     {:else}

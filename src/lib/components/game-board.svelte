@@ -4,22 +4,14 @@
   import {
     handTextToArray,
     handArrayToText,
-    rangeTextToConfig,
-    rangeConfigToText,
-    isRangeNotation,
   } from "$lib/poker/cards";
-  import { enumerate, enumerateRange } from "$lib/poker/solver";
   import Hand from "$lib/components/hand-visualizer.svelte";
   import HandRange from "$lib/components/range-visualizer.svelte";
 
   const HAND_DELIMETER = ",";
   const COMMUNITY_TEXT_REGEX = "([2-9TJQKA][scdh]){3,5}";
-  const MY_HAND_FIXED_REGEX = "([2-9TJQKA][scdh]){2}";
-  const MY_HAND_RANGE_REGEX = "([2-9TJQKA]{2}[so]?\\+?)";
-  const MY_HAND_TEXT_REGEX = `((${MY_HAND_FIXED_REGEX})|(${MY_HAND_RANGE_REGEX}))`;
-  const THEIR_HAND_FIXED_REGEX = "([2-9TJQKA][scdh]){0,2}";
-  const THEIR_HAND_RANGE_REGEX = "([2-9TJQKA]{2}[so]?\\+?)";
-  const THEIR_HAND_TEXT_REGEX = `((${THEIR_HAND_FIXED_REGEX})|(${THEIR_HAND_RANGE_REGEX}))`;
+  const MY_HAND_TEXT_REGEX = "([2-9TJQKA][scdh]){2}";
+  const THEIR_HAND_TEXT_REGEX = "([2-9TJQKA][scdh]){0,2}";
 
   const GAME_CODE_REGEX =
     MY_HAND_TEXT_REGEX +
@@ -39,14 +31,10 @@
     offSuited: true,
     extended: false,
   };
-  let gameCodeInput;
+  export let gameCodeInput;
   let community = [],
     handA = [],
     handB = [];
-  let rangeA = Object.assign({}, DEFAULT_RANGE_CONFIG);
-  let rangeB = Object.assign({}, DEFAULT_RANGE_CONFIG);
-  let useRangeForA = false;
-  let useRangeForB = false;
   export let disabled = false;
 
   const dispatch = createEventDispatcher();
@@ -59,25 +47,15 @@
       return;
     }
     const arr = gameCodeInput.value.split(HAND_DELIMETER);
-    useRangeForA = isRangeNotation(arr[0]);
-    if (useRangeForA) {
-      rangeA = rangeTextToConfig(arr[0]);
-    } else {
-      handA = handTextToArray(arr[0]);
-    }
-    useRangeForB = isRangeNotation(arr[1]);
-    if (useRangeForB) {
-      rangeB = rangeTextToConfig(arr[1]);
-    } else {
-      handB = handTextToArray(arr[1]);
-    }
+    handA = handTextToArray(arr[0]);
+    handB = handTextToArray(arr[1]);
     community = handTextToArray(arr[2]);
     dispatch("updated");
   }
 
   function updateTextFromArray() {
-    const a = useRangeForA ? rangeConfigToText(rangeA) : handArrayToText(handA);
-    const b = useRangeForB ? rangeConfigToText(rangeB) : handArrayToText(handB);
+    const a = handArrayToText(handA);
+    const b = handArrayToText(handB);
     const c = handArrayToText(community);
     gameCodeInput.value = a + HAND_DELIMETER + b + HAND_DELIMETER + c;
     dispatch("updated");
@@ -88,94 +66,25 @@
       .fill()
       .map((e, i) => i)
       .sort((a, b) => Math.random() - 0.5);
-    useRangeForA = Math.random() > 0.5;
-    if (useRangeForA) {
-      rangeA.r1 = Math.floor(pool[0] / 4);
-      rangeA.r2 = Math.floor(pool[1] / 4);
-    } else {
-      handA = pool.slice(0, 2);
-    }
-    useRangeForB = Math.random() > 0.5;
-    if (useRangeForB) {
-      rangeB.r1 = Math.floor(pool[2] / 4);
-      rangeB.r2 = Math.floor(pool[3] / 4);
-    } else {
-      handB = pool.slice(2, 4);
-    }
+    handA = pool.slice(0, 2);
+    handB = pool.slice(2, 4);
     community = pool.slice(5, 10);
     updateTextFromArray();
   }
   export function isValid() {
     return gameCodeInput.validity.valid;
   }
-
-  export function getCandidateA() {
-    if (useRangeForA) {
-      return enumerateRange(rangeA);
-    }
-    const used = handA.concat(handB).concat(community);
-    return enumerate(used, handA, 2);
+  export function getCommunity() {
+    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    return arr[2];
   }
-  export function getCandidateB() {
-    if (useRangeForB) {
-      return enumerateRange(rangeB);
-    }
-    const used = handA.concat(handB).concat(community);
-    return enumerate(used, handB, 2);
+  export function getHandB() {
+    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    return arr[1];
   }
-  export function getCandidateC() {
-    const used = handA.concat(handB).concat(community);
-    return enumerate(used, community, 5);
-  }
-  function switchHandAToValue() {
-    useRangeForA = false;
-    if (rangeA != null && handA.length == 0) {
-      handA.push(rangeA.r1 * 4);
-      handA.push(rangeA.r2 * 4);
-      if (handA[0] == handA[1]) {
-        handA[1]++;
-      }
-    }
-    updateTextFromArray();
-  }
-  function switchHandAToRange() {
-    useRangeForA = true;
-    if (rangeA == null) {
-      rangeA = Object.assign({}, DEFAULT_RANGE_CONFIG);
-      if (handA.length > 0) {
-        rangeA.r1 = rangeA.r2 = Math.floor(handA[0] / 4);
-      }
-      if (handA.length > 1) {
-        rangeA.r2 = Math.floor(handA[1] / 4);
-      }
-      handA = [];
-    }
-    updateTextFromArray();
-  }
-  function switchHandBToValue() {
-    useRangeForB = false;
-    if (rangeB != null && handB.length == 0) {
-      handB.push(rangeB.r1 * 4);
-      handB.push(rangeB.r2 * 4);
-      if (handB[0] == handB[1]) {
-        handB[1]++;
-      }
-    }
-    updateTextFromArray();
-  }
-  function switchHandBToRange() {
-    useRangeForB = true;
-    if (rangeB == null) {
-      rangeB = Object.assign({}, DEFAULT_RANGE_CONFIG);
-      if (handB.length > 0) {
-        rangeB.r1 = rangeB.r2 = Math.floor(handB[0] / 4);
-      }
-      if (handB.length > 1) {
-        rangeB.r2 = Math.floor(handB[1] / 4);
-      }
-      handB = [];
-    }
-    updateTextFromArray();
+  export function getHandA() {
+    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    return arr[0];
   }
 </script>
 
@@ -200,97 +109,41 @@
     >
   </div>
   <div class="mt-6 flex w-full justify-between">
-    <strong
-      >Your Card
-      {#if useRangeForA}
-        <button
-          type="button"
-          {disabled}
-          class="text-blue-400"
-          on:click={switchHandAToValue}>Range</button
-        >
-      {:else}
-        <button
-          type="button"
-          {disabled}
-          class="text-blue-400"
-          on:click={switchHandAToRange}>Values</button
-        >
-      {/if}
-    </strong>
-    <strong
-      >Their Card
-      {#if useRangeForB}
-        <button
-          type="button"
-          {disabled}
-          class="text-blue-400"
-          on:click={switchHandBToValue}>Range</button
-        >
-      {:else}
-        <button
-          type="button"
-          {disabled}
-          class="text-blue-400"
-          on:click={switchHandBToRange}>Values</button
-        >
-      {/if}
-    </strong>
+    <strong>Your Cards </strong>
+    <strong>Their Cards </strong>
   </div>
   <div class="mb-4 flex items-center justify-between gap-2">
-    {#if useRangeForA}
-      <HandRange
-        {disabled}
-        config={rangeA}
-        on:rangeUpdated={(e) => {
-          rangeA = rangeA;
-          updateTextFromArray();
-        }}
-      />
-    {:else}
-      <Hand
-        {disabled}
-        cards={handA}
-        max={2}
-        min={2}
-        usedCards={handB.concat(community)}
-        on:remove={(e) => {
-          handA = handA;
-          updateTextFromArray();
-        }}
-        on:add={(e) => {
-          handA = handA;
-          updateTextFromArray();
-        }}
-      />
-    {/if}
+    <Hand
+      {disabled}
+      cards={handA}
+      max={2}
+      min={2}
+      usedCards={handB.concat(community)}
+      on:remove={(e) => {
+        handA = handA;
+        updateTextFromArray();
+      }}
+      on:add={(e) => {
+        handA = handA;
+        updateTextFromArray();
+      }}
+    />
     <strong>VS</strong>
-    {#if useRangeForB}
-      <HandRange
-        {disabled}
-        config={rangeB}
-        on:rangeUpdated={(e) => {
-          rangeB = rangeB;
-          updateTextFromArray();
-        }}
-      />
-    {:else}
-      <Hand
-        {disabled}
-        cards={handB}
-        max={2}
-        min={0}
-        usedCards={handA.concat(community)}
-        on:remove={(e) => {
-          handB = handB;
-          updateTextFromArray();
-        }}
-        on:add={(e) => {
-          handB = handB;
-          updateTextFromArray();
-        }}
-      />
-    {/if}
+    <Hand
+      {disabled}
+      cards={handB}
+      max={2}
+      min={0}
+      usedCards={handA.concat(community)}
+      on:remove={(e) => {
+        handB = handB;
+        updateTextFromArray();
+      }}
+      on:add={(e) => {
+        handB = handB;
+        updateTextFromArray();
+      }}
+    />
   </div>
   <strong class="w-full text-center">Community Cards</strong>
   <Hand
