@@ -4,7 +4,6 @@
   "scripts": {
     "dev": "vite dev",
     "install-toolchain": "./install-toolchain.sh",
-    "build:wasm": "$HOME/.cargo/bin/wasm-pack build ./poker-solver --target web",
     "build": "vite build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
