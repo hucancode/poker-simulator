@@ -3,7 +3,8 @@
   "version": "0.3",
   "scripts": {
     "dev": "vite dev",
-    "install-toolchain": "./install-toolchain.sh",
+    "build:wasm": "wasm-pack build ./poker-solver --target web && cp ./poker-solver/pkg/*.wasm ./static/assets",
+    "build:wasm-ci": "./build-wasm.sh",
     "build": "vite build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
@@ -31,14 +32,9 @@
     "svelte-i18n": "^3.3.13",
     "svelte-preprocess": "^5.0.0",
     "tailwindcss": "^3.2.4",
+    "poker-solver": "file:poker-solver/pkg",
     "vite": "^4.0.0",
-    "vite-plugin-top-level-await": "^1.3.0",
-    "vite-plugin-wasm": "^3.2.2",
-    "vite-plugin-wasm-pack": "^0.1.12",
     "vitest": "^0.28.3"
   },
-  "type": "module",
-  "dependencies": {
-    "poker-solver": "file:poker-solver/pkg"
-  }
+  "type": "module"
 }

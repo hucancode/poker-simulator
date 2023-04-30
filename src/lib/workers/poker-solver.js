@@ -3,7 +3,7 @@ import init, { solve } from "poker-solver";
 async function start(data) {
   let start = new Date();
   await init();
-  let result = solve(data.handA, data.handB, data.community);
+  const result = solve(data.handA, data.handB, data.community);
   let now = new Date();
   let time = now.getTime() - start.getTime();
   self.postMessage({
@@ -14,7 +14,6 @@ async function start(data) {
     tie: result.tie,
   });
 }
-
 self.addEventListener("message", (e) => {
   if (e.data.name === "start") {
     start(e.data);

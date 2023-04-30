@@ -8,8 +8,6 @@
   import Bar from "$lib/components/progress-bar.svelte";
   import PokerSolver from "$lib/workers/poker-solver?worker";
 
-  import init, { solve } from "poker-solver";
-
   const TEST_FAST = 1000;
   const TEST_NORMAL = 10000;
   const TEST_SLOW = 50000;
