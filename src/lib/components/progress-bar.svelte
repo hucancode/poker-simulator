@@ -1,10 +1,19 @@
 <script>
-  export let percentage = 100.0;
+  export let value = 0.6;
+  export let max = 1.0;
 </script>
 
-<div class="w-full rounded-full bg-gray-200 dark:bg-gray-700">
-  <div
-    class="rounded-full bg-blue-600 p-1 text-center text-xs font-medium leading-none text-blue-100"
-    style="width: {percentage}%"
-  />
-</div>
+<progress {value} {max} class="w-full overflow-hidden rounded-full" />
+
+<style>
+  progress::-webkit-progress-bar {
+    @apply bg-gray-200;
+  }
+  progress::-webkit-progress-value {
+    @apply bg-blue-400;
+  }
+  progress::-webkit-progress-bar,
+  progress::-webkit-progress-value {
+    @apply duration-500;
+  }
+</style>
