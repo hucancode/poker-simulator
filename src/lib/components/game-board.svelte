@@ -57,6 +57,11 @@
     dispatch("updated");
   }
 
+  export function updateWithText(str) {
+    gameCodeInput.value = str;
+    updateArrayFromText();
+  }
+
   export function randomize() {
     let pool = Array(52)
       .fill()

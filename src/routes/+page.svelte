@@ -8,11 +8,6 @@
   import Bar from "$lib/components/progress-bar.svelte";
   import PokerSolver from "$lib/workers/poker-solver?worker";
 
-  const TEST_FAST = 1000;
-  const TEST_NORMAL = 10000;
-  const TEST_SLOW = 50000;
-  const TEST_EXTRA_SLOW = 200000;
-
   const LIVE_UPDATE = false;
 
   const UNKOWN_RESULT = {
@@ -25,7 +20,6 @@
     winRate: 0,
     interupted: false,
   };
-  let speedFast, speedSlow, speedVerySlow, speedAllDay;
   let gameBoard;
   let result = Object.assign({}, UNKOWN_RESULT);
   let isWorking = false;
@@ -33,7 +27,9 @@
   let gameToPlay = 1;
 
   function compute(e) {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     if (isWorking) {
       worker.terminate();
       isWorking = false;

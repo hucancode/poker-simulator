@@ -1,6 +1,7 @@
 # Poker Simulator
 
 ## Getting started
+
 This tool will help you approximate your winning chance in a [Texas Holdem](https://en.wikipedia.org/wiki/Texas_hold_%27em) poker game.
 Kindly set a board, click `Compute`, and let the computer do the hard work for you.
 The latest build is live at [here](https://poker.lamsaoquenem.day/)
