@@ -15,6 +15,14 @@ async function start(data) {
   });
 }
 self.addEventListener("message", (e) => {
+  if (e.data.name === "fixURI") {
+    self.document = {
+      baseURI: e.data.baseURI,
+    };
+  }
+});
+
+self.addEventListener("message", (e) => {
   if (e.data.name === "start") {
     start(e.data);
   }

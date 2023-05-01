@@ -19,13 +19,23 @@
     cards = cards;
     dispatch("add", { card: event.detail.card });
   }
+
+  function open() {
+    picker.showModal();
+    disabled = true;
+  }
+
+  function close() {
+    picker.close();
+    disabled = false;
+  }
 </script>
 
 <button
   type="button"
   {disabled}
   class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
-  on:click={() => picker.showModal()}
+  on:click={open}
 >
   {#each Array(Math.max(cards.length, max)) as _, i}
     <Card card={i < cards.length ? cards[i] : -1} />
@@ -34,7 +44,7 @@
 
 <dialog
   bind:this={picker}
-  on:click|self={() => picker.close()}
+  on:click|self={close}
   on:keypress={() => {}}
   class="pb-20"
 >
@@ -46,7 +56,7 @@
       <button
         type="button"
         class="cursor-pointer bg-black py-2 px-6 font-bold text-white"
-        on:click={() => picker.close()}>X</button
+        on:click={close}>X</button
       >
     </div>
     <Picker

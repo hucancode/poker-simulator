@@ -1,12 +1,8 @@
 <script>
   import { createEventDispatcher } from "svelte";
   import { onMount } from "svelte";
-  import {
-    handTextToArray,
-    handArrayToText,
-  } from "$lib/poker/cards";
+  import { handTextToArray, handArrayToText } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
-  import HandRange from "$lib/components/range-visualizer.svelte";
 
   const HAND_DELIMETER = ",";
   const COMMUNITY_TEXT_REGEX = "([2-9TJQKA][scdh]){3,5}";

@@ -54,6 +54,10 @@
       }
     });
     worker.postMessage({
+      name: "fixURI",
+      baseURI: document.baseURI,
+    });
+    worker.postMessage({
       name: "start",
       handA: gameBoard.getHandA(),
       handB: gameBoard.getHandB(),
@@ -159,15 +163,6 @@
   }
   button {
     @apply m-2 bg-black px-4 py-1 text-xl font-bold uppercase text-white;
-  }
-  input[type="radio"] {
-    display: none;
-  }
-  input[type="radio"] + label {
-    @apply w-1/5 bg-gray-600 px-1 py-2 text-center font-semibold text-gray-100;
-  }
-  input[type="radio"]:checked + label {
-    @apply bg-black text-white;
   }
   form {
     @apply flex flex-col items-center;
