@@ -1,7 +1,6 @@
 <script>
   import { page } from "$app/stores";
   import { onMount } from "svelte";
-  import Hand from "$lib/components/hand-visualizer.svelte";
   import GameBoard from "$lib/components/game-board.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
@@ -106,9 +105,8 @@
   <div>
     {#if isWorking}
       <Bar
-        value={result.covered}
-        max={gameToPlay}
-        indeterminate={!LIVE_UPDATE}
+        value={LIVE_UPDATE ? result.covered : null}
+        max={LIVE_UPDATE ? gameToPlay : null}
       />
       {#if LIVE_UPDATE}
         <small class="flex flex-col items-center justify-center gap-5">

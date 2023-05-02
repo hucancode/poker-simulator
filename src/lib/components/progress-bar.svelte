@@ -1,17 +1,14 @@
 <script>
-  export let value = 0.6;
+  export let value = 0.25;
   export let max = 1.0;
-  export let indeterminate = false;
 </script>
 
-<progress
-  {value}
-  {max}
-  class="relative w-full overflow-hidden rounded-full"
-  {indeterminate}
-/>
+<progress {value} {max} />
 
 <style>
+  progress {
+    @apply relative w-full overflow-hidden rounded-full;
+  }
   progress::-webkit-progress-bar {
     @apply bg-gray-200;
   }
@@ -22,24 +19,7 @@
   progress::-webkit-progress-value {
     @apply duration-500;
   }
-  progress[indeterminate="true"]::after {
-    content: "";
-    inset: 0;
-    position: absolute;
-    background: linear-gradient(
-      to right,
-      #e5e7eb 45%,
-      #60a5fa 0%,
-      #60a5fa 55%,
-      #e5e7eb 0%
-    );
-    background-size: 225% 100%;
-    background-position: right;
-    animation: progress-loading 2s infinite ease;
-  }
-  @keyframes progress-loading {
-    50% {
-      background-position: left;
-    }
+  progress:not([max])::after {
+    @apply absolute inset-0 w-1/4 animate-pingpong bg-blue-400 content-[''];
   }
 </style>

@@ -48,8 +48,13 @@ const config = {
         rotate: "spin 4s linear infinite",
         "waving-hand": "waving-hand 2.5s infinite",
         "bg-pingpong": "bg-pingpong 2.5s ease infinite alternate",
+        pingpong: "pingpong 1s infinite alternate ease-in-out",
       },
       keyframes: {
+        pingpong: {
+          from: { left: "-25%" },
+          to: { left: "100%" },
+        },
         "bg-pingpong": {
           to: { "background-position-x": "50%" },
         },
