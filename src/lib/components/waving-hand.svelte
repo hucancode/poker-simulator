@@ -1,9 +1,4 @@
-<script>
-  let className;
-  export { className as class };
-</script>
-
-<span class={className}><slot>👋</slot></span>
+<span><slot>👋</slot></span>
 
 <style lang="postcss">
   span {

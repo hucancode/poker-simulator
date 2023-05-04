@@ -3,11 +3,7 @@
 
 name: Node.js CI
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+on: workflow_dispatch
 
 jobs:
   build:
@@ -15,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [19.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
       - name: Checkout
@@ -31,7 +27,9 @@ jobs:
           path: |
             **/node_modules
           key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Install
+      - name: Install rust tool chain
+        run: npm run build:wasm-ci
+      - name: Install dependencies
         run: npm install
       - name: Build
         run: npm run build
