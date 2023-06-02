@@ -22,26 +22,10 @@
   let gameBoard;
   let result = Object.assign({}, UNKOWN_RESULT);
   let isWorking = false;
-  let worker;
+  let worker = null;
   let gameToPlay = 1;
 
-  function compute(e) {
-    if (e) {
-      e.preventDefault();
-    }
-    if (isWorking) {
-      worker.terminate();
-      isWorking = false;
-      result.interupted = true;
-      return;
-    }
-    result = Object.assign({}, UNKOWN_RESULT);
-    if (!gameBoard.isValid()) {
-      return;
-    }
-    if (worker) {
-      worker.terminate();
-    }
+  function buildWorker() {
     worker = new PokerSolver();
     worker.addEventListener("message", (e) => {
       if (e.data.name === "ok") {
@@ -52,6 +36,22 @@
       name: "fixURI",
       baseURI: document.baseURI,
     });
+  }
+  function compute() {
+    if (isWorking) {
+      if(worker) {
+        worker.terminate();
+      }
+      worker = null;
+      return;
+    }
+    result = Object.assign({}, UNKOWN_RESULT);
+    if (!gameBoard.isValid()) {
+      return;
+    }
+    if(!worker) {
+      buildWorker();
+    }
     worker.postMessage({
       name: "start",
       handA: gameBoard.getHandA(),
@@ -97,7 +97,7 @@
       on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
     />
     <div>
-      <button type="submit" on:click={compute}
+      <button type="submit" on:click|preventDefault={compute}
         >{isWorking ? "Stop" : "Compute"}</button
       >
     </div>
