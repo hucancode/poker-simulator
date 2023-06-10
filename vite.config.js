@@ -4,9 +4,9 @@ const config = {
   plugins: [sveltekit()],
   server: {
     fs: {
-      allow: ['poker-solver']
-    }
-  }
+      allow: ["poker-solver"],
+    },
+  },
 };
 
 export default config;

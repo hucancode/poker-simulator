@@ -49,11 +49,17 @@ const config = {
         "waving-hand": "waving-hand 2.5s infinite",
         "bg-pingpong": "bg-pingpong 2.5s ease infinite alternate",
         pingpong: "pingpong 1s infinite alternate ease-in-out",
+        "pingpong-absolute":
+          "pingpong-absolute 1s infinite alternate ease-in-out",
       },
       keyframes: {
         pingpong: {
           from: { left: "-25%" },
           to: { left: "100%" },
+        },
+        "pingpong-absolute": {
+          from: { transform: "translateX(-100%)" },
+          to: { transform: "translateX(400%)" },
         },
         "bg-pingpong": {
           to: { "background-position-x": "50%" },

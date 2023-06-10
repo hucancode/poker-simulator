@@ -39,7 +39,7 @@
   }
   function compute() {
     if (isWorking) {
-      if(worker) {
+      if (worker) {
         worker.terminate();
       }
       worker = null;
@@ -49,7 +49,7 @@
     if (!gameBoard.isValid()) {
       return;
     }
-    if(!worker) {
+    if (!worker) {
       buildWorker();
     }
     worker.postMessage({
@@ -89,7 +89,9 @@
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
   <p>Enter your game state and let computer do the hard work for you</p>
 </header>
-<main class="container prose prose-slate text-center dark:prose-invert">
+<main
+  class="container prose prose-slate max-w-lg text-center dark:prose-invert"
+>
   <form>
     <GameBoard
       disabled={isWorking}
