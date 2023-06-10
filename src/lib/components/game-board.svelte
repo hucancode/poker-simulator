@@ -1,6 +1,5 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { onMount } from "svelte";
   import { handTextToArray, handArrayToText } from "$lib/poker/cards";
   import Hand from "$lib/components/hand-visualizer.svelte";
 
@@ -20,13 +19,6 @@
   const GAME_CODE_HELP =
     "Enter 2 cards for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]";
 
-  const DEFAULT_RANGE_CONFIG = {
-    r1: 0,
-    r2: 0,
-    suited: true,
-    offSuited: true,
-    extended: false,
-  };
   export let gameCodeInput;
   let community = [],
     handA = [],
@@ -65,10 +57,10 @@
   export function randomize() {
     let pool = Array(52)
       .fill()
-      .map((e, i) => i)
-      .sort((a, b) => Math.random() - 0.5);
+      .map((_, i) => i)
+      .sort(() => Math.random() - 0.5);
     handA = pool.slice(0, 2);
-    handB = pool.slice(2, 4);
+    // handB = pool.slice(2, 4);
     community = pool.slice(5, 10);
     updateTextFromArray();
   }
@@ -120,11 +112,11 @@
       max={2}
       min={2}
       usedCards={handB.concat(community)}
-      on:remove={(e) => {
+      on:remove={() => {
         handA = handA;
         updateTextFromArray();
       }}
-      on:add={(e) => {
+      on:add={() => {
         handA = handA;
         updateTextFromArray();
       }}
@@ -136,11 +128,11 @@
       max={2}
       min={0}
       usedCards={handA.concat(community)}
-      on:remove={(e) => {
+      on:remove={() => {
         handB = handB;
         updateTextFromArray();
       }}
-      on:add={(e) => {
+      on:add={() => {
         handB = handB;
         updateTextFromArray();
       }}
@@ -153,11 +145,11 @@
     max={5}
     min={3}
     usedCards={handA.concat(handB)}
-    on:remove={(e) => {
+    on:remove={() => {
       community = community;
       updateTextFromArray();
     }}
-    on:add={(e) => {
+    on:add={() => {
       community = community;
       updateTextFromArray();
     }}

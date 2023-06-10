@@ -1,13 +1,6 @@
 <script>
-  import { onMount } from "svelte";
-  import {
-    Chart,
-    Colors,
-    PieController,
-    ArcElement,
-    Legend,
-    Tooltip,
-  } from "chart.js";
+  import ResultSingle from "$lib/components/result-single.svelte";
+  import ResultMulti from "$lib/components/result-multi.svelte";
   export let result = {
     win: 0,
     lose: 0,
@@ -17,85 +10,12 @@
     time: 0,
     interrupted: false,
   };
-  let canvas;
-  onMount(() => {
-    Chart.register(PieController, ArcElement, Colors, Legend, Tooltip);
-    let chart = new Chart(canvas, {
-      type: "pie",
-      data: {
-        labels: ["Win", "Tie", "Lose"],
-        datasets: [
-          {
-            data: [result.win, result.tie, result.lose],
-            backgroundColor: [
-              "rgb(255, 205, 86)",
-              "rgb(54, 162, 235)",
-              "rgb(255, 99, 132)",
-            ],
-          },
-        ],
-      },
-      options: {
-        plugins: {
-          legend: {
-            labels: {
-              font: {
-                size: 20,
-              },
-            },
-          },
-        },
-      },
-    });
-    return () => {
-      chart.destroy();
-      chart = null;
-    };
-  });
 </script>
 
 {#if result.total == 0 || result.covered == 0}
   <h3>This is an invalid board. No computation has been made</h3>
 {:else if result.total == 1}
-  <h3 positive={result.win == 1} negative={result.lose == 1}>
-    {#if result.win == 1}
-      <big>🫅</big><br />
-      Congrats, you won!
-    {:else if result.lose == 1}
-      <big>🥹</big><br />
-      You won my heart. Not the game, but my heart
-    {:else if result.tie == 1}
-      <big>🤝</big><br />
-      It's a tie
-    {/if}
-  </h3>
+  <ResultSingle {result} />
 {:else}
-  <canvas class="mx-auto max-w-xs p-8" bind:this={canvas} />
-  <small class="leading-tight">
-    {#if result.time > 2000}
-      In the matter of
-      <em>{Math.floor(result.time / 1000)} seconds</em>,
-    {/if}
-    I have fast-forwarded into the future and saw
-    {#if result.interrupted}
-      <em>{result.covered}</em>
-    {:else if result.covered == result.total}
-      all <em>{result.total}</em> possible
-    {:else}
-      <em>
-        {result.covered}/{result.total}
-        ({((result.covered / result.total) * 100).toFixed(2)}%)
-      </em>
-    {/if}
-    outcomes, <em>{result.win}</em> of that you win
-  </small>
+  <ResultMulti {result} />
 {/if}
-
-<style>
-  h3[negative="true"] {
-    @apply text-red-500;
-  }
-  h3[positive="true"] {
-    @apply text-green-600;
-  }
-</style>

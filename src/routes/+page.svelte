@@ -23,7 +23,6 @@
   let result = Object.assign({}, UNKOWN_RESULT);
   let isWorking = false;
   let worker = null;
-  let gameToPlay = 1;
 
   function buildWorker() {
     worker = new PokerSolver();
@@ -108,7 +107,7 @@
     {#if isWorking}
       <Bar
         value={LIVE_UPDATE ? result.covered : null}
-        max={LIVE_UPDATE ? gameToPlay : null}
+        max={LIVE_UPDATE ? result.total : null}
       />
       {#if LIVE_UPDATE}
         <small class="flex flex-col items-center justify-center gap-5">

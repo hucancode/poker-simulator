@@ -1,9 +1,13 @@
 <script>
-  export let value = 0.25;
-  export let max = 1.0;
+  export let value;
+  export let max;
 </script>
 
-<progress />
+{#if max}
+  <progress {max} {value} />
+{:else}
+  <progress />
+{/if}
 
 <style>
   progress {
