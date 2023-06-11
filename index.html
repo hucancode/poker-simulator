@@ -5,15 +5,15 @@
     <link rel="icon" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta http-equiv="content-security-policy" content="">
-		<link href="./_app/immutable/assets/_layout-b1d70b03.css" rel="stylesheet">
-		<link href="./_app/immutable/assets/_page-0a0941a3.css" rel="stylesheet">
-		<link rel="modulepreload" href="./_app/immutable/start-d57f4434.js">
+		<link href="./_app/immutable/assets/_layout-841f8502.css" rel="stylesheet">
+		<link href="./_app/immutable/assets/_page-8ad504d1.css" rel="stylesheet">
+		<link rel="modulepreload" href="./_app/immutable/start-0da921b6.js">
 		<link rel="modulepreload" href="./_app/immutable/chunks/index-ec5c854e.js">
 		<link rel="modulepreload" href="./_app/immutable/chunks/singletons-b02923f3.js">
 		<link rel="modulepreload" href="./_app/immutable/components/pages/_layout.svelte-489ab884.js">
 		<link rel="modulepreload" href="./_app/immutable/modules/pages/_layout.js-9cbb603b.js">
 		<link rel="modulepreload" href="./_app/immutable/chunks/_layout-da46b06b.js">
-		<link rel="modulepreload" href="./_app/immutable/components/pages/_page.svelte-3d7e8d6b.js">
+		<link rel="modulepreload" href="./_app/immutable/components/pages/_page.svelte-a99e6d32.js">
 		<link rel="modulepreload" href="./_app/immutable/chunks/stores-7d358371.js"><title>Poker Simulator</title><!-- HEAD_svelte-z1p3mi_START --><!-- HEAD_svelte-z1p3mi_END -->
   </head>
   <body data-sveltekit-preload-data="hover">
@@ -21,14 +21,13 @@
 
 
 
-<header class="container prose prose-slate text-center dark:prose-invert svelte-kzw1pa"><h1 class="svelte-kzw1pa">Poker Simulator <span class="svelte-46t93g">🃏</span></h1>
-  <small class="text-gray-500 svelte-kzw1pa">Enter your game state and let computer do the hard work for you</small></header>
-<main class="container prose prose-slate max-w-lg text-center dark:prose-invert svelte-kzw1pa"><form class="svelte-kzw1pa"><div class="svelte-1dh5jzl"><div class="flex items-center gap-0.5 svelte-1dh5jzl"><input title="Enter 2 cards for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]" id="game-code" type="text" pattern="([2-9TJQKA][scdh]){2},([2-9TJQKA][scdh]){0,2},([2-9TJQKA][scdh]){3,5}" required  class="svelte-1dh5jzl">
-    <label for="game-code" class="svelte-1dh5jzl">Game Code</label>
+<header class="container prose prose-slate text-center dark:prose-invert svelte-pb4hqh"><h1 class="svelte-pb4hqh">Poker Simulator <span class="svelte-46t93g">🃏</span></h1></header>
+<main class="container prose prose-slate max-w-lg text-center dark:prose-invert svelte-pb4hqh"><form class="svelte-pb4hqh"><div class="svelte-ogia8v"><div class="relative flex items-center gap-0.5 svelte-ogia8v"><input title="Enter 2 cards for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]" id="game-code" type="text" pattern="([2-9TJQKA][scdh]){2},([2-9TJQKA][scdh]){0,2},([2-9TJQKA][scdh]){3,5}" required  class="svelte-ogia8v">
+    <label for="game-code" class="svelte-ogia8v">Game Code</label>
     <button type="button" class="m-2 select-none bg-black px-4 py-1 px-6 text-xl font-bold uppercase text-white" >🎲</button></div>
-  <div class="mt-2 flex w-full justify-between svelte-1dh5jzl"><strong>Your Cards </strong>
+  <div class="mt-2 flex w-full justify-between svelte-ogia8v"><strong>Your Cards </strong>
     <strong>Their Cards </strong></div>
-  <div class="mb-4 flex items-center justify-between gap-2 svelte-1dh5jzl"><button type="button"  class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"><label is-high="false" class="relative aspect-[2/2.5] w-16 rounded-md p-0.5 svelte-qmd1b1"><input  enabled="false" type="checkbox" class="svelte-qmd1b1">
+  <div class="mb-4 flex items-center justify-between gap-2 svelte-ogia8v"><button type="button"  class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"><label is-high="false" class="relative aspect-[2/2.5] w-16 rounded-md p-0.5 svelte-qmd1b1"><input  enabled="false" type="checkbox" class="svelte-qmd1b1">
   <div class="relative flex h-full w-full select-none items-center justify-center overflow-hidden rounded-md border border-gray-300 bg-gray-100 text-gray-800 svelte-qmd1b1"  is-red="false"><div class="absolute top-1 left-1 leading-none"></div>
     <div class="text-2xl md:text-4xl"></div>
     <div class="absolute top-0 left-0 h-full w-full bg-diagonal-stripe text-black/80"></div></div>
@@ -712,21 +711,20 @@
 </label></div></div>
 </dialog>
 </div>
-    <div class="mt-2 svelte-kzw1pa"><button type="submit" class="svelte-kzw1pa">Compute</button></div></form>
-  <div><h3>Press <strong>Compute</strong> to run the simulation for this board
-      </h3></div></main>
-<footer class="my-6 text-center opacity-50 svelte-kzw1pa">Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br>
+    <div class="mt-2 svelte-pb4hqh"><button type="submit" class="svelte-pb4hqh">Compute</button></div></form>
+  <div><small class="text-gray-500 svelte-pb4hqh">Enter your game state and let computer do the hard work for you</small></div></main>
+<footer class="my-6 text-center opacity-50 svelte-pb4hqh">Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br>
 </footer>
 
 
-		<script type="module" data-sveltekit-hydrate="1lfrm4o">
-			import { start } from "./_app/immutable/start-d57f4434.js";
+		<script type="module" data-sveltekit-hydrate="g1ecwh">
+			import { start } from "./_app/immutable/start-0da921b6.js";
 
 			start({
 				env: {},
 				paths: {"base":"","assets":""},
-				target: document.querySelector('[data-sveltekit-hydrate="1lfrm4o"]').parentNode,
-				version: "1686442857165",
+				target: document.querySelector('[data-sveltekit-hydrate="g1ecwh"]').parentNode,
+				version: "1686443757800",
 				hydrate: {
 					node_ids: [0, 2],
 					data: [null,null],
