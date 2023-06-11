@@ -86,9 +86,6 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <small class="text-gray-500"
-    >Enter your game state and let computer do the hard work for you</small
-  >
 </header>
 <main
   class="container prose prose-slate max-w-lg text-center dark:prose-invert"
@@ -134,9 +131,9 @@
     {:else if result.total >= 0}
       <Result {result} />
     {:else}
-      <h3>
-        Press <strong>Compute</strong> to run the simulation for this board
-      </h3>
+      <small class="text-gray-500"
+        >Enter your game state and let computer do the hard work for you</small
+      >
     {/if}
   </div>
 </main>
@@ -152,10 +149,10 @@
     @apply px-4;
   }
   h1 {
-    @apply mt-0;
+    @apply mt-0 mb-6;
   }
   small {
-    @apply leading-snug;
+    @apply text-xs font-thin leading-snug;
   }
   button {
     @apply m-2 bg-black px-4 py-1 text-xl font-bold uppercase text-white;

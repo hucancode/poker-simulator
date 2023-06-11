@@ -82,7 +82,7 @@
 </script>
 
 <div>
-  <div class="flex items-center gap-0.5">
+  <div class="relative flex items-center gap-0.5">
     <input
       title={GAME_CODE_HELP}
       bind:this={gameCodeInput}
@@ -161,9 +161,9 @@
     @apply w-full border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-red-500;
   }
   input[type="text"] + label {
-    @apply absolute -top-1/3 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
+    @apply absolute -top-1/4 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
   }
   div:has(input[type="text"]) {
-    @apply relative mt-6 mb-2;
+    @apply relative my-2;
   }
 </style>
