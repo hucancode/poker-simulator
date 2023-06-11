@@ -18,10 +18,9 @@
     covered: 0,
     time: 0,
     winRate: 0,
-    interupted: false,
   };
   let gameBoard;
-  let result = Object.assign({}, UNKOWN_RESULT);
+  let result = { ...UNKOWN_RESULT };
   let isWorking = false;
   let worker = null;
   let gameCode = "";
@@ -46,7 +45,7 @@
       worker = null;
       return;
     }
-    result = Object.assign({}, UNKOWN_RESULT);
+    result = { ...UNKOWN_RESULT };
     if (!gameBoard.isValid()) {
       return;
     }
@@ -100,7 +99,7 @@
       disabled={isWorking}
       bind:this={gameBoard}
       bind:code={gameCode}
-      on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
+      on:updated={() => (result = { ...UNKOWN_RESULT })}
     />
     <div class="mt-2">
       <button type="submit" on:click|preventDefault={compute}
