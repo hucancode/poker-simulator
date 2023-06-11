@@ -86,7 +86,9 @@
 </svelte:head>
 <header class="container prose prose-slate text-center dark:prose-invert">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
-  <p>Enter your game state and let computer do the hard work for you</p>
+  <small class="text-gray-500"
+    >Enter your game state and let computer do the hard work for you</small
+  >
 </header>
 <main
   class="container prose prose-slate max-w-lg text-center dark:prose-invert"
@@ -152,7 +154,6 @@
   h1 {
     @apply mt-0;
   }
-  p,
   small {
     @apply leading-snug;
   }

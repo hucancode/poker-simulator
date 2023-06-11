@@ -4,4 +4,4 @@ source "$HOME/.cargo/env"
 echo "Installing wasm-pack..."
 # Install wasm-pack
 curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh -s -- -y
-wasm-pack build --target web --no-typescript ./poker-solver  && mkdir -p ./static/assets && cp ./poker-solver/pkg/*.wasm ./static/assets/
+wasm-pack build --target web --no-typescript ./poker-solver

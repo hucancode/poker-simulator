@@ -61,7 +61,7 @@
       .sort(() => Math.random() - 0.5);
     handA = pool.slice(0, 2);
     // handB = pool.slice(2, 4);
-    community = pool.slice(5, 10);
+    community = pool.slice(5, 9 + Math.floor(Math.random() * 2));
     updateTextFromArray();
   }
   export function isValid() {

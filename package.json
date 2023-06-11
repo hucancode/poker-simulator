@@ -3,8 +3,8 @@
   "version": "0.3",
   "scripts": {
     "dev": "vite dev",
-    "build:wasm": "wasm-pack build --target web --no-typescript ./poker-solver  && mkdir -p ./static/assets && cp ./poker-solver/pkg/*.wasm ./static/assets/",
-    "build:wasm-ci": "./build-wasm.sh",
+    "build:wasm": "wasm-pack build --target web --no-typescript ./poker-solver",
+    "build:wasm-ci": "./build-wasm-ci.sh",
     "build": "vite build",
     "test": "vitest",
     "coverage": "vitest run --coverage",
