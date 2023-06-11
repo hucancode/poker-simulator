@@ -101,7 +101,7 @@
       {disabled}>🎲</button
     >
   </div>
-  <div class="mt-6 flex w-full justify-between">
+  <div class="mt-2 flex w-full justify-between">
     <strong>Your Cards </strong>
     <strong>Their Cards </strong>
   </div>

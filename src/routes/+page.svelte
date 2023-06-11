@@ -99,7 +99,7 @@
       bind:this={gameBoard}
       on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
     />
-    <div>
+    <div class="mt-2">
       <button type="submit" on:click|preventDefault={compute}
         >{isWorking ? "Stop" : "Compute"}</button
       >
@@ -140,7 +140,7 @@
     {/if}
   </div>
 </main>
-<footer class="my-10 text-center opacity-50">
+<footer class="my-6 text-center opacity-50">
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
 </footer>
