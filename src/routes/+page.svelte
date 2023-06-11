@@ -1,5 +1,6 @@
 <script>
   import { page } from "$app/stores";
+  import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import GameBoard from "$lib/components/game-board.svelte";
   import Result from "$lib/components/result-visualizer.svelte";
@@ -23,6 +24,7 @@
   let result = Object.assign({}, UNKOWN_RESULT);
   let isWorking = false;
   let worker = null;
+  let gameCode = "";
 
   function buildWorker() {
     worker = new PokerSolver();
@@ -51,6 +53,8 @@
     if (!worker) {
       buildWorker();
     }
+    $page.url.searchParams.set("code", gameCode);
+    goto(`?${$page.url.searchParams.toString()}`);
     worker.postMessage({
       name: "start",
       handA: gameBoard.getHandA(),
@@ -73,6 +77,7 @@
   onMount(async () => {
     const code = $page.url.searchParams.get("code");
     if (code) {
+      gameCode = code;
       gameBoard.updateWithText(code);
       compute();
     } else {
@@ -94,6 +99,7 @@
     <GameBoard
       disabled={isWorking}
       bind:this={gameBoard}
+      bind:code={gameCode}
       on:updated={() => (result = Object.assign({}, UNKOWN_RESULT))}
     />
     <div class="mt-2">

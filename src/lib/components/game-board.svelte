@@ -19,7 +19,8 @@
   const GAME_CODE_HELP =
     "Enter 2 cards for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]";
 
-  export let gameCodeInput;
+  let codeInput;
+  export let code;
   let community = [],
     handA = [],
     handB = [];
@@ -28,13 +29,13 @@
   const dispatch = createEventDispatcher();
 
   function updateArrayFromText() {
-    if (!gameCodeInput.validity.valid) {
+    if (!codeInput.validity.valid) {
       community = [];
       handA = [];
       handB = [];
       return;
     }
-    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    const arr = code.split(HAND_DELIMETER);
     handA = handTextToArray(arr[0]);
     handB = handTextToArray(arr[1]);
     community = handTextToArray(arr[2]);
@@ -45,12 +46,13 @@
     const a = handArrayToText(handA);
     const b = handArrayToText(handB);
     const c = handArrayToText(community);
-    gameCodeInput.value = a + HAND_DELIMETER + b + HAND_DELIMETER + c;
+    code = a + HAND_DELIMETER + b + HAND_DELIMETER + c;
     dispatch("updated");
   }
 
   export function updateWithText(str) {
-    gameCodeInput.value = str;
+    code = str;
+    codeInput.value = code;
     updateArrayFromText();
   }
 
@@ -65,18 +67,18 @@
     updateTextFromArray();
   }
   export function isValid() {
-    return gameCodeInput.validity.valid;
+    return codeInput.validity.valid;
   }
   export function getCommunity() {
-    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    const arr = code.split(HAND_DELIMETER);
     return arr[2];
   }
   export function getHandB() {
-    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    const arr = code.split(HAND_DELIMETER);
     return arr[1];
   }
   export function getHandA() {
-    const arr = gameCodeInput.value.split(HAND_DELIMETER);
+    const arr = code.split(HAND_DELIMETER);
     return arr[0];
   }
 </script>
@@ -85,7 +87,8 @@
   <div class="relative flex items-center gap-0.5">
     <input
       title={GAME_CODE_HELP}
-      bind:this={gameCodeInput}
+      bind:this={codeInput}
+      bind:value={code}
       id="game-code"
       type="text"
       pattern={GAME_CODE_REGEX}
