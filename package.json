@@ -1,6 +1,6 @@
 {
   "name": "poker-simulator",
-  "version": "0.3",
+  "version": "0.4",
   "scripts": {
     "dev": "vite dev",
     "build:wasm": "wasm-pack build --target web --no-typescript ./poker-solver",
