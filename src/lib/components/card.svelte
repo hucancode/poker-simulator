@@ -6,8 +6,12 @@
   export let selectable = false;
   export let selected = false;
 
+  $: rankIdx = Math.floor(card / 4);
+  $: suitIdx = card % 4;
   $: isHigh = card >= 9 * 4;
-  $: isRed = Math.floor(card % 4) >= 2;
+  $: isRed = suitIdx >= 2;
+  $: isCourt = card >= 0 && rankIdx >= 9 && rankIdx <= 11;
+  $: courtCid = isCourt ? poker.cardIdToText(card) : "";
 
   const dispatch = createEventDispatcher();
   function toggle(event) {
@@ -27,11 +31,15 @@
   />
   <div class="face" class:selected class:is-red={isRed}>
     <div class="rank">
-      {poker.readableRanks[Math.floor(card / 4)] ?? ""}
+      {poker.readableRanks[rankIdx] ?? ""}
     </div>
-    <div class="suit">
-      {poker.suitSymbols[Math.floor(card % 4)] ?? ""}
-    </div>
+    {#if isCourt}
+      <img class="court" src="/courts/{courtCid}.svg" alt={courtCid} draggable="false" />
+    {:else}
+      <div class="suit">
+        {poker.suitSymbols[suitIdx] ?? ""}
+      </div>
+    {/if}
     {#if used || card < 0}
       <div class="stripe"></div>
     {/if}
@@ -84,6 +92,7 @@
     top: 0.25rem;
     left: 0.25rem;
     line-height: 1;
+    z-index: 1;
   }
   .suit {
     font-size: 1.5rem;
@@ -92,6 +101,14 @@
     .suit {
       font-size: 2.25rem;
     }
+  }
+  .court {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
   }
   .stripe {
     position: absolute;
