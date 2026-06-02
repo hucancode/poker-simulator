@@ -14,6 +14,7 @@
     heroTie: 0,
     heroLose: 0,
     villainEquity: [],
+    villainNames: [],
     time: 0,
     ready: false,
   };
@@ -23,6 +24,8 @@
   let isWorking = false;
   let worker = null;
   let errorMessage = "";
+
+  let pendingVillainNames = [];
 
   function buildWorker() {
     worker = new PokerSolver();
@@ -34,6 +37,7 @@
           heroTie: e.data.heroTie,
           heroLose: e.data.heroLose,
           villainEquity: e.data.villainEquity,
+          villainNames: pendingVillainNames,
           time: e.data.time,
           ready: true,
         };
@@ -61,6 +65,7 @@
     }
     if (!worker) buildWorker();
     syncUrl();
+    pendingVillainNames = gameBoard.getActiveVillainNames();
     worker.postMessage({
       name: "startMulti",
       hero: gameBoard.getHero(),

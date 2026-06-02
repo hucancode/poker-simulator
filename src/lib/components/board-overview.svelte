@@ -1,16 +1,18 @@
 <script>
-  import { createEventDispatcher } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import { handTextToArray, handArrayToText } from "$lib/poker/cards";
   import Card from "$lib/components/card.svelte";
   import VillainDisplay from "$lib/components/villain-display.svelte";
   import CardPickerModal from "$lib/components/card-picker-modal.svelte";
   import RangePickerModal from "$lib/components/range-picker-modal.svelte";
-  import { Splide, SplideTrack, SplideSlide } from "@splidejs/svelte-splide";
-  import "@splidejs/splide/css";
+  import { register } from "swiper/element/bundle";
+
+  let swiperEl;
 
   export let disabled = false;
 
-  const VILLAIN_SLOTS = 8;
+  const VILLAIN_NAMES = ["Alice", "Bob", "Carol", "Dave", "Eve", "Frank", "Grace", "Heidi"];
+  const VILLAIN_SLOTS = VILLAIN_NAMES.length;
   let hero = [];
   let community = [];
   let villains = Array(VILLAIN_SLOTS)
@@ -69,6 +71,9 @@
   export function getVillainNotations() {
     return villains.map((v) => v.notation).filter((n) => n.trim());
   }
+  export function getActiveVillainNames() {
+    return VILLAIN_NAMES.filter((_, i) => villains[i].notation.trim());
+  }
   export function getVillainSlots() {
     return villains.map((v) => v.notation);
   }
@@ -106,19 +111,26 @@
     notify();
   }
 
-  const splideOptions = {
-    perPage: 3,
-    perMove: 1,
-    gap: "0.5rem",
-    pagination: true,
-    arrows: false,
-    drag: true,
-    padding: { left: 0, right: "1.5rem" },
+  const swiperParams = {
+    slidesPerView: 1.5,
+    slidesPerGroup: 1,
+    spaceBetween: 8,
+    pagination: { clickable: true },
+    navigation: false,
+    slidesOffsetAfter: 24,
     breakpoints: {
-      500: { perPage: 2, arrows: true, padding: 0 },
-      900: { perPage: 3, arrows: true, padding: 0 },
+      500: { slidesPerView: 2, navigation: true, slidesOffsetAfter: 0 },
+      900: { slidesPerView: 3, navigation: true, slidesOffsetAfter: 0 },
     },
   };
+
+  onMount(() => {
+    register();
+    if (swiperEl) {
+      Object.assign(swiperEl, swiperParams);
+      swiperEl.initialize();
+    }
+  });
 </script>
 
 <div class="overview" class:disabled>
@@ -153,9 +165,9 @@
   </section>
 
   <div class="villains">
-    <Splide options={splideOptions} aria-label="Villains">
+    <swiper-container bind:this={swiperEl} init="false" aria-label="Villains">
       {#each villains as v, i (i)}
-        <SplideSlide>
+        <swiper-slide>
           <div
             class="villain"
             class:empty={!v.notation.trim()}
@@ -166,15 +178,15 @@
               (e.key === "Enter" || e.key === " ") &&
               open({ type: "villain", idx: i })}
           >
-            <span class="label">Villain {i + 1}</span>
+            <span class="label">{VILLAIN_NAMES[i]}</span>
             <VillainDisplay
               notation={v.notation}
               dead={hero.concat(community)}
             />
           </div>
-        </SplideSlide>
+        </swiper-slide>
       {/each}
-    </Splide>
+    </swiper-container>
   </div>
 </div>
 
@@ -204,7 +216,7 @@
   <RangePickerModal
     open={true}
     notation={villains[editing.idx].notation}
-    title={`Villain ${editing.idx + 1} range`}
+    title={`${VILLAIN_NAMES[editing.idx]} range`}
     removable={!!villains[editing.idx].notation.trim()}
     on:change={(e) => onVillainChange(editing.idx, e)}
     on:remove={() => clearVillain(editing.idx)}
@@ -250,21 +262,18 @@
     flex-direction: column;
     gap: 0.5rem;
   }
-  .villains :global(.splide__pagination) {
-    position: static;
-    margin-top: 0.5rem;
-    padding: 0;
-    gap: 0.25rem;
+  .villains swiper-container {
+    width: 100%;
+    --swiper-pagination-color: var(--fg);
+    --swiper-pagination-bullet-inactive-color: var(--border);
+    --swiper-pagination-bullet-inactive-opacity: 1;
+    --swiper-pagination-bullet-size: 0.5rem;
+    --swiper-pagination-bullet-horizontal-gap: 0.25rem;
+    --swiper-navigation-color: var(--fg);
+    --swiper-navigation-size: 1.25rem;
   }
-  .villains :global(.splide__pagination__page) {
-    background: #d1d5db;
-    opacity: 1;
-    width: 0.5rem;
-    height: 0.5rem;
-  }
-  .villains :global(.splide__pagination__page.is-active) {
-    background: #000;
-    transform: scale(1.2);
+  .villains :global(swiper-container::part(wrapper)) {
+    padding-bottom: 2rem;
   }
   .villain {
     padding: 0.5rem;
@@ -274,7 +283,8 @@
     gap: 0.375rem;
     cursor: pointer;
     height: 100%;
-    background: #f9fafb;
+    background: var(--card-bg);
+    color: var(--fg);
     transition: border-color 100ms, opacity 100ms;
   }
   .villain.empty {
@@ -284,7 +294,7 @@
   .villain:focus-visible,
   .villain.empty:hover {
     opacity: 1;
-    border-color: #000;
+    border-color: var(--fg);
     outline: none;
   }
 </style>

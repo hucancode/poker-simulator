@@ -21,6 +21,9 @@
   :root {
     --bg: #111827;
     --fg: #fff;
+    --card-bg: #1f2937;
+    --card-bg-alt: #374151;
+    --border: #374151;
   }
 }
 

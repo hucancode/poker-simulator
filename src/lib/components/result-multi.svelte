@@ -5,6 +5,7 @@
     heroTie: 0,
     heroLose: 0,
     villainEquity: [],
+    villainNames: [],
     time: 0,
   };
 
@@ -53,7 +54,7 @@
       <div class="vil-head">Villain equity</div>
       {#each result.villainEquity as eq, i}
         <div class="vil-row">
-          <span class="vil-name">V{i + 1}</span>
+          <span class="vil-name">{result.villainNames[i] ?? ""}</span>
           <div class="vil-bar">
             <div class="vil-fill" style="width: {eq * 100}%"></div>
           </div>
@@ -141,13 +142,13 @@
   }
   .vil-row {
     display: grid;
-    grid-template-columns: 2rem 1fr 3.5rem;
+    grid-template-columns: 3.5rem 1fr 3.5rem;
     align-items: center;
     gap: 0.5rem;
   }
   .vil-name {
     font-weight: 700;
-    font-family: ui-monospace, monospace;
+    text-align: left;
   }
   .vil-bar {
     background: #e5e7eb;
