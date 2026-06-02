@@ -2,82 +2,88 @@
   import { page } from "$app/stores";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
-  import GameBoard from "$lib/components/game-board.svelte";
-  import Result from "$lib/components/result-visualizer.svelte";
+  import GameBoard from "$lib/components/board-overview.svelte";
+  import ResultMulti from "$lib/components/result-multi.svelte";
   import WavingHand from "$lib/components/waving-hand.svelte";
   import Bar from "$lib/components/progress-bar.svelte";
   import PokerSolver from "$lib/workers/poker-solver?worker";
 
-  const LIVE_UPDATE = false;
-
-  const UNKOWN_RESULT = {
-    win: 0,
-    lose: 0,
-    tie: 0,
-    total: -1,
-    covered: 0,
+  const UNKNOWN_RESULT = {
+    iterations: 0,
+    heroWin: 0,
+    heroTie: 0,
+    heroLose: 0,
+    villainEquity: [],
     time: 0,
-    winRate: 0,
+    ready: false,
   };
+
   let gameBoard;
-  let result = { ...UNKOWN_RESULT };
+  let result = { ...UNKNOWN_RESULT };
   let isWorking = false;
   let worker = null;
-  let gameCode = "";
+  let errorMessage = "";
 
   function buildWorker() {
     worker = new PokerSolver();
     worker.addEventListener("message", (e) => {
-      if (e.data.name === "ok") {
-        reportComputeData(e.data);
+      if (e.data.name === "ok" && e.data.mode === "multi") {
+        result = {
+          iterations: e.data.iterations,
+          heroWin: e.data.heroWin,
+          heroTie: e.data.heroTie,
+          heroLose: e.data.heroLose,
+          villainEquity: e.data.villainEquity,
+          time: e.data.time,
+          ready: true,
+        };
+        isWorking = false;
+      } else if (e.data.name === "error") {
+        errorMessage = e.data.message;
+        isWorking = false;
       }
     });
-    worker.postMessage({
-      name: "fixURI",
-      baseURI: document.baseURI,
-    });
+    worker.postMessage({ name: "fixURI", baseURI: document.baseURI });
   }
+
   function compute() {
     if (isWorking) {
-      if (worker) {
-        worker.terminate();
-      }
+      if (worker) worker.terminate();
       worker = null;
+      isWorking = false;
       return;
     }
-    result = { ...UNKOWN_RESULT };
+    errorMessage = "";
+    result = { ...UNKNOWN_RESULT };
     if (!gameBoard.isValid()) {
+      errorMessage = "Pick 2 hero cards, 3-5 board cards, and a range for at least one villain.";
       return;
     }
-    if (!worker) {
-      buildWorker();
-    }
-    $page.url.searchParams.set("code", gameCode);
-    goto(`?${$page.url.searchParams.toString()}`);
+    if (!worker) buildWorker();
+    syncUrl();
     worker.postMessage({
-      name: "start",
-      handA: gameBoard.getHandA(),
-      handB: gameBoard.getHandB(),
+      name: "startMulti",
+      hero: gameBoard.getHero(),
+      villains: gameBoard.getVillainNotations(),
       community: gameBoard.getCommunity(),
+      maxIterations: 0,
+      seed: 0,
     });
     isWorking = true;
   }
 
-  function reportComputeData(data) {
-    result.win = data.win;
-    result.lose = data.lose;
-    result.tie = data.tie;
-    result.covered = result.total = result.win + result.lose + result.tie;
-    result.winRate = (result.win / result.covered) * 100;
-    result.time = data.time;
-    isWorking = false;
+  function syncUrl() {
+    const params = new URLSearchParams();
+    params.set("h", gameBoard.getHero());
+    params.set("c", gameBoard.getCommunity());
+    for (const v of gameBoard.getVillainNotations()) params.append("v", v);
+    goto(`?${params.toString()}`, { keepFocus: true, noScroll: true });
   }
 
   onMount(async () => {
-    const code = $page.url.searchParams.get("code");
-    if (code) {
-      gameCode = code;
-      gameBoard.updateWithText(code);
+    const params = $page.url.searchParams;
+    if (params.has("h") || params.has("v") || params.has("c")) {
+      gameBoard.loadFromUrl(params);
       compute();
     } else {
       gameBoard.randomize();
@@ -88,49 +94,36 @@
 <svelte:head>
   <title>Poker Simulator</title>
 </svelte:head>
+
 <header class="container text-center">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
 </header>
-<main class="container text-center main-narrow">
-  <form>
+
+<main class="container main-narrow">
+  <form on:submit|preventDefault={compute}>
     <GameBoard
       disabled={isWorking}
       bind:this={gameBoard}
-      bind:code={gameCode}
-      on:updated={() => (result = { ...UNKOWN_RESULT })}
+      on:updated={() => {
+        result = { ...UNKNOWN_RESULT };
+        errorMessage = "";
+      }}
     />
     <div class="action">
-      <button type="submit" on:click|preventDefault={compute}
-        >{isWorking ? "Stop" : "Compute"}</button
-      >
+      <button type="submit">{isWorking ? "Stop" : "Compute"}</button>
     </div>
   </form>
-  <div>
+
+  {#if errorMessage}
+    <p class="error">{errorMessage}</p>
+  {/if}
+
+  <div class="result-area">
     {#if isWorking}
-      <Bar
-        value={LIVE_UPDATE ? result.covered : null}
-        max={LIVE_UPDATE ? result.total : null}
-      />
-      {#if LIVE_UPDATE}
-        <small class="live">
-          <div class="row-mt">
-            <span>Looking into the future</span>
-            <span class="mono">#{result.covered}</span>
-          </div>
-          <div class="winning">
-            <span>You are winning &nbsp</span>
-            <div class="win-count">
-              <div>
-                {result.win}
-              </div>
-              ({result.winRate.toFixed(1)}%)
-            </div>
-            <span>&nbsp;games so far</span>
-          </div>
-        </small>
-      {/if}
-    {:else if result.total >= 0}
-      <Result {result} />
+      <Bar />
+      <small class="muted">Crunching outcomes…</small>
+    {:else if result.ready}
+      <ResultMulti {result} />
     {:else}
       <small class="muted"
         >Enter your game state and let computer do the hard work for you</small
@@ -138,9 +131,9 @@
     {/if}
   </div>
 </main>
+
 <footer class="footer">
-  Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
-  />
+  Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong>
 </footer>
 
 <style>
@@ -152,68 +145,51 @@
   }
   .main-narrow {
     max-width: 32rem;
+    margin: 0 auto;
   }
   h1 {
     margin-top: 0;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
   }
-  small {
-    font-size: 0.75rem;
-    font-weight: 100;
-    line-height: 1.375;
+  form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+  .action {
+    display: flex;
+    justify-content: center;
+    margin-top: 0.75rem;
+  }
+  button[type="submit"] {
+    background: #000;
+    color: #fff;
+    padding: 0.5rem 1.5rem;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    border: 0;
+    cursor: pointer;
+  }
+  .result-area {
+    margin-top: 1rem;
+    text-align: center;
+  }
+  .error {
+    color: #b91c1c;
+    text-align: center;
+    font-size: 0.875rem;
+    margin: 0.5rem 0;
   }
   .muted {
     color: #6b7280;
-  }
-  .action {
-    margin-top: 0.5rem;
   }
   .footer {
     margin-top: 1.5rem;
     margin-bottom: 1.5rem;
     text-align: center;
     opacity: 0.5;
-  }
-  button {
-    margin: 0.5rem;
-    background: #000;
-    padding: 0.25rem 1rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    color: #fff;
-  }
-  form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .live {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1.25rem;
-  }
-  .row-mt {
-    margin-top: 1.25rem;
-  }
-  .mono {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  }
-  .winning {
-    margin-top: auto;
-    margin-bottom: auto;
-    display: flex;
-    align-items: baseline;
-  }
-  .win-count {
-    display: flex;
-    width: 2.5rem;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-weight: 700;
   }
 </style>

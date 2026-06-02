@@ -106,6 +106,7 @@
   .card.is-high {
     position: relative;
     overflow: hidden;
+    isolation: isolate;
     background-color: transparent;
   }
   .card.is-high::before {
