@@ -40,13 +40,18 @@
 
 <style>
   .card {
-    position: relative;
     aspect-ratio: 2 / 2.5;
-    width: 4rem;
-    border-radius: 0.375rem;
-    padding: 0.125rem;
-    display: block;
+    width: 3.5rem;
+    border-radius: 0.275rem;
+    padding: 0.075rem;
     background-color: #e5e7eb;
+  }
+  @media (min-width: 512px) {
+    .card {
+        width: 4rem;
+        border-radius: 0.375rem;
+        padding: 0.125rem;
+    }
   }
   input {
     display: none;

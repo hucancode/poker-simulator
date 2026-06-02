@@ -87,7 +87,7 @@
     background: var(--bg, #fff);
     color: var(--fg, #111);
     padding: 0.75rem;
-    width: min(100vw, 32rem);
+    width: min(100vw, 42rem);
     max-height: 90vh;
     display: flex;
     flex-direction: column;
@@ -118,7 +118,7 @@
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 0.375rem;
     overflow-y: auto;
     padding: 0.25rem;
