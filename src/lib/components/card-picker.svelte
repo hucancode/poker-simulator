@@ -20,9 +20,7 @@
   }
 </script>
 
-<div
-  class="mx-auto grid max-h-96 w-max grid-cols-4 gap-2 overflow-y-auto p-2 font-bold md:max-h-full md:grid-cols-8 md:gap-4"
->
+<div class="grid">
   {#each Array(52)
     .fill()
     .map((e, i) => i) as i}
@@ -37,3 +35,24 @@
     />
   {/each}
 </div>
+
+<style>
+  .grid {
+    margin: 0 auto;
+    display: grid;
+    max-height: 24rem;
+    width: max-content;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    overflow-y: auto;
+    padding: 0.5rem;
+    font-weight: 700;
+  }
+  @media (min-width: 768px) {
+    .grid {
+      max-height: none;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 1rem;
+    }
+  }
+</style>

@@ -15,7 +15,6 @@
     HAND_DELIMETER +
     COMMUNITY_TEXT_REGEX;
 
-  // TODO: explain more about the game state notation, value input, range input, ...
   const GAME_CODE_HELP =
     "Enter 2 cards for you, 0-2 for them, 3-5 community cards, each card consists of 2 letters (rank and suit) in the form of [2-9TJQKA][scdh]";
 
@@ -62,7 +61,6 @@
       .map((_, i) => i)
       .sort(() => Math.random() - 0.5);
     handA = pool.slice(0, 2);
-    // handB = pool.slice(2, 4);
     community = pool.slice(5, 9 + Math.floor(Math.random() * 2));
     updateTextFromArray();
   }
@@ -84,7 +82,7 @@
 </script>
 
 <div>
-  <div class="relative flex items-center gap-0.5">
+  <div class="code-row">
     <input
       title={GAME_CODE_HELP}
       bind:this={codeInput}
@@ -99,16 +97,16 @@
     <label for="game-code">Game Code</label>
     <button
       type="button"
-      class="m-2 select-none bg-black px-4 py-1 px-6 text-xl font-bold uppercase text-white"
+      class="dice-btn"
       on:click|preventDefault={randomize}
       {disabled}>🎲</button
     >
   </div>
-  <div class="mt-2 flex w-full justify-between">
+  <div class="labels-row">
     <strong>Your Cards </strong>
     <strong>Their Cards </strong>
   </div>
-  <div class="mb-4 flex items-center justify-between gap-2">
+  <div class="hands-row">
     <Hand
       {disabled}
       cards={handA}
@@ -141,7 +139,7 @@
       }}
     />
   </div>
-  <strong class="w-full text-center">Community Cards</strong>
+  <strong class="community-label">Community Cards</strong>
   <Hand
     {disabled}
     cards={community}
@@ -160,13 +158,62 @@
 </div>
 
 <style>
+  .code-row {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    margin: 0.5rem 0;
+  }
   input {
-    @apply w-full border p-1 text-center text-gray-800 valid:border-green-500 invalid:border-red-500;
+    width: 100%;
+    border: 1px solid #d1d5db;
+    padding: 0.25rem;
+    text-align: center;
+    color: #1f2937;
+  }
+  input:valid {
+    border-color: #22c55e;
+  }
+  input:invalid {
+    border-color: #ef4444;
   }
   input[type="text"] + label {
-    @apply absolute -top-1/4 left-1/2 -translate-x-1/2 bg-black px-2 text-sm text-white;
+    position: absolute;
+    top: -25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000;
+    padding: 0 0.5rem;
+    font-size: 0.875rem;
+    color: #fff;
   }
-  div:has(input[type="text"]) {
-    @apply relative my-2;
+  .dice-btn {
+    margin: 0.5rem;
+    user-select: none;
+    background: #000;
+    padding: 0.25rem 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .labels-row {
+    margin-top: 0.5rem;
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+  .hands-row {
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .community-label {
+    display: block;
+    width: 100%;
+    text-align: center;
   }
 </style>

@@ -53,11 +53,11 @@
   });
 </script>
 
-<canvas class="mx-auto max-w-xs p-8" bind:this={canvas} />
-<small class="leading-tight">
+<canvas class="chart" bind:this={canvas}></canvas>
+<small class="caption">
   {#if result.time > 2000}
     In the matter of
-    <em>{Math.floor(result.time / 1000)} seconds</em>,
+    <em>{Math.floor(result.time / 1000) } seconds</em>,
   {/if}
   I have fast-forwarded into the future and saw
   {#if result.interrupted}
@@ -72,3 +72,15 @@
   {/if}
   outcomes, <em>{result.win}</em> of that you win
 </small>
+
+<style>
+  .chart {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 20rem;
+    padding: 2rem;
+  }
+  .caption {
+    line-height: 1.25;
+  }
+</style>

@@ -31,12 +31,7 @@
   }
 </script>
 
-<button
-  type="button"
-  {disabled}
-  class="mx-auto flex max-w-full flex-wrap items-center justify-center gap-0.5 font-bold md:gap-1"
-  on:click={open}
->
+<button type="button" {disabled} class="hand" on:click={open}>
   {#each Array(Math.max(cards.length, max)) as _, i}
     <Card card={i < cards.length ? cards[i] : -1} />
   {/each}
@@ -46,18 +41,14 @@
   bind:this={picker}
   on:click|self={close}
   on:keypress={() => {}}
-  class="pb-20"
+  class="picker-dialog"
 >
-  <div class="mx-auto flex w-max flex-col items-center justify-center">
-    <div class="flex items-center justify-between gap-2">
-      <p class="bg-black p-2 text-white">
+  <div class="picker-inner">
+    <div class="picker-header">
+      <p class="header-text">
         Selected <b class:invalid={cards.length < min}>{cards.length}/{max}</b> cards
       </p>
-      <button
-        type="button"
-        class="cursor-pointer bg-black py-2 px-6 font-bold text-white"
-        on:click={close}>X</button
-      >
+      <button type="button" class="close-btn" on:click={close}>X</button>
     </div>
     <Picker
       {cards}
@@ -70,7 +61,51 @@
 </dialog>
 
 <style>
+  .hand {
+    margin: 0 auto;
+    display: flex;
+    max-width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.125rem;
+    font-weight: 700;
+  }
+  @media (min-width: 768px) {
+    .hand {
+      gap: 0.25rem;
+    }
+  }
+  .picker-dialog {
+    padding-bottom: 5rem;
+  }
+  .picker-inner {
+    margin: 0 auto;
+    display: flex;
+    width: max-content;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .picker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+  .header-text {
+    background: #000;
+    padding: 0.5rem;
+    color: #fff;
+  }
+  .close-btn {
+    cursor: pointer;
+    background: #000;
+    padding: 0.5rem 1.5rem;
+    font-weight: 700;
+    color: #fff;
+  }
   .invalid {
-    @apply text-red-500;
+    color: #ef4444;
   }
 </style>

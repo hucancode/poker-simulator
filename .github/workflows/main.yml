@@ -1,50 +1,68 @@
-# This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+name: Deploy to GitHub Pages
 
-name: Node.js CI
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
 
-on: workflow_dispatch
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [19.x]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: "npm"
-      - name: Cache dependencies
-        uses: actions/cache@v2
+          node-version: 20
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
         with:
-          path: |
-            **/node_modules
-          key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
-      - name: Install rust tool chain
-        run: npm run build:wasm-ci
+          targets: wasm32-unknown-unknown
+
+      - name: Cache Rust
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: poker-solver
+
+      - name: Install wasm-pack
+        uses: jetli/wasm-pack-action@v0.4.0
+
       - name: Install dependencies
         run: npm install
-      - name: Build
+
+      - name: Build wasm
+        run: npm run build:wasm
+
+      - name: Build site
         run: npm run build
-      - name: Test
-        run: npm test
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy
-        run: |
-          git config --global user.name $user_name
-          git config --global user.email $user_email
-          git remote set-url origin https://${user_name}:${github_token}@github.com/${repository}
-          git remote -v
-          npm run deploy
-        env:
-          user_name: "hucancode"
-          user_email: "hucancode@gmail.com"
-          github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
-          repository: ${{ github.repository }}
+        id: deployment
+        uses: actions/deploy-pages@v4

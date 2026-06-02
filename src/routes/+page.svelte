@@ -88,12 +88,10 @@
 <svelte:head>
   <title>Poker Simulator</title>
 </svelte:head>
-<header class="container prose prose-slate text-center dark:prose-invert">
+<header class="container text-center">
   <h1>Poker Simulator <WavingHand>🃏</WavingHand></h1>
 </header>
-<main
-  class="container prose prose-slate max-w-lg text-center dark:prose-invert"
->
+<main class="container text-center main-narrow">
   <form>
     <GameBoard
       disabled={isWorking}
@@ -101,7 +99,7 @@
       bind:code={gameCode}
       on:updated={() => (result = { ...UNKOWN_RESULT })}
     />
-    <div class="mt-2">
+    <div class="action">
       <button type="submit" on:click|preventDefault={compute}
         >{isWorking ? "Stop" : "Compute"}</button
       >
@@ -114,17 +112,15 @@
         max={LIVE_UPDATE ? result.total : null}
       />
       {#if LIVE_UPDATE}
-        <small class="flex flex-col items-center justify-center gap-5">
-          <div class="mt-5">
+        <small class="live">
+          <div class="row-mt">
             <span>Looking into the future</span>
-            <span class="font-mono">#{result.covered}</span>
+            <span class="mono">#{result.covered}</span>
           </div>
-          <div class="my-auto flex items-baseline">
+          <div class="winning">
             <span>You are winning &nbsp</span>
-            <div
-              class="flex w-10 flex-col items-center justify-center font-mono font-bold"
-            >
-              <div class="">
+            <div class="win-count">
+              <div>
                 {result.win}
               </div>
               ({result.winRate.toFixed(1)}%)
@@ -136,13 +132,13 @@
     {:else if result.total >= 0}
       <Result {result} />
     {:else}
-      <small class="text-gray-500"
+      <small class="muted"
         >Enter your game state and let computer do the hard work for you</small
       >
     {/if}
   </div>
 </main>
-<footer class="my-6 text-center opacity-50">
+<footer class="footer">
   Made with ♥ by <strong><a href="https://hucanco.de/">hucancode</a></strong><br
   />
 </footer>
@@ -151,21 +147,73 @@
   header,
   main,
   footer {
-    @apply px-4;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .main-narrow {
+    max-width: 32rem;
   }
   h1 {
-    @apply mt-0 mb-6;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
   }
   small {
-    @apply text-xs font-thin leading-snug;
+    font-size: 0.75rem;
+    font-weight: 100;
+    line-height: 1.375;
+  }
+  .muted {
+    color: #6b7280;
+  }
+  .action {
+    margin-top: 0.5rem;
+  }
+  .footer {
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    opacity: 0.5;
   }
   button {
-    @apply m-2 bg-black px-4 py-1 text-xl font-bold uppercase text-white;
+    margin: 0.5rem;
+    background: #000;
+    padding: 0.25rem 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #fff;
   }
   form {
-    @apply flex flex-col items-center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  form > div:has(input) {
-    @apply relative mt-6 mb-2 w-full;
+  .live {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+  }
+  .row-mt {
+    margin-top: 1.25rem;
+  }
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  }
+  .winning {
+    margin-top: auto;
+    margin-bottom: auto;
+    display: flex;
+    align-items: baseline;
+  }
+  .win-count {
+    display: flex;
+    width: 2.5rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 700;
   }
 </style>

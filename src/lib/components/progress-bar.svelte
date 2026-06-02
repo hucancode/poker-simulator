@@ -4,31 +4,62 @@
 </script>
 
 {#if max}
-  <progress {max} {value} />
+  <progress {max} {value}></progress>
 {:else}
-  <progress />
+  <progress></progress>
 {/if}
 
 <style>
   progress {
-    @apply relative w-full overflow-hidden rounded-full;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 9999px;
+    height: 0.75rem;
+    border: none;
+    appearance: none;
   }
   progress::-webkit-progress-bar {
-    @apply bg-gray-200;
+    background-color: #e5e7eb;
   }
   progress::-webkit-progress-value,
   progress::-moz-progress-bar {
-    @apply bg-blue-400;
+    background-color: #60a5fa;
   }
   progress::-webkit-progress-bar,
   progress::-webkit-progress-value,
   progress::-moz-progress-bar {
-    @apply duration-500;
+    transition: all 500ms;
   }
   progress:not([max])::after {
-    @apply absolute inset-0 w-1/4 animate-pingpong bg-blue-400 content-[''];
+    position: absolute;
+    inset: 0;
+    width: 25%;
+    background-color: #60a5fa;
+    content: "";
+    animation: pingpong 1s infinite alternate ease-in-out;
   }
   progress:indeterminate::-moz-progress-bar {
-    @apply absolute inset-0 w-1/4 animate-pingpong-absolute bg-blue-400;
+    position: absolute;
+    inset: 0;
+    width: 25%;
+    background-color: #60a5fa;
+    animation: pingpong-absolute 1s infinite alternate ease-in-out;
+  }
+  @keyframes pingpong {
+    from {
+      left: -25%;
+    }
+    to {
+      left: 100%;
+    }
+  }
+  @keyframes pingpong-absolute {
+    from {
+      transform: translateX(-100%);
+    }
+    to {
+      transform: translateX(400%);
+    }
   }
 </style>

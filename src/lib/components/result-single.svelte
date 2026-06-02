@@ -21,9 +21,9 @@
 
 <style>
   h3[negative="true"] {
-    @apply text-red-500;
+    color: #ef4444;
   }
   h3[positive="true"] {
-    @apply text-green-600;
+    color: #16a34a;
   }
 </style>

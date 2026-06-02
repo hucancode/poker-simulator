@@ -1,65 +1,175 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800;900&display=swap");
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-@layer base {
-  body {
-    @apply flex min-h-screen w-full flex-col items-center justify-start bg-sky-50 pt-4 text-gray-800 antialiased duration-500 dark:bg-gray-900 dark:text-white;
-    font-family: "Noto Sans JP", sans-serif;
-  }
+:root {
+  --bg: #f0f9ff;
+  --fg: #1f2937;
+  --muted: #6b7280;
+  --border: #d1d5db;
+  --card-bg: #f3f4f6;
+  --card-bg-alt: #e5e7eb;
+  --accent: #60a5fa;
+  --accent-bg: #e5e7eb;
+  --positive: #16a34a;
+  --negative: #ef4444;
+  --selected: #fed7aa;
+  --red-card: #ef4444;
+  --black-on-white: #000;
+  --white-on-black: #fff;
+}
 
-  nav {
-    @apply flex w-full max-w-screen-lg items-center justify-between px-4;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111827;
+    --fg: #fff;
   }
+}
 
-  main {
-    @apply grow;
-  }
-  dialog:not([open]) {
-    @apply pointer-events-none opacity-0;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
 
-  dialog {
-    @apply fixed top-0 left-0 m-auto grid bg-transparent;
-  }
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: 1rem;
+  background-color: var(--bg);
+  color: var(--fg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 500ms, color 500ms;
+  font-family: "Noto Sans JP", sans-serif;
+  line-height: 1.6;
+}
+
+nav {
+  display: flex;
+  width: 100%;
+  max-width: 1024px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+}
+
+main {
+  flex-grow: 1;
+}
+
+section {
+  display: flex;
+  width: 100%;
+  max-width: 1024px;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.container {
+  width: 100%;
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.text-center {
+  text-align: center;
+}
+
+h1,
+h2,
+h3 {
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 2.25rem;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+}
+
+dialog:not([open]) {
+  pointer-events: none;
+  opacity: 0;
+}
+
+dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: auto;
+  display: grid;
+  background: transparent;
+  border: none;
+  color: var(--fg);
+}
+
+dialog > div {
+  transform: scale(0.75);
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
   dialog > div {
-    @apply scale-75 opacity-0 duration-200 ease-in-out motion-safe:transition-all motion-reduce:transition-none;
+    transition: all 200ms ease-in-out;
   }
-  dialog[open] > div {
-    @apply scale-100 opacity-100;
-  }
-
   dialog::backdrop {
-    @apply backdrop-blur-none duration-500 motion-safe:transition-all motion-reduce:transition-none;
+    transition: all 500ms;
   }
+}
 
-  dialog[open]::backdrop {
-    @apply backdrop-blur;
-  }
+dialog[open] > div {
+  transform: scale(1);
+  opacity: 1;
+}
 
-  button {
-    @apply select-none;
-  }
+dialog::backdrop {
+  backdrop-filter: blur(0);
+}
 
-  button > * {
-    cursor: inherit;
-  }
+dialog[open]::backdrop {
+  backdrop-filter: blur(8px);
+}
 
-  button:enabled {
-    @apply cursor-pointer;
-  }
+button {
+  user-select: none;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
 
-  section {
-    @apply flex w-full max-w-screen-lg flex-col items-center px-4;
-  }
+button > * {
+  cursor: inherit;
+}
 
-  * {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    -webkit-tap-highlight-color: transparent;
-  }
+button:enabled {
+  cursor: pointer;
+}
 
-  .text-fill-none {
-    -webkit-text-fill-color: transparent;
-  }
+button:disabled {
+  opacity: 0.5;
+}
+
+.text-fill-none {
+  -webkit-text-fill-color: transparent;
 }
